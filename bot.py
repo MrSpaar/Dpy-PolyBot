@@ -1,5 +1,6 @@
 from discord import Game, Intents, __version__
 from discord.ext import commands
+from discord.utils import get
 
 from os import listdir, environ
 from utils.db import Settings
@@ -21,11 +22,15 @@ class Bot(commands.Bot):
         print(f'Le bot est prêt !')
 
     async def is_enabled(self, ctx):
-        return ctx.channel.id in self.settings.channels or ctx.command.name == 'sondage' or not ctx.guild
+        if not ctx.guild:
+            return True
+
+        role = get(ctx.guild.roles, id=self.settings.mod)
+        return ctx.channel.id in self.settings.channels or ctx.command.name == 'sondage' or role in ctx.author.roles
 
 
 bot = Bot(intents=Intents.all(), case_insensitive=True,
-          help_command=None, activity=Game(name=f'!help'), debug=True)
+          help_command=None, activity=Game(name=f'!help'), debug=False)
 
 for directory in ['admin', 'events', 'commands']:
     for file in listdir(directory):

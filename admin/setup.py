@@ -47,15 +47,15 @@ class Setup(commands.Cog, description='admin'):
     )
     async def settings(self, ctx):
         logs = get(ctx.guild.text_channels, id=self.bot.settings.logs)
-        channel = get(ctx.guild.text_channels, id=self.bot.settings.channel)
+        announce = get(ctx.guild.text_channels, id=self.bot.settings.announce)
 
         mute = get(ctx.guild.roles, id=self.bot.settings.mute)
         mod = get(ctx.guild.roles, id=self.bot.settings.mod)
 
         embed = (Embed(color=0x3498db)
                  .add_field(name='Channel logs', value=f'```#{logs}```')
-                 .add_field(name='Channel du bot', value=f'```#{channel}```')
-                 .add_field(name='Préfix des channels', value=f'```Créer```')
+                 .add_field(name='Channel du bot', value=f'```#{announce}```')
+                 .add_field(name='Prochaine baisse de paliers', value=f'```{self.bot.settings.next.strftime("%d/%m/%Y")}```')
                  .add_field(name='Rôle mute', value=f'```@{mute}```')
                  .add_field(name='Rôle modérateur', value=f'```@{mod}```')
                  .set_author(name='Réglages du bot', icon_url=ctx.guild.icon_url))

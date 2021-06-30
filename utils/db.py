@@ -61,7 +61,7 @@ class Settings:
         self.logs = None
         self.next = None
         self.channels = None
-        self.channel = None
+        self.announce = None
 
     async def start(self):
         settings = await self.collection.find()

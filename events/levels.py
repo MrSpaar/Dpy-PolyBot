@@ -17,7 +17,7 @@ class XP(commands.Cog):
             return
 
         bucket = self.cd.get_bucket(message)
-        if bucket.update_rate_limit() or message.author.bot or not message.channel.category:
+        if bucket.update_rate_limit() or message.author.bot or not message.channel.category or message.channel.id == 853630887794311178:
             return
 
         db = Database({'coeff': ['data', 'channels'], 'xp': ['data', 'users']})
@@ -34,7 +34,7 @@ class XP(commands.Cog):
                            {'$set': {'xp': int(xp), 'level': lvl if xp >= next_lvl else lvl - 1}})
 
         if xp >= next_lvl:
-            channel = get(message.guild.text_channels, id=self.bot.settings.channel)
+            channel = get(message.guild.text_channels, id=self.bot.settings.announce)
             embed = Embed(description=f'🆙 Tu viens de monter niveau **{lvl}**.', color=0xf1c40f)
             await channel.send(message.author.mention, embed=embed)
 

@@ -13,7 +13,8 @@ class Logs(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         conn = Collection(collection='users')
-        await conn.insert({'id': member.id, 'xp': 0, 'level': 0, 'mute': '10m'})
+        if not conn.find({'id': member.id}) and not member.bot:
+            await conn.insert({'id': member.id, 'xp': 0, 'level': 0, 'mute': '10m'})
         conn.close()
 
         channel = get(member.guild.text_channels, id=self.bot.settings.logs)
