@@ -1,5 +1,32 @@
+from discord import __version__
+from discord.ext import commands
+from discord.utils import get
+
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
 from os import environ
+
+
+class Bot(commands.Bot):
+    def __init__(self, debug=False, **kwargs):
+        super().__init__(command_prefix='-' if debug else '!', **kwargs)
+        load_dotenv()
+
+        self.debug = debug
+        self.settings = Settings()
+        self.token = environ.get('DEBUG_TOKEN') if debug else environ.get('BOT_TOKEN')
+
+    async def on_ready(self):
+        self.settings = await self.settings.start()
+        print(f'\nConnecté en tant que : {self.user.name} - {self.user.id}\nVersion : {__version__}\n')
+        print(f'Le bot est prêt !')
+
+    async def is_enabled(self, ctx):
+        if not ctx.guild:
+            return True
+
+        role = get(ctx.guild.roles, id=self.settings.mod)
+        return ctx.channel.id in self.settings.channels or ctx.command.name == 'sondage' or role in ctx.author.roles
 
 
 class Collection:

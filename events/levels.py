@@ -2,7 +2,7 @@ from discord import Embed
 from discord.ext import commands
 from discord.utils import get
 
-from utils.db import Database
+from utils.cls import Database
 from random import randint
 
 

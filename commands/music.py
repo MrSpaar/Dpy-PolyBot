@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.utils import get
 
 from asyncio import run_coroutine_threadsafe
-from utils.db import Collection
+from utils.cls import Collection
 from youtube_dl import YoutubeDL
 from re import findall
 

@@ -2,7 +2,7 @@ from discord import Embed, Status, Member, Role, TextChannel
 from discord.ext import commands
 
 from datetime import datetime
-from utils.decorators import has_mod_role
+from utils.tools import has_mod_role
 
 
 class Informations(commands.Cog, description='admin'):

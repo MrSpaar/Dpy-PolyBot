@@ -3,7 +3,7 @@ from discord.ext import commands
 from utils.tools import get_json
 
 
-class Maths(commands.Cog, name='Mathématiques'):
+class Maths(commands.Cog, name='Mathématiques', description='commands'):
     def __init__(self, bot):
         self.bot = bot
 

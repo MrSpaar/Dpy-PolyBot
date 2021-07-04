@@ -1,6 +1,6 @@
 from discord.ext import commands
 from discord.utils import get
-from utils.db import Collection
+from utils.cls import Collection
 
 
 class Channels(commands.Cog):

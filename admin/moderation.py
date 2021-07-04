@@ -2,9 +2,9 @@ from discord import Member, Embed
 from discord.ext import commands, tasks
 from discord.utils import get
 
-from utils.decorators import has_mod_role, has_higher_perms
+from utils.tools import has_mod_role, has_higher_perms
 from datetime import datetime, timedelta
-from utils.db import Collection
+from utils.cls import Collection
 from asyncio import sleep
 
 

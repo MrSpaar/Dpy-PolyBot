@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.utils import get
 
 from datetime import datetime, timedelta
-from utils.db import Collection
+from utils.cls import Collection
 
 
 class Logs(commands.Cog):
