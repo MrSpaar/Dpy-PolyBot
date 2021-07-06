@@ -5,7 +5,7 @@ from os import listdir
 from utils.cls import Bot
 
 bot = Bot(intents=Intents.all(), case_insensitive=True,
-          help_command=None, activity=Game(name=f'!help'), debug=True)
+          help_command=None, activity=Game(name=f'!help'), debug=False)
 
 for directory in ['admin', 'events', 'commands']:
     for file in listdir(directory):
@@ -22,7 +22,7 @@ async def restart(ctx):
             if file == '__pycache__' or (file == 'errors.py' and bot.debug):
                 continue
 
-            bot.load_extension(f'{directory}.{file[:-3]}')
+            bot.reload_extension(f'{directory}.{file[:-3]}')
     await ctx.send('Tous les modules ont été relancé')
 
 bot.run(bot.token, bot=True, reconnect=True)
