@@ -32,7 +32,7 @@ class Erreurs(commands.Cog):
             commands.PartialEmojiConversionFailure: "❌ Cette commande ne marche qu'avec les emojis custom",
             commands.CommandInvokeError: arg,
             commands.CommandNotFound: '❌ Commande inexistante',
-            commands.CheckFailure: '❌ Tu ne peux pas faire ça',
+            commands.CheckFailure: '❌ Les commandes ne sont pas activées ici',
             commands.ChannelNotFound: '❌ Channel introuvable',
             commands.BadArgument: '❌ Les arguments doivent être des nombres entiers',
             commands.CommandOnCooldown: "❌ Commande en cooldown",
