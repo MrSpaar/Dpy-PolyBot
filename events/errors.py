@@ -50,7 +50,7 @@ class Erreurs(commands.Cog):
         if ctx.message and ctx.command:
             cmd = f'{self.bot.command_prefix}{ctx.invoked_with}'
             url = ctx.message.to_reference().jump_url
-            print(f'[Erreur] "{cmd}{ctx.message.content.strip(cmd)}" ({url}):')
+            print(f'[ERROR] "{cmd}{ctx.message.content.strip(cmd)}" ({url}):')
             print(error, end='\n\n')
         else:
             raise error

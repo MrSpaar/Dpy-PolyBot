@@ -175,6 +175,12 @@ class Logs(commands.Cog):
         channel = get(ctx.guild.text_channels, id=self.bot.settings.logs)
         await channel.send(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_command_completion(self, ctx):
+        now = datetime.now()
+        print(f'[INFO] {now.strftime("%d/%m/%Y %H:%M:%S")} Commande exécutée')
+        print(f'Par {ctx.author} : {ctx.message.clean_content}\n')
+
 
 def setup(bot):
     bot.add_cog(Logs(bot))

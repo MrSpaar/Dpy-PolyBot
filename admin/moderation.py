@@ -33,6 +33,7 @@ class Moderation(commands.Cog, description='admin'):
         for entry in data:
             await conn.update({'id': entry['id']}, {'$set': {'mute': durations[entry['mute']]}})
 
+        print(f'[INFO] {now.strftime("%d/%m/%Y %H:%M:%S")} Paliers de mute baissés')
         conn.close()
 
     @staticmethod

@@ -19,7 +19,6 @@ class Bot(commands.Bot):
     async def on_ready(self):
         self.settings = await self.settings.start()
         print(f'\nConnecté en tant que : {self.user.name} - {self.user.id}\nVersion : {__version__}\n')
-        print(f'Le bot est prêt !')
 
     async def is_enabled(self, ctx):
         if not ctx.guild:
