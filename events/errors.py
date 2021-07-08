@@ -42,7 +42,7 @@ class Erreurs(commands.Cog):
         for error_type, msg in basic_errors.items():
             if isinstance(error, error_type) and msg:
                 if ctx.command and ctx.command.brief:
-                    msg = f"{msg}\n❔ Exemple d'utilisation : `{ctx.command.brief}`"
+                    msg = f"{msg}\n❔ Exemple d'utilisation : `{self.bot.command_prefix}{ctx.command.name} {ctx.command.brief}`"
 
                 await ctx.send(msg)
                 return

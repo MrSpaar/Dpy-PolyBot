@@ -19,7 +19,7 @@ class Musique(commands.Cog, description='commands'):
         }
 
     async def cog_check(self, ctx):
-        conn = Collection(database='data', collection='channels')
+        conn = Collection(collection='pending')
         data = bool(await conn.find({'txt_id': ctx.channel.id}))
         return data or ctx.channel.id in [752933939462799432, 752933914091323493]
 
