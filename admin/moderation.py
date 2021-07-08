@@ -44,8 +44,8 @@ class Moderation(commands.Cog, description='admin'):
 
         return duration, time
 
-    @staticmethod
-    async def mute_member(ctx, role, member: Member, reason, time, duration):
+    async def mute_member(self, ctx, role, member: Member, reason, time, duration):
+        logs = get(ctx.guild.text_channels, id=self.bot.settings.logs)
         embed = (Embed(color=0xe74c3c)
                  .add_field(name='Par', value=f"```{ctx.author.display_name}```")
                  .add_field(name='Durée', value=f"```{time}```")
@@ -53,6 +53,7 @@ class Moderation(commands.Cog, description='admin'):
                  .set_author(name=f'{member} a été mute', icon_url=member.avatar_url))
 
         await ctx.send(embed=embed)
+        await logs.send(embed=embed)
         await member.add_roles(role)
 
         await sleep(duration)

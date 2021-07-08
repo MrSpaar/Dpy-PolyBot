@@ -44,7 +44,7 @@ class Logs(commands.Cog):
     async def on_member_unban(self, guild, user):
         entry = await guild.audit_logs(limit=1).flatten()
         embed = Embed(title=':man_judge: Membre unban', color=0xc27c0e,
-                      description=f"{entry[0].user.mention} a unban {user}\n**Raison:** {entry[0].reason}")
+                      description=f"{entry[0].user.mention} a unban {user}\nRaison: {entry[0].reason}")
 
         channel = get(guild.text_channels, id=self.bot.settings.logs)
         await channel.send(embed=embed)
@@ -58,7 +58,7 @@ class Logs(commands.Cog):
 
         if before.display_name != after.display_name:
             value = f"```{before.display_name} → {after.display_name}```"
-            embed.add_field(name="Pseudo:", value=value, inline=False)
+            embed.add_field(name="Pseudo:", value=value)
         elif before.roles != after.roles:
             try:
                 role = list(filter(lambda r: r not in before.roles, after.roles))[0].name
@@ -67,7 +67,7 @@ class Logs(commands.Cog):
                 role = list(filter(lambda r: r not in after.roles, before.roles))[0].name
                 state = 0
             value = f'```Role "{role}"' + (' ajouté' if state else ' enlevé')+'```'
-            embed.add_field(name="Roles", value=value, inline=False)
+            embed.add_field(name="Roles", value=value)
         else:
             return
 
@@ -94,11 +94,12 @@ class Logs(commands.Cog):
         entry = [infos[i] for i, flag in enumerate(flags) if flag][0]
 
         embed = (Embed(title=entry['title'], color=entry['color'])
-                 .add_field(name='Message de', value=f'```{message.author.display_name}```', inline=False)
+                 .add_field(name='Message de', value=f'```{message.author.display_name}```')
                  .add_field(name='Dans', value=f'```#{message.channel}```'))
 
         if message.content:
-            embed.add_field(name='Contenu', value=f'```{message.clean_content}```', inline=False)
+            inline = True if len(message.clean_content) < 31 else False
+            embed.add_field(name='Contenu', value=f'```{message.clean_content}```', inline=inline)
         if message.attachments:
             embed.set_image(url=message.attachments[0].url)
 
@@ -111,16 +112,14 @@ class Logs(commands.Cog):
                  .set_author(name='Modification Discord', icon_url=before.avatar_url))
 
         if before.name != after.name and before.discriminator != after.discriminator:
-            embed.add_field(name='Pseudo', value=f'```{before.name} → {after.name}```', inline=False)
+            embed.add_field(name='Pseudo', value=f'```{before.name} → {after.name}```')
             embed.add_field(name='Discriminant', value=f'```{before.discriminator} → {after.discriminator}```', inline=False)
         if before.name != after.name and before.discriminator == after.discriminator:
-            embed.add_field(name='Cible', value=f'```{after}```', inline=False)
-            embed.add_field(name='Avant', value=f'```{before.name}```')
-            embed.add_field(name='Après', value=f'```{after.name}```')
+            embed.add_field(name='Cible', value=f'```{after}```')
+            embed.add_field(name='Avant', value=f'```{before.name} → {after.name}```')
         elif before.discriminator != after.discriminator and before.name == after.name:
             embed.add_field(name='Cible', value=f'```{after}```', inline=False)
-            embed.add_field(name='Avant', value=f'```{before.discriminator}```')
-            embed.add_field(name='Après', value=f'```{after.discriminator}```')
+            embed.add_field(name='Avant', value=f'```{before.discriminator} → {after.discriminator}```')
         else:
             return
 
@@ -146,33 +145,6 @@ class Logs(commands.Cog):
                  .set_author(name='Invitation créée', icon_url=invite.inviter.avatar_url))
 
         channel = get(invite.guild.text_channels, id=self.bot.settings.logs)
-        await channel.send(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_command(self, ctx):
-        if ctx.command.name not in ['mute', 'automute'] or not await ctx.command.can_run(ctx):
-            return
-
-        cmd = ctx.command.name
-        args = ctx.message.content[len(f'{self.bot.command_prefix}{ctx.invoked_with}')+1:].split(' ')
-
-        member = ctx.message.mentions[0]
-        title = f"Membre {'muté' if cmd in ['mute', 'automute'] else 'warn'}"
-
-        embed = (Embed(color=0xe74c3c)
-                 .add_field(name='Cible', value=f"```{member.display_name}```")
-                 .add_field(name='Par', value=f"```{ctx.author.display_name}```")
-                 .set_author(name=title, icon_url=member.avatar_url))
-
-        if cmd == 'mute':
-            embed.set_author(name='Membre muté', icon_url=member.avatar_url)
-            embed.add_field(name='Durée', value=f"```{args[1]}```")
-            embed.add_field(name='Raison', value=f"```{' '.join(args[2:]) if len(args) > 2 else 'Pas de raison'}```", inline=False)
-        else:
-            embed.set_author(name='Membre automuté', icon_url=member.avatar_url)
-            embed.add_field(name='Raison', value=f"```{' '.join(args[1:]) if args[1:] else 'Pas de raison'}```", inline=False)
-
-        channel = get(ctx.guild.text_channels, id=self.bot.settings.logs)
         await channel.send(embed=embed)
 
     @commands.Cog.listener()

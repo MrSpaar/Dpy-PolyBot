@@ -21,11 +21,11 @@ class Bot(commands.Bot):
         print(f'\nConnecté en tant que : {self.user.name} - {self.user.id}\nVersion : {__version__}\n')
 
     async def is_enabled(self, ctx):
-        if not ctx.guild:
+        if not ctx.guild or ctx.channel.id == self.settings.announce or ctx.command.name == 'sondage':
             return True
 
         role = get(ctx.guild.roles, id=self.settings.mod)
-        return ctx.channel.id in self.settings.channels or ctx.command.name == 'sondage' or role in ctx.author.roles
+        return role in ctx.author.roles
 
 
 class Collection:
@@ -86,7 +86,6 @@ class Settings:
         self.mod = None
         self.logs = None
         self.next = None
-        self.channels = None
         self.announce = None
 
     async def start(self):
