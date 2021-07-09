@@ -9,7 +9,7 @@ bot = Bot(intents=Intents.all(), case_insensitive=True,
 
 for directory in ['admin', 'events', 'commands']:
     for file in listdir(directory):
-        if file == '__pycache__' or (file == 'errors.py' and bot.debug):
+        if file == '__pycache__' or (file in ['errors.py', 'logs.py'] and bot.debug):
             continue
 
         bot.load_extension(f'{directory}.{file[:-3]}')

@@ -22,7 +22,7 @@ class Channels(commands.Cog):
                 channel = await member.guild.create_voice_channel(name=name, category=cat, overwrites=overwrites)
                 try:
                     await member.move_to(channel)
-                    await db.insert({'name': name, 'txt_id': text.id})
+                    await db.insert({'type': 'channel', 'name': name, 'txt_id': text.id})
                 except:
                     await channel.delete()
                     await text.delete()

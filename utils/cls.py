@@ -66,19 +66,6 @@ class Collection:
         self.client.close()
 
 
-class Database:
-    def __init__(self, connections):
-        self.client = AsyncIOMotorClient(environ['DATABASE_URL'])
-        self.xp = None
-        self.coeff = None
-
-        for key, value in connections.items():
-            setattr(self, key, Collection(self.client, value[0], value[1]))
-
-    def close(self):
-        self.client.close()
-
-
 class Settings:
     def __init__(self):
         self.collection = Collection(collection='settings')
