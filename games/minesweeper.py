@@ -11,22 +11,22 @@ class Minesweeper:
         self.embed = None
         self.end = False
 
-        self.emotes = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣']
+        self.emotes = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
         self.mine, self.flag, self.blank = '🇲', '🚩', '🟦'
 
         self.checks = (
-            lambda i, m: -1 < i - 12 < 144 and (self.sol[i - 12] == self.mine or m),
-            lambda i, m: -1 < i + 12 < 144 and (self.sol[i + 12] == self.mine or m),
-            lambda i, m: -1 < i + 1 < 144 and (self.sol[i + 1] == self.mine or m) and (i + 1) % 12,
-            lambda i, m: -1 < i - 11 < 144 and (self.sol[i - 11] == self.mine or m) and (i + 1) % 12,
-            lambda i, m: -1 < i + 13 < 144 and (self.sol[i + 13] == self.mine or m) and (i + 1) % 12,
-            lambda i, m: -1 < i - 1 < 144 and (self.sol[i - 1] == self.mine or m) and i % 12,
-            lambda i, m: -1 < i + 11 < 144 and (self.sol[i + 11] == self.mine or m) and i % 12,
-            lambda i, m: -1 < i - 13 < 144 and (self.sol[i - 13] == self.mine or m) and i % 12,
+            lambda i, m: -1 < i - 10 < 100 and (self.sol[i - 10] == self.mine or m),
+            lambda i, m: -1 < i + 10 < 100 and (self.sol[i + 10] == self.mine or m),
+            lambda i, m: -1 < i + 1 < 100 and (self.sol[i + 1] == self.mine or m) and (i + 1) % 10,
+            lambda i, m: -1 < i - 9 < 100 and (self.sol[i - 9] == self.mine or m) and (i + 1) % 10,
+            lambda i, m: -1 < i + 11 < 100 and (self.sol[i + 11] == self.mine or m) and (i + 1) % 10,
+            lambda i, m: -1 < i - 1 < 100 and (self.sol[i - 1] == self.mine or m) and i % 10,
+            lambda i, m: -1 < i + 9 < 100 and (self.sol[i + 9] == self.mine or m) and i % 10,
+            lambda i, m: -1 < i - 11 < 100 and (self.sol[i - 11] == self.mine or m) and i % 10,
         )
 
-        self.sol = sample(self.blank*119 + self.mine*25, 144)
-        self._cur = list(self.blank*144)
+        self.sol = sample(self.blank*75 + self.mine*25, 100)
+        self._cur = list(self.blank*100)
 
         for i, elem in enumerate(self.sol):
             if elem != self.mine:
@@ -34,7 +34,10 @@ class Minesweeper:
 
     @property
     def grid(self):
-        return '\n'.join(['​'.join(self._cur[i:i+12]) for i in range(0, 144, 12)])
+        temp = f"⬛⬛{''.join(self.emotes[1:])}\n{'⬛'*12}\n"
+        for i in range(0, 100, 10):
+            temp += f"{self.emotes[1:][i//10]}⬛{'​'.join(self._cur[i:i+10])}\n"
+        return temp
 
     @grid.setter
     def grid(self, i):
@@ -46,7 +49,7 @@ class Minesweeper:
             self.reveal_near(i)
 
     def reveal_near(self, i, lastest=[]):
-        for x, c in zip((-12, 12, 1, -11, 13, -1, 11, -13), self.checks):
+        for x, c in zip((-10, 10, 1, -9, 11, -1, 9, -11), self.checks):
             if c(i, True):
                 self._cur[i+x] = self.sol[i+x]
                 if self.sol[i+x] == self.emotes[0] and i+x not in lastest:
@@ -61,9 +64,6 @@ class Minesweeper:
         await self.message.edit(embed=self.embed)
 
     async def start(self):
-        if self.bot.debug:
-            print('\n'.join([''.join(self.sol[i:i+12]) for i in range(0, 144, 12)]))
-
         self.embed = (Embed(color=Color.random(), description=self.grid)
                       .set_author(name='Partie de démineur', icon_url=self.ctx.author.avatar_url))
         self.message = await self.ctx.send(embed=self.embed)
@@ -86,8 +86,8 @@ class Minesweeper:
 
             try:
                 a, b = [int(x.strip()) for x in pos.content.split('/')]
-                if -1 < a < 13 and -1 < b < 13:
-                    pos = (a - 1) * 12 + b - 1
+                if -1 < a < 11 and -1 < b < 11:
+                    pos = (a - 1) * 10 + b - 1
                     reaction = str(reaction.emoji)
                     break
             except:
@@ -104,5 +104,5 @@ class Minesweeper:
             await self.edit_embed(description=self.grid)
             await self.loop()
         else:
-            desc = '\n'.join(['​'.join(self.sol[i:i+12]) for i in range(0, 144, 12)])
+            desc = '\n'.join(['​'.join(self.sol[i:i+10]) for i in range(0, 100, 10)])
             await self.edit_embed(color=0xe74c3c, name='Partie perdue !', description=desc)
