@@ -13,17 +13,20 @@ class Moderation(commands.Cog, description='admin'):
         self.bot = bot
         self.decrement.start()
 
+    @property
+    def now(self):
+        return datetime.utcnow() + timedelta(hours=2)
+
     @tasks.loop(hours=1, reconnect=True)
     async def decrement(self):
         if not self.bot.settings.next:
             await sleep(5)
 
-        now = datetime.now()
-        limit = datetime(year=now.year, month=self.bot.settings.next.month, day=self.bot.settings.next.day)
+        limit = datetime(year=self.now.year, month=self.bot.settings.next.month, day=self.bot.settings.next.day)
         if datetime.now() < limit:
             return
 
-        await self.bot.settings.setv('next', datetime.now() + timedelta(days=30))
+        await self.bot.settings.setv('next', self.now + timedelta(days=30))
         conn = Collection(collection='users')
         data = await conn.find({'mute': {'$ne': '10m'}})
 
@@ -33,7 +36,7 @@ class Moderation(commands.Cog, description='admin'):
         for entry in data:
             await conn.update({'id': entry['id']}, {'$set': {'mute': durations[entry['mute']]}})
 
-        print(f'[INFO] {now.strftime("%d/%m/%Y %H:%M:%S")} Paliers de mute baissés')
+        print(f'[INFO] {self.now.strftime("%d/%m/%Y %H:%M:%S")} Paliers de mute baissés')
         conn.close()
 
     async def mute_member(self, entry):
@@ -49,7 +52,7 @@ class Moderation(commands.Cog, description='admin'):
         await logs.send(embed=embed)
         await member.add_roles(entry['role'])
 
-        date = datetime.now() + timedelta(seconds=entry['time'][0])
+        date = self.now + timedelta(seconds=entry['time'][0])
         try:
             await member.send(f"🔇 Tu es mute jusqu'au {date.strftime('%d/%m/%Y à %H:%M:%S')}\n⚠️ Une fois cette date dépassé, écris `!unmute` pour ne plus être mute")
         except:
@@ -109,17 +112,18 @@ class Moderation(commands.Cog, description='admin'):
 
         member = member or ctx.author
         mute = get(ctx.guild.roles, id=self.bot.settings.mute)
-
         if member and mute not in member.roles:
             await ctx.send(f"❌ {member.mention} n'est pas mute")
             return
 
+        if mod not in ctx.author.roles and member != ctx.author:
+            raise commands.MissingPermissions('')
+
         conn = Collection(collection='pending')
-        if mod not in ctx.author.roles and member == ctx.author:
-            entry = await conn.find({'type': 'mute', 'id': member.id})
-            if entry['end'] > datetime.now():
-                await ctx.send(f"❌ Ton mute n'est pas terminé : {entry['end'].strftime('%d/%m/%Y à %H:%M:%S')}")
-                return
+        entry = await conn.find({'type': 'mute', 'id': member.id})
+        if mod not in ctx.author.roles and member == ctx.author and self.now <= entry['end']:
+            await ctx.send(f"❌ Ton mute n'est pas terminé : {entry['end'].strftime('%d/%m/%Y à %H:%M:%S')}")
+            return
 
         await member.remove_roles(mute)
         await ctx.send(f'✅ {member.mention} a été unmute')
