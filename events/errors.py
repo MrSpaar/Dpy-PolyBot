@@ -13,7 +13,6 @@ class Erreurs(commands.Cog):
             'list index': "❌ Recherche invalide, aucuns résultats trouvés",
             'UnknownObjectException': "❌ Recherche invalide, aucuns résultats trouvés",
             'not enough values to unpack': "❌ Lancer invalide, exemples de lancers valides : `d6` `2d6` `2d6+3d9` `d6+20`",
-            'This field is required': "❌ Nom de catégorie invalide",
             "KeyError: 'list'": "❌ Ville introuvable ou inexistante",
             "2048": "❌ Mon message est trop long, impossible de l'envoyer",
             "This video may be": "❌ Restriction d'âge, impossible de jouer la vidéo",

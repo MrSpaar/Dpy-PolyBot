@@ -105,6 +105,7 @@ class Recherche(commands.Cog, description='commands'):
         await ctx.send(embed=embed)
 
     @commands.command(
+        aliases=['weather'],
         brief='Nancy',
         usage='<ville>',
         description="Donne la météo d'une ville sur un jour"

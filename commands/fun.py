@@ -32,6 +32,7 @@ class Fun(commands.Cog, description='commands'):
         await game.play()
 
     @commands.command(
+        aliases=['hangman'],
         brief='',
         usage='',
         description='Jouer au pendu'
@@ -40,6 +41,7 @@ class Fun(commands.Cog, description='commands'):
         await Hangman(self.bot, ctx).start()
 
     @commands.command(
+        aliases=['minesweeper'],
         brief='',
         usage='',
         description='Jouer au démineur'

@@ -28,7 +28,7 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         await ctx.send(f'**⚙️ Convertion base {from_base} en base {to_base} :** `{conv}`')
 
     @commands.command(
-        aliases=['bin'],
+        aliases=['bin', 'binary'],
         brief='prout',
         usage='<texte>',
         description='Convertir du texte en binaire'
@@ -51,6 +51,7 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         await ctx.send(f'**⚙️ Conversion hexadécimale :** `{arg.encode().hex()}`')
 
     @commands.command(
+        aliases=['compute'],
         brief='3*log(50)',
         usage='<expression>',
         description='Faire des calculs'

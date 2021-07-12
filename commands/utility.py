@@ -91,7 +91,7 @@ class Utilitaire(commands.Cog, description='commands'):
             return await ctx.send("```py\n" + source.replace('`', '\`') + "\n```")
 
     @commands.command(
-        aliases=['pp', 'idp'],
+        aliases=['pp', 'idp', 'pfp'],
         brief='@[!] Polybot',
         usage='<mention>',
         description="Afficher l'image de profil d'un membre"
@@ -109,7 +109,7 @@ class Utilitaire(commands.Cog, description='commands'):
         await ctx.send(embed=(Embed(color=ctx.author.color)).set_image(url=emoji.url))
 
     @commands.command(
-        aliases=['trad'],
+        aliases=['trad', 'translate'],
         brief='fr Hello World!',
         usage='<langue> <texte à traduire>',
         description='Traduire du texte'
