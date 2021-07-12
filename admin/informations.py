@@ -78,8 +78,7 @@ class Informations(commands.Cog, description='admin'):
 
         if member.premium_since:
             since = member.premium_since.strftime("%d/%m/%Y")
-            embed.add_field(name='📈 Booste depuis', value=since, inline=True)
-            embed.add_field(name='\u200b', value='\u200b')
+            embed.add_field(name='📈 Booste depuis', value=f'```{since}```', inline=True)
 
         await ctx.send(embed=embed)
 
