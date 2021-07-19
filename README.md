@@ -26,8 +26,8 @@ PolyBot is a french, **multi-function bot for Discord**. For now, the bot's **pr
 |[Setup](https://github.com/MrSpaar/PolyBot/blob/master/admin/setup.py)          | `set` `settings`                                            |
 
 ⚠️ For some commands, setting up a moderator and mute role will be necessary:
-- `!set mod <role id>` (every moderation command)
-- `!set mute <role id>` (mute commands)
+- `!set mod <role>` (every moderation command)
+- `!set mute <role>` (mute commands)
 
 Also, this bot uses [MongoDB](https://www.mongodb.com/cloud/atlas). If you plan copy pasting the whole code, you'll need to create a database named `data`, containing 3 collections: `pending`, `users` and `settings`.
 
@@ -48,7 +48,7 @@ async def is_enabled(self, ctx):
 ### • 📈 [Leveling system](https://github.com/MrSpaar/PolyBot/blob/master/events/levels.py)
 
 The system have the **same xp curve as [Mee6](https://mee6.xyz/)**. <br>
-Use `!set announce <channel id>` to set the bot's channel, where it will announce rank ups.<br>
+Use `!set announce <channel>` to set the bot's channel, where it will announce rank ups.<br>
 `!rank` will show your current xp, level and leaderboard position.<br>
 `!levels` will show a leaderboard, each page contains 10 users along with their xp and level.
 
@@ -56,14 +56,13 @@ Use `!set announce <channel id>` to set the bot's channel, where it will announc
 
 This module generates temporary voice channels :
 
-- Use `!set prefix <something>` to set a prefix.
-- Every voice channel that contain this prefix will generate a temporary channel when a member joins it.
+- Every voice channel that contain [this prefix](https://github.com/MrSpaar/PolyBot/blob/master/events/channels.py#L18) will generate a temporary channel when a member joins it.
 - A text channel is generated along with the voice channel.
 - Both of them are deleted when the voice channel is empty.
 
 ### • 📝 [Logs](https://github.com/MrSpaar/PolyBot/blob/master/events/logs.py)
 
-Log channel can be set using `!set logs <channel id>`.
+Log channel can be set using `!set logs <channel>`.
 
 |            Log             |                  Informations showed                  |
 |----------------------------|-------------------------------------------------------|
