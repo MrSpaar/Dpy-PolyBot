@@ -15,6 +15,16 @@ class Logs(commands.Cog):
         return logs
 
     @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        await self.bot.db_settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channels': None})
+        await self.bot.db_users.collection.insert_many([{'id': member.id, 'level': 0, 'xp': 0} for member in guild.members])
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        await self.bot.db_settings.delete({'guild_id': guild.id})
+        await self.bot.db_users.delete({'guild_id': guild.id})
+
+    @commands.Cog.listener()
     async def on_member_join(self, member):
         if not self.bot.db_users.find({'guild_id': member.guild.id, 'id': member.id}) and not member.bot:
             await self.bot.db_users.insert({'guild_id': member.guild.id, 'id': member.id, 'xp': 0, 'level': 0})

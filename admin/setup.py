@@ -12,7 +12,8 @@ class Setup(commands.Cog, description='admin'):
     @commands.command(
         name='set',
         brief='channel #🧙-polybot',
-        usage='<catégorie> <valeur>'
+        usage='<catégorie> <valeur>',
+        description='Modifier les paramètres du bot'
     )
     @commands.has_permissions(administrator=True)
     async def _set(self, ctx, key, value: Union[Role, TextChannel]):
@@ -32,6 +33,7 @@ class Setup(commands.Cog, description='admin'):
     @commands.command(
         brief='',
         usage='',
+        description='Afficher les paramètres du bot'
     )
     @commands.has_permissions(administrator=True)
     async def settings(self, ctx):
