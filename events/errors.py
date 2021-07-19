@@ -43,8 +43,7 @@ class Erreurs(commands.Cog):
                 if ctx.command and ctx.command.brief:
                     msg = f"{msg}\n❔ Exemple d'utilisation : `{self.bot.command_prefix}{ctx.command.name} {ctx.command.brief}`"
 
-                await ctx.send(msg)
-                return
+                return await ctx.send(msg)
 
         if ctx.message and ctx.command:
             cmd = f'{self.bot.command_prefix}{ctx.invoked_with}'

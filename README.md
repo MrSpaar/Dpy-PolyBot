@@ -25,30 +25,18 @@ PolyBot is a french, **multi-function bot for Discord**. For now, the bot's **pr
 |[Infos](https://github.com/MrSpaar/PolyBot/blob/master/admin/informations.py)   | `serverinfo` `userinfo` `roleinfo` `channelinfo` `lastjoins`|
 |[Setup](https://github.com/MrSpaar/PolyBot/blob/master/admin/setup.py)          | `set` `settings`                                            |
 
-⚠️ For some commands, setting up a moderator and mute role will be necessary:
-- `!set mod <role>` (every moderation command)
-- `!set mute <role>` (mute commands)
+⚠️ For mute related commands, you'll need to set a mute role: `!set mute <role>`
 
-Also, this bot uses [MongoDB](https://www.mongodb.com/cloud/atlas). If you plan copy pasting the whole code, you'll need to create a database named `data`, containing 3 collections: `pending`, `users` and `settings`.
+This bot uses [MongoDB](https://www.mongodb.com/cloud/atlas). If you plan copy pasting the whole code, you'll need to create a database named `data`, containing 3 collections: `pending`, `users` and `settings`.
 
 # Extra modules
 
 ---
 
-### • 🔐 Command restrictions
-
-Commands can only be used in one channel (except music, which can be used in temporary channels).<br>
-To set the bot's channel, use `!set announce <channel id>`.<br>
-If you don't want this feature to be enabled, replace [this part](https://github.com/MrSpaar/PolyBot/blob/master/utils/cls.py#L23-L25) with:
-```python
-async def is_enabled(self, ctx):
-    return True
-```
-
 ### • 📈 [Leveling system](https://github.com/MrSpaar/PolyBot/blob/master/events/levels.py)
 
 The system have the **same xp curve as [Mee6](https://mee6.xyz/)**. <br>
-Use `!set announce <channel>` to set the bot's channel, where it will announce rank ups.<br>
+Use `!set channel <channel>` to set the bot's channel, where it will announce rank ups.<br>
 `!rank` will show your current xp, level and leaderboard position.<br>
 `!levels` will show a leaderboard, each page contains 10 users along with their xp and level.
 

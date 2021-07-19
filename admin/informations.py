@@ -2,7 +2,6 @@ from discord import Embed, Status, Member, Role, TextChannel
 from discord.ext import commands
 
 from datetime import datetime
-from utils.tools import has_mod_role
 
 
 class Informations(commands.Cog, description='admin'):
@@ -14,7 +13,7 @@ class Informations(commands.Cog, description='admin'):
         usage='',
         description='Afficher des informations à propos du serveur'
     )
-    @has_mod_role()
+    @commands.has_permissions(manage_messages=True)
     async def serverinfo(self, ctx):
         guild = ctx.guild
         channels = f'{len(guild.text_channels)} textuels et {len(guild.voice_channels)} vocaux'
@@ -44,7 +43,7 @@ class Informations(commands.Cog, description='admin'):
         usage='<membre>',
         description="Afficher des informations à propos du serveur d'un membre"
     )
-    @has_mod_role()
+    @commands.has_permissions(manage_messages=True)
     async def userinfo(self, ctx, member: Member = None):
         member = member or ctx.author
         flags = [str(f)[10:].replace('_', ' ').title() for f in member.public_flags.all()]
@@ -87,7 +86,7 @@ class Informations(commands.Cog, description='admin'):
         usage='<role>',
         description="Afficher des informations à propos du serveur d'un rôle"
     )
-    @has_mod_role()
+    @commands.has_permissions(manage_messages=True)
     async def roleinfo(self, ctx, role: Role):
         since = role.created_at.strftime("%d/%m/%Y")
         perms = role.permissions
@@ -137,7 +136,7 @@ class Informations(commands.Cog, description='admin'):
         usage='<channel>',
         description="Afficher des informations à propos d'un channel"
     )
-    @has_mod_role()
+    @commands.has_permissions(manage_messages=True)
     async def channelinfo(self, ctx, channel: TextChannel = None):
         channel = channel or ctx.channel
         category = channel.category if channel.category else "Pas de catégorie"
@@ -161,7 +160,7 @@ class Informations(commands.Cog, description='admin'):
         usage="<nombre d'entrées>",
         description='Afficher les nouveaux membres les plus récents'
     )
-    @has_mod_role()
+    @commands.has_permissions(manage_messages=True)
     async def lastjoins(self, ctx, x: int = 10):
         members = filter(lambda m: not m.bot, sorted(ctx.guild.members, key=lambda m: m.joined_at, reverse=True))
         members = [f'`{member.name}` : {str(member.joined_at)[:10]} ({member.id})'.replace('-', '/') for member in members]

@@ -3,41 +3,46 @@ from discord.ext import commands
 from discord.utils import get
 
 from datetime import datetime, timedelta
-from utils.cls import Collection
 
 
 class Logs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def get_logs(self, guild):
+        settings = await self.bot.db_settings.find({'guild_id': guild.id})
+        logs = get(guild.text_channels, id=settings['logs'])
+        return logs
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        conn = Collection(collection='users')
-        if not conn.find({'id': member.id}) and not member.bot:
-            await conn.insert({'id': member.id, 'xp': 0, 'level': 0, 'mute': '10m'})
-        conn.close()
+        if not self.bot.db_users.find({'guild_id': member.guild.id, 'id': member.id}) and not member.bot:
+            await self.bot.db_users.insert({'guild_id': member.guild.id, 'id': member.id, 'xp': 0, 'level': 0})
 
-        channel = get(member.guild.text_channels, id=self.bot.settings.logs)
         embed = Embed(color=0x2ecc71, description=f'**:inbox_tray: {member.mention} a rejoint le serveur !**')
+
+        channel = await self.get_logs(member.guild)
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
         entry = await member.guild.audit_logs(limit=1).flatten()
+        await self.bot.db_users.delete({'guild_id': member.guild.id, 'id': member.id})
+
         if entry[0].action == AuditLogAction.ban:
             embed = (Embed(title=':man_judge: Membre ban', color=0xe74c3c)
-                     .add_field(name='Par', value=f'```{entry[0].user}```', inline=False)
-                     .add_field(name='Cible', value=f'```{entry[0].target}```', inline=False)
+                     .add_field(name='Par', value=f'```{entry[0].user}```')
+                     .add_field(name='Cible', value=f'```{entry[0].target}```')
                      .add_field(name='Raison', value=f'```{entry[0].reason}```', inline=False))
         elif entry[0].action == AuditLogAction.kick:
             embed = (Embed(title=':man_judge: Membre kick', color=0xe74c3c)
-                     .add_field(name='Par', value=f'```{entry[0].user}```', inline=False)
-                     .add_field(name='Cible', value=f'```{entry[0].target}```', inline=False)
+                     .add_field(name='Par', value=f'```{entry[0].user}```')
+                     .add_field(name='Cible', value=f'```{entry[0].target}```')
                      .add_field(name='Raison', value=f'```{entry[0].reason}```', inline=False))
         else:
             embed = Embed(color=0xe74c3c, description=f'**:outbox_tray: {member.display_name} ({member}) a quitté le serveur**')
 
-        channel = get(member.guild.text_channels, id=self.bot.settings.logs)
+        channel = await self.get_logs(member.guild)
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -46,7 +51,7 @@ class Logs(commands.Cog):
         embed = Embed(title=':man_judge: Membre unban', color=0xc27c0e,
                       description=f"{entry[0].user.mention} a unban {user}\nRaison: {entry[0].reason}")
 
-        channel = get(guild.text_channels, id=self.bot.settings.logs)
+        channel = await self.get_logs(guild)
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -71,7 +76,7 @@ class Logs(commands.Cog):
         else:
             return
 
-        channel = get(before.guild.text_channels, id=self.bot.settings.logs)
+        channel = await self.get_logs(before.guild)
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -103,7 +108,7 @@ class Logs(commands.Cog):
         if message.attachments:
             embed.set_image(url=message.attachments[0].url)
 
-        channel = get(message.guild.text_channels, id=self.bot.settings.logs)
+        channel = await self.get_logs(message.guild)
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -124,8 +129,7 @@ class Logs(commands.Cog):
             return
 
         guild = self.bot.get_guild(752921557214429316)
-        channel = get(guild.text_channels, id=self.bot.settings.logs)
-
+        channel = await self.get_logs(guild)
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -144,14 +148,14 @@ class Logs(commands.Cog):
                  .add_field(name='Utilisations max', value=f'```{uses}```')
                  .set_author(name='Invitation créée', icon_url=invite.inviter.avatar_url))
 
-        channel = get(invite.guild.text_channels, id=self.bot.settings.logs)
+        channel = await self.get_logs(invite.guild)
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
         now = datetime.now()
         print(f'[INFO] {now.strftime("%d/%m/%Y %H:%M:%S")} Commande exécutée')
-        print(f'Par {ctx.author} : {ctx.message.clean_content}\n')
+        print(f'Par {ctx.author} : {ctx.message.clean_content}')
 
 
 def setup(bot):

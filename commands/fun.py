@@ -11,9 +11,6 @@ class Fun(commands.Cog, description='commands'):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
-        return await self.bot.is_enabled(ctx)
-
     @commands.command(
         aliases=['chess'],
         brief='@Noah Conrard', usage='<membre>',
@@ -22,13 +19,12 @@ class Fun(commands.Cog, description='commands'):
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def echecs(self, ctx, opponent: Member):
         if opponent.bot or opponent == ctx.author:
-            await ctx.send('Tu ne peux pas jouer contre un bot ou contre toi-même')
-            return
+            return await ctx.send('Tu ne peux pas jouer contre un bot ou contre toi-même')
         
         game = Chess(self.bot, ctx, opponent)
         if not await game.start():
             return
-        
+
         await game.play()
 
     @commands.command(

@@ -1,66 +1,25 @@
 from discord import Member, Embed
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord.utils import get
 
-from utils.tools import has_mod_role, has_higher_perms, parse_time
+from utils.tools import has_higher_perms, parse_time
 from datetime import datetime, timedelta
-from utils.cls import Collection
-from asyncio import sleep
 
 
 class Moderation(commands.Cog, description='admin'):
     def __init__(self, bot):
         self.bot = bot
-        self.decrement.start()
 
     @property
     def now(self):
         return datetime.utcnow() + timedelta(hours=2)
 
-    @tasks.loop(hours=1, reconnect=True)
-    async def decrement(self):
-        if not self.bot.settings.next:
-            await sleep(5)
+    async def fetch_settings(self, ctx):
+        settings = await self.bot.db_settings.find({'guild_id': ctx.guild.id})
+        role = get(ctx.guild.roles, id=settings['mute'])
+        logs = get(ctx.guild.text_channels, id=settings['logs'])
 
-        limit = datetime(year=self.now.year, month=self.bot.settings.next.month, day=self.bot.settings.next.day)
-        if datetime.now() < limit:
-            return
-
-        await self.bot.settings.setv('next', self.now + timedelta(days=30))
-        conn = Collection(collection='users')
-        data = await conn.find({'mute': {'$ne': '10m'}})
-
-        durations = {'20m': '10m', '30m': '20m', '1h': '30m', '2h': '1h', '5h': '2h',
-                     '10h': '5h', '24h': '10h', '48h': '24h', '72h': '48h'}
-
-        for entry in data:
-            await conn.update({'id': entry['id']}, {'$set': {'mute': durations[entry['mute']]}})
-
-        print(f'[INFO] {self.now.strftime("%d/%m/%Y %H:%M:%S")} Paliers de mute baissés')
-        conn.close()
-
-    async def mute_member(self, entry):
-        ctx, member = entry['ctx'], entry['member']
-        logs = get(ctx.guild.text_channels, id=self.bot.settings.logs)
-        embed = (Embed(color=0xe74c3c)
-                 .add_field(name='Par', value=f"```{ctx.author.display_name}```")
-                 .add_field(name='Durée', value=f"```{entry['time'][1]}```")
-                 .add_field(name='Raison', value=f"```{entry['reason']}```", inline=False)
-                 .set_author(name=f'{member} a été mute', icon_url=member.avatar_url))
-
-        await ctx.send(embed=embed)
-        await logs.send(embed=embed)
-        await member.add_roles(entry['role'])
-
-        date = self.now + timedelta(seconds=entry['time'][0])
-        try:
-            await member.send(f"🔇 Tu es mute jusqu'au {date.strftime('%d/%m/%Y à %H:%M:%S')}\n⚠️ Une fois cette date dépassé, écris `!unmute` pour ne plus être mute")
-        except:
-            pass
-
-        conn = Collection(collection='pending')
-        entry = {'type': 'mute', 'id': member.id, 'end': date}
-        await conn.insert(entry)
+        return role, logs
 
     @commands.command(
         brief='@Antoine Grégoire 10m mdrr',
@@ -68,37 +27,30 @@ class Moderation(commands.Cog, description='admin'):
         description='Rendre un membre muet'
     )
     @has_higher_perms()
+    @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx, member: Member, time, *, reason='Pas de raison'):
-        role = get(ctx.guild.roles, id=self.bot.settings.mute)
+        role, logs = await self.fetch_settings(ctx)
         if role in member.roles:
-            await ctx.send(f"❌ {member.mention} est déjà mute")
-            return
+            return await ctx.send(f"❌ {member.mention} est déjà mute")
 
-        await self.mute_member({'ctx': ctx, 'role': role, 'member': member, 'reason': reason, 'time': parse_time(time)})
+        duration, time = parse_time(time)
+        date = self.now + timedelta(seconds=duration)
+        embed = (Embed(color=0xe74c3c)
+                 .add_field(name='Par', value=f"```{ctx.author.display_name}```")
+                 .add_field(name='Durée', value=f"```{time}```")
+                 .add_field(name='Raison', value=f"```{reason}```", inline=False)
+                 .set_author(name=f'{member} a été mute', icon_url=member.avatar_url))
 
-    @commands.command(
-        brief='@Maxence Crouvezier 💤 tuorp',
-        usage='<membre> <raison>',
-        description='Rendre un membre muet avec durée automatique'
-    )
-    @has_higher_perms()
-    async def automute(self, ctx, member: Member, *, reason='Pas de raison'):
-        role = get(ctx.guild.roles, id=self.bot.settings.mute)
-        if role in member.roles:
-            await ctx.send(f"❌ {member.mention} est déjà mute")
-            return
+        await ctx.send(embed=embed)
+        await logs.send(embed=embed)
+        await member.add_roles(role)
 
-        db = Collection(collection='users')
-        entry = await db.find({'id': member.id})
+        try:
+            await member.send(f"🔇 Tu es mute jusqu'au {date.strftime('%d/%m/%Y à %H:%M:%S')}\n⚠️ Une fois cette date dépassé, écris `!unmute` pour ne plus être mute")
+        except:
+            pass
 
-        duration, time = parse_time(entry['mute'])
-        await self.mute_member({'ctx': ctx, 'role': role, 'member': member, 'reason': reason, 'time': parse_time(time)})
-
-        durations = {'10m': '20m', '20m': '30m', '30m': '1h', '1h': '2h', '2h': '5h',
-                     '5h': '10h', '10h': '24h', '24h': '48h', '48h': '72h'}
-
-        await db.update({'id': member.id}, {'$set': {'mute': durations[entry['mute']]}})
-        db.close()
+        await self.bot.db_pending.insert({'type': 'mute', 'guild_id': ctx.guild.id, 'id': member.id, 'end': date})
 
     @commands.command(
         brief='@Antoine Grégoire',
@@ -106,37 +58,33 @@ class Moderation(commands.Cog, description='admin'):
         description='Redonner la parole à un membre'
     )
     async def unmute(self, ctx, member: Member = None):
-        mod = get(ctx.guild.roles, id=ctx.bot.settings.mod)
-        if mod in ctx.author.roles and not member:
+        role, logs = await self.fetch_settings(ctx)
+        mod = ctx.author.guild_permissions.manage_messages
+
+        if mod and not member:
             raise commands.MissingRequiredArgument('member')
 
         member = member or ctx.author
-        mute = get(ctx.guild.roles, id=self.bot.settings.mute)
-        if member and mute not in member.roles:
-            await ctx.send(f"❌ {member.mention} n'est pas mute")
-            return
+        if member and role not in member.roles:
+            return await ctx.send(f"❌ {member.mention} n'est pas mute")
 
-        if mod not in ctx.author.roles and member != ctx.author:
-            raise commands.MissingPermissions('')
+        if not mod and member != ctx.author:
+            raise commands.MissingPermissions('Manage messages')
 
-        conn = Collection(collection='pending')
-        entry = await conn.find({'type': 'mute', 'id': member.id})
+        entry = await self.bot.db_pending.find({'type': 'mute', 'guild_id': ctx.guild.id, 'id': member.id})
         if mod not in ctx.author.roles and member == ctx.author and self.now <= entry['end']:
-            await ctx.send(f"❌ Ton mute n'est pas terminé : {entry['end'].strftime('%d/%m/%Y à %H:%M:%S')}")
-            return
+            return await ctx.send(f"❌ Ton mute n'est pas terminé : {entry['end'].strftime('%d/%m/%Y à %H:%M:%S')}")
 
-        await member.remove_roles(mute)
+        await member.remove_roles(role)
         await ctx.send(f'✅ {member.mention} a été unmute')
-
-        await conn.delete({'id': member.id})
-        conn.close()
+        await self.bot.db_pending.delete({'guild_id': ctx.guild.id, 'id': member.id})
 
     @commands.command(
         aliases=['prout'],
         brief='20', usage='<nombre de messages>',
         description='Supprimer plusieurs messages en même temps'
     )
-    @has_mod_role()
+    @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, x: int):
         await ctx.channel.purge(limit=x+1)
 
@@ -145,7 +93,7 @@ class Moderation(commands.Cog, description='admin'):
         usage='<membre> <raison (optionnel)>',
         description='Exclure un membre du serveur'
     )
-    @has_higher_perms()
+    @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: Member, *, reason='Pas de raison'):
         embed = (Embed(color=0xe74c3c)
                  .add_field(name='Par', value=f"```{ctx.author.display_name}```", inline=False)
@@ -160,7 +108,7 @@ class Moderation(commands.Cog, description='admin'):
         usage='<membre> <raison (optionnel)>',
         description='Bannir un membre du serveur'
     )
-    @has_higher_perms()
+    @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: Member, *, reason='Pas de raison'):
         embed = (Embed(color=0xe74c3c)
                  .add_field(name='Par', value=f"```{ctx.author.display_name}```", inline=False)
@@ -175,7 +123,7 @@ class Moderation(commands.Cog, description='admin'):
         usage='<membre> <raison (optionnel)>',
         description='Révoquer un bannissement'
     )
-    @has_mod_role()
+    @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, user_id: int, *, reason='Pas de raison'):
         try:
             member = self.bot.get_user(user_id)

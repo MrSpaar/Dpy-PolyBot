@@ -20,9 +20,8 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         description="Convertir en base n depuis n'importe quelle base (uniquement des nombres, base 52 maximum)"
     )
     async def base(self, ctx, from_base: int, to_base: int, num: str):
-        if from_base > 52 or to_base > 52:
-            await ctx.send('❌ Base trop grande (base 52 maximum)')
-            return
+        if from_base > 62 or to_base > 52:
+            return await ctx.send('❌ Base trop grande (base 52 maximum)')
 
         conv = self.base_conv(num, from_base, to_base)
         await ctx.send(f'**⚙️ Convertion base {from_base} en base {to_base} :** `{conv}`')
@@ -57,8 +56,8 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         description='Faire des calculs'
     )
     async def calcul(self, ctx, *, expr):
-        expr = expr.replace('+', '%2B').replace('x', '*')
-        result = await get_json(f"https://api.mathjs.org/v4/?expr={expr}", json=False)
+        query = expr.replace('+', '%2B').replace('x', '*')
+        result = await get_json(f"https://api.mathjs.org/v4/?expr={query}", json=False)
         await ctx.send(f':pager: `{expr}` = `{result}`')
 
 

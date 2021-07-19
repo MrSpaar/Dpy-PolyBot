@@ -1,6 +1,5 @@
 from discord import __version__
 from discord.ext import commands
-from discord.utils import get
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
@@ -13,25 +12,33 @@ class Bot(commands.Bot):
         load_dotenv()
 
         self.debug = debug
-        self.settings = Settings()
+        self.client = AsyncIOMotorClient(environ['DATABASE_URL'])
         self.token = environ.get('DEBUG_TOKEN') if debug else environ.get('BOT_TOKEN')
 
+        print('[INFO] Connecté à la base de données')
+
+    @property
+    def db_channels(self):
+        return Collection(self, 'channels')
+
+    @property
+    def db_pending(self):
+        return Collection(self, 'pending')
+
+    @property
+    def db_users(self):
+        return Collection(self, 'users')
+
+    @property
+    def db_settings(self):
+        return Collection(self, 'settings')
+
     async def on_ready(self):
-        self.settings = await self.settings.start()
         print(f'\nConnecté en tant que : {self.user.name} - {self.user.id}\nVersion : {__version__}\n')
 
-    async def is_enabled(self, ctx):
-        if not ctx.guild or ctx.channel.id == self.settings.announce or ctx.command.name == 'sondage':
-            return True
-
-        role = get(ctx.guild.roles, id=self.settings.mod)
-        return role in ctx.author.roles
-
-
 class Collection:
-    def __init__(self, client=None, database='data', collection=None):
-        self.client = client or AsyncIOMotorClient(environ['DATABASE_URL'])
-        self.collection = self.client[database][collection]
+    def __init__(self, db, collection, database='data'):
+        self.collection = db.client[database][collection]
 
     async def find(self, query=None):
         query = query or {}
@@ -41,50 +48,23 @@ class Collection:
             return data
         elif data:
             return data[0]
+
+        print(f'[REQ] Find : {query}')
         return
 
     async def update(self, query, data, upsert=False):
         await self.collection.update_one(query, data, upsert)
-
-    async def update_many(self, query, data, upsert=False):
-        await self.collection.update_many(query, data, upsert)
+        print(f'[REQ] Update : {query} et {data}')
 
     async def insert(self, data):
         await self.collection.insert_one(data)
-
-    async def insert_many(self, data):
-        await self.collection.insert_many(data)
+        print(f'[REQ] Insert : {data}')
 
     async def delete(self, query):
         await self.collection.delete_one(query)
+        print(f'[REQ] Delete : {query}')
 
-    async def sort(self, field, order):
-        data = self.collection.find().sort(field, order)
+    async def sort(self, query, field, order):
+        data = self.collection.find(query).sort(field, order)
+        print(f'[REQ] Sort : {field}')
         return await data.to_list(length=None)
-
-    def close(self):
-        self.client.close()
-
-
-class Settings:
-    def __init__(self):
-        self.collection = Collection(collection='settings')
-        self.mute = None
-        self.mod = None
-        self.logs = None
-        self.next = None
-        self.announce = None
-
-    async def start(self):
-        settings = await self.collection.find()
-        self.collection.close()
-
-        for key, value in settings.items():
-            setattr(self, f'{key}', value)
-
-        return self
-
-    async def setv(self, key, value):
-        setattr(self, key, value)
-        await self.collection.update({}, {'$set': {key: value}})
-        self.collection.close()

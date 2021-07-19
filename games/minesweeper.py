@@ -77,8 +77,7 @@ class Minesweeper:
         while True:
             reaction, member = await self.bot.wait_for('reaction_add', check=lambda r, m: m == self.ctx.author)
             if str(reaction) == '🗑️':
-                await self.edit_embed(color=0xe74c3c, name='Partie abandonnée')
-                return
+                return await self.edit_embed(color=0xe74c3c, name='Partie abandonnée')
 
             pos = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author)
             await pos.delete()

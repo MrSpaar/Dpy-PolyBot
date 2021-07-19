@@ -11,9 +11,6 @@ class Utilitaire(commands.Cog, description='commands'):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
-        return await self.bot.is_enabled(ctx)
-
     @commands.command(
         aliases=['ahelp'],
         brief='utilitaire',
@@ -21,15 +18,7 @@ class Utilitaire(commands.Cog, description='commands'):
         description='Faire apparaître ce menu'
     )
     async def help(self, ctx, command=''):
-        mod = get(ctx.guild.roles, id=self.bot.settings.mod)
-        mod = mod in ctx.author.roles or ctx.author.guild_permissions.administrator
-        command = get(self.bot.commands, name=command)
-
-        if (ctx.invoked_with == 'ahelp' and not mod) or \
-           (not mod and command and command.cog.description == 'admin'):
-            raise commands.MissingPermissions('')
-
-        if command:
+        if command := get(self.bot.commands, name=command):
             embed = (Embed(color=0x3498db)
                      .add_field(name='Description', value=f'```{command.description}```')
                      .add_field(name='Utilisation',

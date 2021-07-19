@@ -2,7 +2,6 @@ from discord import Member, Embed
 from discord.ext import commands
 from discord.utils import get
 
-from utils.cls import Collection
 from pymongo import DESCENDING
 
 
@@ -10,9 +9,6 @@ class Niveaux(commands.Cog, description='commands'):
     def __init__(self, bot):
         self.bot = bot
         self.data = None
-
-    async def cog_check(self, ctx):
-        return await self.bot.is_enabled(ctx)
 
     @staticmethod
     def get_progress_bar(level, xp, n, short=False):
@@ -49,10 +45,8 @@ class Niveaux(commands.Cog, description='commands'):
     )
     async def rank(self, ctx, member: Member = None):
         member = member or ctx.author
-        conn = Collection(collection='users')
-        xp = await conn.find({'id': member.id})
-        rank = (await conn.sort('xp', DESCENDING)).index(xp) + 1
-        conn.close()
+        xp = await self.bot.db_users.find({'guild_id': ctx.guild.id, 'id': member.id})
+        rank = (await self.bot.db_users.sort({'guild_id': ctx.guild.id}, 'xp', DESCENDING)).index(xp) + 1
 
         embed = (Embed(color=0x3498db)
                  .set_author(name=f'Progression de {member.display_name}',
@@ -70,9 +64,7 @@ class Niveaux(commands.Cog, description='commands'):
         description='Afficher le classement du serveur'
     )
     async def levels(self, ctx):
-        conn = Collection(database='data', collection='users')
-        data = await conn.sort('xp', DESCENDING)
-        conn.close()
+        data = await self.bot.db_users.sort({'guild_id': ctx.guild.id}, 'xp', DESCENDING)
 
         self.data = data
         embed = (Embed(color=0x3498db)

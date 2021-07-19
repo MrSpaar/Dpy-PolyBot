@@ -16,17 +16,14 @@ class Hangman:
 
     async def parse(self, s):
         if s in ['quit', 'quitter', 'leave', 'stop']:
-            await self.ctx.send(f"Partie terminée. Le mot était `{self.word}`")
             self.end = True
-            return
+            return await self.ctx.send(f"Partie terminée. Le mot était `{self.word}`")
         elif s in self.errors:
-            await self.ctx.send('Tu as déjà entré cette lettre.', delete_after=3)
-            return
+            return await self.ctx.send('Tu as déjà entré cette lettre.', delete_after=3)
         elif s not in self.word:
             self.lives -= 1
             self.errors.append(s)
-            await self.edit()
-            return
+            return await self.edit()
 
         self.words[1] = [s if s == self.words[0][i] else c for i, c in enumerate(self.words[1])]
 

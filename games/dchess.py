@@ -82,8 +82,7 @@ class Chess:
             await move.delete()
             await self.send_message(move.content, 0xfffff)
         except:
-            await self.ctx.send(f'Temps de réflexion écoulé, {self.cur[1].mention} a gagné')
-            return
+            return await self.ctx.send(f'Temps de réflexion écoulé, {self.cur[1].mention} a gagné')
 
     async def play(self):
         while not self.end:

@@ -13,9 +13,6 @@ class Recherche(commands.Cog, description='commands'):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
-        return await self.bot.is_enabled(ctx)
-
     @commands.command(
         brief='cs ranked',
         usage='<catégorie> <mots-clés>',

@@ -1,4 +1,3 @@
-from discord.utils import get
 from discord.ext import commands
 from aiohttp import ClientSession
 
@@ -14,19 +13,9 @@ def parse_time(time):
 
     return duration, time
 
-def has_mod_role():
-    async def extended_check(ctx):
-        if ctx.guild is None:
-            return False
-
-        role = get(ctx.guild.roles, id=ctx.bot.settings.mod)
-        return role in ctx.author.roles
-    return commands.check(extended_check)
-
 def has_higher_perms():
     async def extended_check(ctx):
-        role = get(ctx.guild.roles, id=ctx.bot.settings.mod)
-        if ctx.author.top_role > ctx.message.mentions[0].top_role and role in ctx.author.roles:
+        if ctx.author.top_role > ctx.message.mentions[0].top_role:
             return True
 
         raise commands.MissingPermissions('')

@@ -3,7 +3,6 @@ from discord.ext import commands
 from discord.utils import get
 
 from asyncio import run_coroutine_threadsafe
-from utils.cls import Collection
 from youtube_dl import YoutubeDL
 from re import findall
 
@@ -17,11 +16,6 @@ class Musique(commands.Cog, description='commands'):
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
             'options': '-vn'
         }
-
-    async def cog_check(self, ctx):
-        conn = Collection(collection='pending')
-        data = bool(await conn.find({'txt_id': ctx.channel.id}))
-        return data or ctx.channel.id in [752933939462799432, 752933914091323493]
 
     async def edit_message(self):
         embed = self.song_queue[0]['embed']
@@ -57,8 +51,7 @@ class Musique(commands.Cog, description='commands'):
         if not voice:
             voice = await channel.connect()
         elif ctx.author not in voice.channel.members:
-            await ctx.send("❌ Tu n'es pas dans le même channel que moi")
-            return
+            return await ctx.send("❌ Tu n'es pas dans le même channel que moi")
 
         regex = r"http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?"
         video_id = findall(regex, query)
@@ -100,8 +93,7 @@ class Musique(commands.Cog, description='commands'):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if ctx.author not in voice.channel.members:
-            await ctx.send("❌ Tu n'es pas dans le même channel que moi")
-            return
+            return await ctx.send("❌ Tu n'es pas dans le même channel que moi")
         if voice.is_connected():
             await ctx.message.delete()
             if voice.is_playing():
@@ -120,8 +112,7 @@ class Musique(commands.Cog, description='commands'):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if ctx.author not in voice.channel.members:
-            await ctx.send("❌ Tu n'es pas dans le même channel que moi")
-            return
+            return await ctx.send("❌ Tu n'es pas dans le même channel que moi")
         if voice.is_playing():
             await ctx.message.delete()
             await ctx.send('⏭️ Musique skippée', delete_after=5.0)
@@ -136,8 +127,7 @@ class Musique(commands.Cog, description='commands'):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if ctx.author not in voice.channel.members:
-            await ctx.send("❌ Tu n'es pas dans le même channel que moi")
-            return
+            return await ctx.send("❌ Tu n'es pas dans le même channel que moi")
         if voice.is_playing():
             del self.song_queue[num]
             await ctx.message.delete()
@@ -152,8 +142,7 @@ class Musique(commands.Cog, description='commands'):
     async def leave(self, ctx):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if ctx.author not in voice.channel.members:
-            await ctx.send("❌ Tu n'es pas dans le même channel que moi")
-            return
+            return await ctx.send("❌ Tu n'es pas dans le même channel que moi")
 
         self.song_queue = []
         voice.stop()
