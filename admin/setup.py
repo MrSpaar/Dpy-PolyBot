@@ -1,6 +1,8 @@
-from discord import Embed
+from discord import Embed, Role, TextChannel
 from discord.ext import commands
 from discord.utils import get
+
+from typing import Union
 
 
 class Setup(commands.Cog, description='admin'):
@@ -17,28 +19,20 @@ class Setup(commands.Cog, description='admin'):
         usage='<mute, mod, logs, testing, channel ou prefix> <valeur>',
         description='Modifier les réglages du bot'
     )
-    async def settings_manager(self, ctx, key, value):
+    async def settings_manager(self, ctx, key, value: Union[Role, TextChannel]):
         settings = {
             'mute': 'Rôle des muets',
             'mod': 'Rôle des modérateurs',
             'logs': 'Channel de logs',
-            'testing': 'Channel de testing',
-            'channel': 'Channel du bot',
-            'prefix': 'Préfixe des channels temporaires',
+            'announce': 'Channel du bot'
         }
 
         if key not in settings.keys():
             await ctx.send(f'❌ Catégorie invalide : {", ".join(settings.keys())}')
             return
 
-        try:
-            value = get(ctx.guild.roles, id=int(value)) or get(ctx.guild.text_channels, id=int(value))
-            await self.bot.settings.setv(key, value.id)
-        except:
-            await self.bot.settings.setv(key, value)
-
-        modif_str = value.mention if getattr(value, "mention", "") else value
-        await ctx.send(f'✅ {settings[key]} modifié (**{modif_str}**)')
+        await self.bot.settings.setv(key, value.id)
+        await ctx.send(f'✅ {settings[key]} modifié (**{value.mention}**)')
 
     @commands.command(
         brief='',
