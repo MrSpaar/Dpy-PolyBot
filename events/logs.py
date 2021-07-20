@@ -16,7 +16,7 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await self.bot.db_settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channels': None})
+        await self.bot.db_settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channel': None})
         await self.bot.db_users.collection.insert_many([{'id': member.id, 'level': 0, 'xp': 0} for member in guild.members])
 
     @commands.Cog.listener()
