@@ -18,8 +18,12 @@ class Informations(commands.Cog, description='admin'):
         guild = ctx.guild
         channels = f'{len(guild.text_channels)} textuels et {len(guild.voice_channels)} vocaux'
 
-        since = str(datetime.now() - guild.created_at).replace('days', 'jours').split(', ')
-        since = f"{since[0]} et {since[1].split(':')[0]} heures"
+        try:
+            since = str(datetime.now() - guild.created_at).replace('days', 'jours').split(', ')
+            since = f"{since[0]} et {since[1].split(':')[0]} heures"
+        except:
+            since = str(datetime.now() - guild.created_at).split('.')[0]
+
         creation = guild.created_at.strftime('%d/%m/%Y')
 
         bots = [member for member in guild.members if member.bot]
@@ -60,8 +64,12 @@ class Informations(commands.Cog, description='admin'):
 
         since = member.joined_at.strftime('%d/%m/%Y')
         creation = member.created_at.strftime("%d/%m/%Y")
-        joined = str(datetime.now() - member.joined_at).replace('days', 'jours').split(', ')
-        joined = f"{joined[0]} et {joined[1].split(':')[0]} heures"
+
+        try:
+            joined = str(datetime.now() - member.joined_at).replace('days', 'jours').split(', ')
+            joined = f"{joined[0]} et {joined[1].split(':')[0]} heures"
+        except:
+            joined = str(datetime.now() - member.joined_at).split('.')[0]
 
         embed = (Embed(color=0x1abc9c)
                  .add_field(name='Pseudo', value=f'```{member}```')

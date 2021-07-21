@@ -49,6 +49,15 @@ class Setup(commands.Cog, description='admin'):
 
         await ctx.send(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        await self.bot.db_settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channel': None})
+        await self.bot.db_users.collection.insert_many([{'guild_id': guild.id, 'id': member.id, 'level': 0, 'xp': 0} for member in guild.members if not member.bot])
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        await self.bot.db_settings.delete({'guild_id': guild.id})
+        await self.bot.db_users.delete({'guild_id': guild.id})
 
 def setup(bot):
     bot.add_cog(Setup(bot))
