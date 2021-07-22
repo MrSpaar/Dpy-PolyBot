@@ -9,10 +9,12 @@ class Logs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def get_logs(self, guild):
+    async def send_log(self, guild, embed):
         settings = await self.bot.db_settings.find({'guild_id': guild.id})
         logs = get(guild.text_channels, id=settings['logs'])
-        return logs
+
+        if logs:
+            await logs.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -20,9 +22,7 @@ class Logs(commands.Cog):
             await self.bot.db_users.insert({'guild_id': member.guild.id, 'id': member.id, 'xp': 0, 'level': 0})
 
         embed = Embed(color=0x2ecc71, description=f'**:inbox_tray: {member.mention} a rejoint le serveur !**')
-
-        channel = await self.get_logs(member.guild)
-        await channel.send(embed=embed)
+        await self.send_log(member.guild, embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
@@ -42,8 +42,7 @@ class Logs(commands.Cog):
         else:
             embed = Embed(color=0xe74c3c, description=f'**:outbox_tray: {member.display_name} ({member}) a quitté le serveur**')
 
-        channel = await self.get_logs(member.guild)
-        await channel.send(embed=embed)
+        await self.send_log(member.guild, embed)
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, user):
@@ -51,8 +50,7 @@ class Logs(commands.Cog):
         embed = Embed(title=':man_judge: Membre unban', color=0xc27c0e,
                       description=f"{entry[0].user.mention} a unban {user}\nRaison: {entry[0].reason}")
 
-        channel = await self.get_logs(guild)
-        await channel.send(embed=embed)
+        await self.send_log(guild, embed)
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -76,8 +74,7 @@ class Logs(commands.Cog):
         else:
             return
 
-        channel = await self.get_logs(before.guild)
-        await channel.send(embed=embed)
+        await self.send_log(before.guild, embed)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -108,8 +105,7 @@ class Logs(commands.Cog):
         if message.attachments:
             embed.set_image(url=message.attachments[0].url)
 
-        channel = await self.get_logs(message.guild)
-        await channel.send(embed=embed)
+        await self.send_log(message.guild, embed)
 
     @commands.Cog.listener()
     async def on_user_update(self, before, after):
@@ -129,8 +125,7 @@ class Logs(commands.Cog):
             return
 
         guild = self.bot.get_guild(752921557214429316)
-        channel = await self.get_logs(guild)
-        await channel.send(embed=embed)
+        await self.send_log(guild, embed)
 
     @commands.Cog.listener()
     async def on_invite_create(self, invite):
@@ -148,8 +143,7 @@ class Logs(commands.Cog):
                  .add_field(name='Utilisations max', value=f'```{uses}```')
                  .set_author(name='Invitation créée', icon_url=invite.inviter.avatar_url))
 
-        channel = await self.get_logs(invite.guild)
-        await channel.send(embed=embed)
+        await self.send_log(invite.guild, embed)
 
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):

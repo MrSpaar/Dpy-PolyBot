@@ -25,7 +25,7 @@ PolyBot is a french, **multi-function bot for Discord**. For now, the bot's **pr
 |[Infos](https://github.com/MrSpaar/PolyBot/blob/master/admin/informations.py)   | `serverinfo` `userinfo` `roleinfo` `channelinfo` `lastjoins`|
 |[Setup](https://github.com/MrSpaar/PolyBot/blob/master/admin/setup.py)          | `set` `settings`                                            |
 
-⚠️ For mute related commands, you'll need to set a mute role: `!set mute <role>`
+⚠️ For mute related commands, you'll need to set a mute role: `!set mute <@role>`
 
 This bot uses [MongoDB](https://www.mongodb.com/cloud/atlas). If you plan copy pasting the whole code, you'll need to create a database named `data`, containing 3 collections: `pending`, `users` and `settings`.
 
@@ -36,7 +36,7 @@ This bot uses [MongoDB](https://www.mongodb.com/cloud/atlas). If you plan copy p
 ### • 📈 [Leveling system](https://github.com/MrSpaar/PolyBot/blob/master/events/levels.py)
 
 The system have the **same xp curve as [Mee6](https://mee6.xyz/)**. <br>
-Use `!set channel <channel>` to set the bot's channel, where it will announce rank ups.<br>
+Use `!set channel <#channel>` to set the bot's channel, where it will announce rank ups.<br>
 `!rank` will show your current xp, level and leaderboard position.<br>
 `!levels` will show a leaderboard, each page contains 10 users along with their xp and level.
 
@@ -50,7 +50,7 @@ This module generates temporary voice channels :
 
 ### • 📝 [Logs](https://github.com/MrSpaar/PolyBot/blob/master/events/logs.py)
 
-Log channel can be set using `!set logs <channel>`.
+Log channel can be set using `!set logs <#channel>`.
 
 |            Log             |                  Informations showed                  |
 |----------------------------|-------------------------------------------------------|
