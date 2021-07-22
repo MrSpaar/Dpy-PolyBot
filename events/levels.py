@@ -20,10 +20,8 @@ class XP(commands.Cog):
             return
 
         coeff = await self.bot.db_channels.find({'id': message.channel.category.id})
-        if not coeff:
-            return
-
-        member, coeff = await self.bot.db_users.find({'guild_id': message.guild.id, 'id': message.author.id}), coeff['value']
+        coeff = 1 if not coeff else coeff['value']
+        member = await self.bot.db_users.find({'guild_id': message.guild.id, 'id': message.author.id})
 
         xp, lvl = member['xp'] + (randint(15, 25)) * coeff, member['level'] + 1
         next_lvl = 5 / 6 * lvl * (2 * lvl ** 2 + 27 * lvl + 91)
