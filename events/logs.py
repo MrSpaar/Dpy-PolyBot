@@ -2,7 +2,8 @@ from discord import Embed, Member, AuditLogAction
 from discord.ext import commands
 from discord.utils import get
 
-from datetime import datetime, timedelta
+from utils.tools import now
+from datetime import timedelta
 
 
 class Logs(commands.Cog):
@@ -81,8 +82,8 @@ class Logs(commands.Cog):
         if message.embeds or message.author.bot or message.channel.id == 840555556707237928 or len(message.content) == 1:
             return
 
-        flags = [datetime.now().second - message.created_at.second <= 20 and message.mentions and message.content and message.attachments,
-                 datetime.now().second - message.created_at.second <= 20 and message.mentions and message.content,
+        flags = [(now(utc=True)-message.created_at).total_seconds() <= 20 and message.mentions and message.content and message.attachments,
+                 (now(utc=True)-message.created_at).total_seconds() <= 20 and message.mentions and message.content,
                  message.content and not message.attachments,
                  message.content and message.attachments,
                  message.attachments]
@@ -133,7 +134,7 @@ class Logs(commands.Cog):
         if not invite.max_age:
             expire = 'Jamais'
         else:
-            expire = (datetime.now() + timedelta(seconds=invite.max_age)).strftime('%d/%m/%Y à %H:%M:%S')
+            expire = (now() + timedelta(seconds=invite.max_age)).strftime('%d/%m/%Y à %H:%M:%S')
 
         embed = (Embed(color=0x3498db)
                  .add_field(name='Créée par', value=f'```{invite.inviter}```')
@@ -147,8 +148,7 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
-        now = datetime.now()
-        print(f'[INFO] {now.strftime("%d/%m/%Y %H:%M:%S")} Commande exécutée')
+        print(f'[INFO] {now().strftime("%d/%m/%Y %H:%M:%S")} Commande exécutée')
         print(f'Par {ctx.author} : {ctx.message.clean_content}')
 
 

@@ -1,4 +1,6 @@
 from discord.ext import commands
+
+from datetime import datetime, timedelta
 from aiohttp import ClientSession
 
 async def get_json(link, headers=None, json=True):
@@ -12,6 +14,11 @@ def parse_time(time):
     time = f"{time[:-1]} {units[time[-1]][1]}"
 
     return duration, time
+
+def now(utc=False):
+    if utc:
+        return datetime.utcnow()
+    return datetime.utcnow() + timedelta(hours=2)
 
 def has_higher_perms():
     async def extended_check(ctx):

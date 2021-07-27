@@ -2,17 +2,13 @@ from discord import Member, Embed
 from discord.ext import commands
 from discord.utils import get
 
-from utils.tools import has_higher_perms, parse_time
-from datetime import datetime, timedelta
+from utils.tools import has_higher_perms, parse_time, now
+from datetime import timedelta
 
 
 class Moderation(commands.Cog, description='admin'):
     def __init__(self, bot):
         self.bot = bot
-
-    @property
-    def now(self):
-        return datetime.utcnow() + timedelta(hours=2)
 
     async def fetch_settings(self, ctx):
         settings = await self.bot.db_settings.find({'guild_id': ctx.guild.id})
@@ -34,7 +30,7 @@ class Moderation(commands.Cog, description='admin'):
             return await ctx.send(f"❌ {member.mention} est déjà mute")
 
         duration, time = parse_time(time)
-        date = self.now + timedelta(seconds=duration)
+        date = now() + timedelta(seconds=duration)
         embed = (Embed(color=0xe74c3c)
                  .add_field(name='Par', value=f"```{ctx.author.display_name}```")
                  .add_field(name='Durée', value=f"```{time}```")
@@ -72,7 +68,7 @@ class Moderation(commands.Cog, description='admin'):
             raise commands.MissingPermissions('Manage messages')
 
         entry = await self.bot.db_pending.find({'type': 'mute', 'guild_id': ctx.guild.id, 'id': member.id})
-        if mod not in ctx.author.roles and member == ctx.author and self.now <= entry['end']:
+        if mod not in ctx.author.roles and member == ctx.author and now() <= entry['end']:
             return await ctx.send(f"❌ Ton mute n'est pas terminé : {entry['end'].strftime('%d/%m/%Y à %H:%M:%S')}")
 
         await member.remove_roles(role)
