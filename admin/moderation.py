@@ -38,7 +38,10 @@ class Moderation(commands.Cog, description='admin'):
                  .set_author(name=f'{member} a été mute', icon_url=member.avatar_url))
 
         await ctx.send(embed=embed)
-        await logs.send(embed=embed)
+        try:
+            await logs.send(embed=embed)
+        except:
+            pass
         await member.add_roles(role)
 
         try:

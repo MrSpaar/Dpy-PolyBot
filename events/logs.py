@@ -19,7 +19,7 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if not self.bot.db_users.find({'guild_id': member.guild.id, 'id': member.id}) and not member.bot:
+        if not await self.bot.db_users.find({'guild_id': member.guild.id, 'id': member.id}) and not member.bot:
             await self.bot.db_users.insert({'guild_id': member.guild.id, 'id': member.id, 'xp': 0, 'level': 0})
 
         embed = Embed(color=0x2ecc71, description=f'**:inbox_tray: {member.mention} a rejoint le serveur !**')
