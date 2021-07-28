@@ -53,16 +53,8 @@ class Setup(commands.Cog, description='admin'):
         await self.bot.db_settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channel': None})
         await self.bot.db_users.collection.insert_many([{'guild_id': guild.id, 'id': member.id, 'level': 0, 'xp': 0} for member in guild.members if not member.bot])
 
-        channel = self.bot.get_channel(867362453502558228)
-        embed = (Embed(color=0xf1c40f)
-                 .add_field(name='Nom', value=f'```{guild.name}```')
-                 .add_field(name='Owner', value=f'```{guild.owner}```')
-                 .set_author(name="J'ai rejoint un serveur", icon_url=guild.icon_url))
-
-        await channel.send(embed=embed)
         await guild.owner.send("Merci beaucoup de m'avoir ajouté 👍" +
                                "\n\nPour certaines de mes commandes, quelques réglages sont nécessaires :" +
-                               "\n    • `!set mute <role>` pour indiquer le rôle des personnes mute" +
                                "\n    • `!set channel <#channel>` pour indiquer au bot ou faire les annonces de level up" +
                                "\n    • `!set logs <#channel>` pour indiquer au bot où envoyer les messages de logs" +
                                "\n\nCes **commandes sont à faire sur ton serveur**, pas ici, en privé ⚠️")
@@ -71,14 +63,6 @@ class Setup(commands.Cog, description='admin'):
     async def on_guild_remove(self, guild):
         await self.bot.db_settings.delete({'guild_id': guild.id})
         await self.bot.db_users.delete({'guild_id': guild.id})
-
-        channel = self.bot.get_channel(867362453502558228)
-        embed = (Embed(color=0xe74c3c)
-                 .add_field(name='Nom', value=f'```{guild.name}```')
-                 .add_field(name='Owner', value=f'```{guild.owner}```')
-                 .set_author(name="J'ai quitté un serveur", icon_url=guild.icon_url))
-
-        await channel.send(embed=embed)
 
 
 def setup(bot):

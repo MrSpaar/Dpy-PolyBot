@@ -1,4 +1,4 @@
-from discord import Member, Embed
+from discord import Member, Embed, Permissions, PermissionOverwrite
 from discord.ext import commands
 from discord.utils import get
 
@@ -14,6 +14,14 @@ class Moderation(commands.Cog, description='admin'):
         settings = await self.bot.db_settings.find({'guild_id': ctx.guild.id})
         role = get(ctx.guild.roles, id=settings['mute'])
         logs = get(ctx.guild.text_channels, id=settings['logs'])
+
+        if not role:
+            role = await ctx.guild.create_role(name='Muted', color=0xa6aaab, permissions=Permissions.none())
+            await self.bot.db_settings.update({'guild_id': ctx.guild.id}, {'$set': {'mute': role.id}})
+
+            for channel in ctx.guild.text_channels:
+                overwrite = channel.overwrites | {role:  PermissionOverwrite(add_reactions=False, send_messages=False)}
+                await channel.edit(overwrites=overwrite)
 
         return role, logs
 
@@ -37,12 +45,10 @@ class Moderation(commands.Cog, description='admin'):
                  .add_field(name='Raison', value=f"```{reason}```", inline=False)
                  .set_author(name=f'{member} a été mute', icon_url=member.avatar_url))
 
-        await ctx.send(embed=embed)
-        try:
-            await logs.send(embed=embed)
-        except:
-            pass
         await member.add_roles(role)
+        await ctx.send(embed=embed)
+        if logs:
+            await logs.send(embed=embed)
 
         try:
             await member.send(f"🔇 Tu es mute jusqu'au {date.strftime('%d/%m/%Y à %H:%M:%S')}\n⚠️ Une fois cette date dépassé, écris `!unmute` pour ne plus être mute")
