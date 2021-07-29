@@ -10,7 +10,7 @@ class OpenAI(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not message.content.startswith(self.bot.mention):
+        if not message.content.startswith(self.bot.mention) and not message.content.startswith(self.bot.user.mention):
             return
 
         question = message.content.strip(self.bot.mention).strip()
@@ -27,9 +27,9 @@ class OpenAI(commands.Cog):
                 async with s.post('https://api.openai.com/v1/engines/davinci/completions', headers=headers, data=data) as resp:
                     data = await resp.json()
                     try:
-                        await message.channel.send(data['choices'][0]['text'].split('\n\n')[1].strip('—-'))
+                        await message.reply(data['choices'][0]['text'].split('\n\n')[1].strip('—-'))
                     except:
-                        await message.channel.send("J'ai pas compris :(")
+                        await message.reply("J'ai pas compris :(")
 
 
 def setup(bot):

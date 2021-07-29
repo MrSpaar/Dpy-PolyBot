@@ -19,10 +19,6 @@ class Bot(commands.Bot):
         print('[INFO] Connecté à la base de données')
 
     @property
-    def db_channels(self):
-        return Collection(self, 'channels')
-
-    @property
     def db_pending(self):
         return Collection(self, 'pending')
 
