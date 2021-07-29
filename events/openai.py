@@ -14,7 +14,8 @@ class OpenAI(commands.Cog):
             return
 
         question = message.content.strip(message.guild.me.mention).strip()
-        data = '{"prompt": "%s", "max_tokens": 100, "temperature": 0.1}' % question
+        query = f"Ce qui suit est une conversation avec un assistant IA. L'assistant est serviable, creatif, intelligent et tres sympathique.\\n\\n {question}"
+        data = '{"prompt": "%s", "max_tokens": 100, "temperature": 0.1}' % query
 
         headers = {
             'Content-Type': 'application/json',
