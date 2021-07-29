@@ -10,10 +10,10 @@ class OpenAI(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not message.content.startswith(message.guild.me.mention):
+        if not message.content.startswith(self.bot.mention):
             return
 
-        question = message.content.strip(message.guild.me.mention).strip()
+        question = message.content.strip(self.bot.mention).strip()
         query = f"Ce qui suit est une conversation avec un assistant IA. L'assistant est serviable, creatif, intelligent et tres sympathique.\\n\\n {question}"
         data = '{"prompt": "%s", "max_tokens": 100, "temperature": 0.1}' % query
 

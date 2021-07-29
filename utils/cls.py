@@ -12,6 +12,7 @@ class Bot(commands.Bot):
         load_dotenv()
 
         self.debug = debug
+        self.mention = '<@!730832334055669930>' if debug else '<@!713781013830041640>'
         self.client = AsyncIOMotorClient(environ['DATABASE_URL'])
         self.token = environ.get('DEBUG_TOKEN') if debug else environ.get('BOT_TOKEN')
 
