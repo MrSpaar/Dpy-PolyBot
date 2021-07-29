@@ -1,5 +1,6 @@
 from discord.ext import commands
 
+from unicodedata import normalize, combining
 from aiohttp import ClientSession
 from os import environ
 
@@ -14,6 +15,7 @@ class OpenAI(commands.Cog):
             return
 
         question = message.content.strip(self.bot.mention).strip()
+        question = u"".join([c for c in normalize('NFKD', question) if not combining(c)])
         query = f"Ce qui suit est une conversation avec un assistant IA. L'assistant est serviable, creatif, intelligent et tres sympathique.\\n\\n {question}"
         data = '{"prompt": "%s", "max_tokens": 100, "temperature": 0.1}' % query
 
