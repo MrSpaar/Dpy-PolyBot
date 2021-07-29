@@ -12,7 +12,7 @@ class XP(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.id == 689154823941390507 and 'mdrr' in message.content.lower() or not message.guild:
+        if (message.author.id == 689154823941390507 and 'mdrr' in message.content.lower()) or not message.guild or message.channel.id == 840555556707237928:
             return
 
         bucket = self.cd.get_bucket(message)
@@ -33,7 +33,7 @@ class XP(commands.Cog):
                                        {'$set': {'xp': int(xp), 'level': lvl if xp >= next_lvl else lvl - 1}})
 
         if xp >= next_lvl:
-            settings = await self.bot.db_settings.find()
+            settings = await self.bot.db_settings.find({'guild_id': message.guild.id})
             channel = get(message.guild.text_channels, id=settings['channel']) or message.channel
             embed = Embed(description=f'🆙 Tu viens de monter niveau **{lvl}**.', color=0xf1c40f)
             await channel.send(message.author.mention, embed=embed)
