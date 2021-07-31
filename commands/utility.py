@@ -110,6 +110,14 @@ class Utilitaire(commands.Cog, description='commands'):
         except:
             await ctx.send('❌ Texte traduit identique au texte initial, langue probablement invalide')
 
+    @commands.command(
+        brief='',
+        usage='',
+        description='Envoyer le lien vers le code source du bot'
+    )
+    async def repo(self, ctx):
+        await ctx.send('https://github.com/MrSpaar/PolyBot')
+
 
 def setup(bot):
     bot.add_cog(Utilitaire(bot))
