@@ -29,9 +29,9 @@ class OpenAI(commands.Cog):
                 async with s.post('https://api.openai.com/v1/engines/davinci/completions', headers=headers, data=data) as resp:
                     data = await resp.json()
                     try:
-                        message = data['choices'][0]['text'].split('\n\n')[1].strip('—-')
-                        if "Ce qui suit est une conversation avec un assistant IA. L'assistant est serviable, creatif, intelligent et tres sympathique".lower() not in message.lower():
-                            await message.reply(message)
+                        msg = data['choices'][0]['text'].split('\n\n')[1].strip('—-')
+                        if "Ce qui suit est une conversation avec un assistant IA. L'assistant est serviable, creatif, intelligent et tres sympathique".lower() not in msg.lower():
+                            await message.reply(msg)
                         else:
                             await message.reply("J'ai pas compris :(")
                     except:
