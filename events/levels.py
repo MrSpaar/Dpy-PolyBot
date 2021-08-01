@@ -12,11 +12,11 @@ class XP(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if (message.author.id == 689154823941390507 and 'mdrr' in message.content.lower()) or not message.guild or message.channel.id == 840555556707237928:
+        if not message.guild or message.channel.id in [840555556707237928, 853630887794311178] or message.author.bot:
             return
 
         bucket = self.cd.get_bucket(message)
-        if bucket.update_rate_limit() or message.author.bot or not message.channel.category or message.channel.id == 853630887794311178:
+        if bucket.update_rate_limit():
             return
 
         member = await self.bot.db_users.find({'guild_id': message.guild.id, 'id': message.author.id})
