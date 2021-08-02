@@ -44,7 +44,8 @@ Use `!set channel <#channel>` to set the bot's channel, where it will announce r
 
 This module is a WIP but allows to "talk" with PolyBot:
 ![Example](https://i.imgur.com/V1Eikkc.png)
-To get an API key, you need to join [OpenAI's waitlist](https://share.hsforms.com/1Lfc7WtPLRk2ppXhPjcYY-A4sk30).
+To get an API key, you need to join [OpenAI's waitlist](https://share.hsforms.com/1Lfc7WtPLRk2ppXhPjcYY-A4sk30). <br>
+⚠️ Answers might not be accurate or can be repetitive.
 
 ### • ⏲️ [Temporary channels](https://github.com/MrSpaar/PolyBot/blob/master/events/channels.py)
 
