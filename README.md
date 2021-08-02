@@ -40,6 +40,12 @@ Use `!set channel <#channel>` to set the bot's channel, where it will announce r
 `!rank` will show your current xp, level and leaderboard position.<br>
 `!levels` will show a leaderboard, each page contains 10 users along with their xp and level.
 
+### • 💬 [OpenAI Chatbot](https://github.com/MrSpaar/PolyBot/blob/master/events/openai.py)
+
+This module is a WIP but allows to "talk" with PolyBot:
+![Example](https://i.imgur.com/V1Eikkc.png)
+To get an API key, you need to join [OpenAI's waitlist](https://share.hsforms.com/1Lfc7WtPLRk2ppXhPjcYY-A4sk30).
+
 ### • ⏲️ [Temporary channels](https://github.com/MrSpaar/PolyBot/blob/master/events/channels.py)
 
 This module generates temporary voice channels :
