@@ -59,10 +59,20 @@ class Setup(commands.Cog, description='admin'):
                                "\n    • `!set logs <#channel>` pour indiquer au bot où envoyer les messages de logs" +
                                "\n\nCes **commandes sont à faire sur ton serveur**, pas ici, en privé ⚠️")
 
+        owner = self.bot.get_user(self.bot.owner_id)
+        embed = (Embed(description=f"Owner : {guild.owner.mention}\nNom : {guild.name}\nID : `{guild.id}`", color=0x2ecc71)
+                 .set_author(name="J'ai rejoint un serveur", icon_url=guild.icon_url))
+        await owner.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         await self.bot.db_settings.delete({'guild_id': guild.id})
         await self.bot.db_users.delete({'guild_id': guild.id})
+
+        owner = self.bot.get_user(self.bot.owner_id)
+        embed = (Embed(description=f"Owner : {guild.owner.mention}\nNom : {guild.name}\nID : `{guild.id}`", color=0xe74c3c)
+                 .set_author(name="J'ai quitté un serveur", icon_url=guild.icon_url))
+        await owner.send(embed=embed)
 
 
 def setup(bot):

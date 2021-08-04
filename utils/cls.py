@@ -12,6 +12,7 @@ class Bot(commands.Bot):
         load_dotenv()
 
         self.debug = debug
+        self.owner_id = 201674460393242624
         self.mention = '<@!730832334055669930>' if debug else '<@!713781013830041640>'
         self.client = AsyncIOMotorClient(environ['DATABASE_URL'])
         self.token = environ.get('DEBUG_TOKEN') if debug else environ.get('BOT_TOKEN')
@@ -31,7 +32,7 @@ class Bot(commands.Bot):
         return Collection(self, 'settings')
 
     async def on_ready(self):
-        print(f'\nConnecté en tant que : {self.user.name} - {self.user.id}\nVersion : {__version__}\n')
+        print(f'Connecté en tant que : {self.user.name} - {self.user.id}\nVersion : {__version__}\n')
 
 class Collection:
     def __init__(self, db, collection, database='data'):
