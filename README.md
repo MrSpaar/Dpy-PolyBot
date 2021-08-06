@@ -19,11 +19,11 @@ PolyBot is a french, **multi-function bot for Discord**. For now, the bot's **pr
 
 ### • 🔒 [Admin commands](https://github.com/MrSpaar/PolyBot/tree/master/admin)
 
-|                                        Category                                |                          Commands                           |
-|--------------------------------------------------------------------------------|-------------------------------------------------------------|
-|[Moderation](https://github.com/MrSpaar/PolyBot/blob/master/admin/moderation.py)| `mute` `automute` `unmute` `clear` `kick` `ban` `unban`     |
-|[Infos](https://github.com/MrSpaar/PolyBot/blob/master/admin/informations.py)   | `serverinfo` `userinfo` `roleinfo` `channelinfo` `lastjoins`|
-|[Setup](https://github.com/MrSpaar/PolyBot/blob/master/admin/setup.py)          | `set` `settings`                                            |
+|                                        Category                                |                                  Commands                               |
+|--------------------------------------------------------------------------------|-------------------------------------------------------------------------|
+|[Moderation](https://github.com/MrSpaar/PolyBot/blob/master/admin/moderation.py)| `mute` `automute` `unmute` `clear` `kick` `ban` `unban` `clone` `cancel`|
+|[Infos](https://github.com/MrSpaar/PolyBot/blob/master/admin/informations.py)   | `serverinfo` `userinfo` `roleinfo` `channelinfo` `lastjoins`            |
+|[Setup](https://github.com/MrSpaar/PolyBot/blob/master/admin/setup.py)          | `set` `settings`                                                        |
 
 ⚠️ For mute related commands, you'll need to set a mute role: `!set mute <@role>`
 
