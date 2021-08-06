@@ -1,6 +1,7 @@
 from discord.ext import commands
 
 from datetime import datetime, timedelta
+from inspect import Parameter
 from aiohttp import ClientSession
 
 async def get_json(link, headers=None, json=True):
@@ -22,6 +23,9 @@ def now(utc=False):
 
 def has_higher_perms():
     async def extended_check(ctx):
+        if not ctx.message.mentions:
+            raise commands.MissingRequiredArgument(Parameter('member', Parameter.POSITIONAL_ONLY))
+
         if ctx.author.top_role > ctx.message.mentions[0].top_role:
             return True
 

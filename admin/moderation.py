@@ -1,25 +1,24 @@
-from discord import Member, Embed, Permissions, PermissionOverwrite
+from discord import Member, Embed, Permissions, PermissionOverwrite, CategoryChannel, VoiceChannel
 from discord.ext import commands
 from discord.utils import get
 
 from utils.tools import has_higher_perms, parse_time, now
 from datetime import timedelta
 
-
 class Moderation(commands.Cog, description='admin'):
     def __init__(self, bot):
         self.bot = bot
 
-    async def fetch_settings(self, ctx):
-        settings = await self.bot.db_settings.find({'guild_id': ctx.guild.id})
-        role = get(ctx.guild.roles, id=settings['mute'])
-        logs = get(ctx.guild.text_channels, id=settings['logs'])
+    async def fetch_settings(self, guild):
+        settings = await self.bot.db_settings.find({'guild_id': guild.id})
+        role = get(guild.roles, id=settings['mute'])
+        logs = get(guild.text_channels, id=settings['logs'])
 
         if not role:
-            role = await ctx.guild.create_role(name='Muted', color=0xa6aaab, permissions=Permissions.none())
-            await self.bot.db_settings.update({'guild_id': ctx.guild.id}, {'$set': {'mute': role.id}})
+            role = await guild.create_role(name='Muted', color=0xa6aaab, permissions=Permissions.none())
+            await self.bot.db_settings.update({'guild_id': guild.id}, {'$set': {'mute': role.id}})
 
-            for channel in ctx.guild.text_channels:
+            for channel in guild.text_channels:
                 overwrite = channel.overwrites | {role:  PermissionOverwrite(add_reactions=False, send_messages=False)}
                 await channel.edit(overwrites=overwrite)
 
@@ -33,7 +32,7 @@ class Moderation(commands.Cog, description='admin'):
     @has_higher_perms()
     @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx, member: Member, time, *, reason='Pas de raison'):
-        role, logs = await self.fetch_settings(ctx)
+        role, logs = await self.fetch_settings(ctx.guild)
         if role in member.roles:
             return await ctx.send(f"❌ {member.mention} est déjà mute")
 
@@ -51,34 +50,49 @@ class Moderation(commands.Cog, description='admin'):
             await logs.send(embed=embed)
 
         try:
-            await member.send(f"🔇 Tu es mute jusqu'au {date.strftime('%d/%m/%Y à %H:%M:%S')}\n⚠️ Une fois cette date dépassé, écris `!unmute` pour ne plus être mute")
+            await member.send(f"🔇 Tu es mute jusqu'au {date.strftime('%d/%m/%Y à %H:%M:%S')} sur **{ctx.guild.name}**" +
+                              "\n⚠️ Une fois cette date dépassé, écris `!cancel` ici pour ne plus être mute")
         except:
             pass
 
         await self.bot.db_pending.insert({'type': 'mute', 'guild_id': ctx.guild.id, 'id': member.id, 'end': date})
 
     @commands.command(
+        brief='',
+        usage='',
+        description="Se unmute une fois qu'un mute est terminé"
+    )
+    async def cancel(self, ctx):
+        entries = await self.bot.db_pending.find({'type': 'mute', 'id': ctx.author.id})
+        if not entries:
+            return await ctx.send("❌ Tu n'es mute sur aucun de mes serveurs")
+
+        entries = [entries] if not isinstance(entries, list) else entries
+        for entry in entries:
+            guild = self.bot.get_guild(entry['guild_id'])
+
+            if now() <= entry['end']:
+                await ctx.send(f"❌ Mute non terminé sur **{guild.name}** ({entry['end'].strftime('%d/%m/%Y à %H:%M:%S')})")
+                continue
+
+            member = guild.get_member(entry['id'])
+            role, _ = await self.fetch_settings(guild)
+
+            await member.remove_roles(role)
+            await ctx.send(f'✅ Tu as été unmute de **{guild.name}**')
+            await self.bot.db_pending.delete(entry)
+
+    @commands.command(
         brief='@Antoine Grégoire',
         usage='<membre>',
         description='Redonner la parole à un membre'
     )
-    async def unmute(self, ctx, member: Member = None):
-        role, logs = await self.fetch_settings(ctx)
-        mod = ctx.author.guild_permissions.manage_messages
-
-        if mod and not member:
-            raise commands.MissingRequiredArgument('member')
-
-        member = member or ctx.author
-        if member and role not in member.roles:
+    @has_higher_perms()
+    @commands.has_permissions(manage_permissions=True)
+    async def unmute(self, ctx, member: Member):
+        role, _ = await self.fetch_settings(ctx.guild)
+        if role not in member.roles:
             return await ctx.send(f"❌ {member.mention} n'est pas mute")
-
-        if not mod and member != ctx.author:
-            raise commands.MissingPermissions('Manage messages')
-
-        entry = await self.bot.db_pending.find({'type': 'mute', 'guild_id': ctx.guild.id, 'id': member.id})
-        if mod not in ctx.author.roles and member == ctx.author and now() <= entry['end']:
-            return await ctx.send(f"❌ Ton mute n'est pas terminé : {entry['end'].strftime('%d/%m/%Y à %H:%M:%S')}")
 
         await member.remove_roles(role)
         await ctx.send(f'✅ {member.mention} a été unmute')
@@ -142,6 +156,15 @@ class Moderation(commands.Cog, description='admin'):
             await ctx.send(embed=embed)
         except:
             await ctx.send("❌ L'utilisateur n'est pas banni de ce serveur")
+
+    @commands.command()
+    async def clone(self, ctx, cat: CategoryChannel):
+        clone = await cat.clone()
+        for channel in cat.channels:
+            if isinstance(channel, VoiceChannel):
+                await clone.create_voice_channel(name=channel.name, overwrites=channel.overwrites)
+            else:
+                await clone.create_text_channel(name=channel.name, overwrites=channel.overwrites)
 
 
 def setup(bot):
