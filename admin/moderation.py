@@ -31,17 +31,23 @@ class Moderation(commands.Cog, description='admin'):
     )
     @has_higher_perms()
     @commands.has_permissions(manage_messages=True)
-    async def mute(self, ctx, member: Member, time, *, reason='Pas de raison'):
+    async def mute(self, ctx, member: Member, time=None, *, reason=None):
         role, logs = await self.fetch_settings(ctx.guild)
         if role in member.roles:
             return await ctx.send(f"❌ {member.mention} est déjà mute")
 
-        duration, time = parse_time(time)
-        date = now() + timedelta(seconds=duration)
+        try:
+            duration, time = parse_time(time)
+            date = now() + timedelta(seconds=duration)
+        except:
+            reason = f'{time} {reason if reason else ""}' if time else 'Pas de raison'
+            time = 'Indéfiniment'
+            date = now() + timedelta(days=1000)
+
         embed = (Embed(color=0xe74c3c)
                  .add_field(name='Par', value=f"```{ctx.author.display_name}```")
                  .add_field(name='Durée', value=f"```{time}```")
-                 .add_field(name='Raison', value=f"```{reason}```", inline=False)
+                 .add_field(name='Raison', value=f"```{reason or 'Pas de raison'}```", inline=False)
                  .set_author(name=f'{member} a été mute', icon_url=member.avatar_url))
 
         await member.add_roles(role)
