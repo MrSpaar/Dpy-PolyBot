@@ -1,4 +1,4 @@
-from discord import Member
+from discord import Member, Embed
 from discord.ext import commands
 
 from games.minesweeper import Minesweeper
@@ -21,11 +21,7 @@ class Fun(commands.Cog, description='commands'):
         if opponent.bot or opponent == ctx.author:
             return await ctx.send('Tu ne peux pas jouer contre un bot ou contre toi-même')
         
-        game = Chess(self.bot, ctx, opponent)
-        if not await game.start():
-            return
-
-        await game.play()
+        await Chess(self.bot, ctx, opponent).start()
 
     @commands.command(
         aliases=['hangman'],
@@ -45,6 +41,31 @@ class Fun(commands.Cog, description='commands'):
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def demineur(self, ctx):
         await Minesweeper(self.bot, ctx).start()
+
+    @commands.command(
+        aliases=['règles', 'regle', 'règle', 'regles'],
+        brief='echecs',
+        usage='<echecs ou demineur>',
+        description='Afficher une aide pour jouer aux échecs ou au démineur'
+    )
+    async def rules(self, ctx, game):
+        if game.lower() in ['démineur', 'demineur']:
+            embed = (Embed(color=0x3498db)
+                     .add_field(name='Pour jouer', value='Appuis sur une réaction \n' +
+                                                         'Envois un message sous la forme `ligne/colonne`')
+                     .add_field(inline=False, name='Les réactions',
+                                value='🚩 Mettre un drapeau pour marquer une mine\n' +
+                                      '⛏️ Révéler une case\n' +
+                                      '🗑️ Abandonner la partie'))
+        else:
+            embed = (Embed(color=0x3498db)
+                     .add_field(name='Règles', value="Les règles classiques des échecs s'appliquent.\n" +
+                                                     "Pour faire une promotion, ajoutez un `q` à la fin de votre move.")
+                     .add_field(inline=False, name='Mouvements',
+                                value='Le seul format pour un mouvement est `départarrivée` (`a2a4` par exemple)'))
+
+        embed.set_footer(text='⚠️ Ne pas mettre ! dans vos messages')
+        await ctx.send(embed=embed)
 
     @commands.command(
         aliases=['pof', 'hot'],

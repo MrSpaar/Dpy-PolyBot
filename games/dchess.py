@@ -41,25 +41,6 @@ class Chess:
         self.message = await self.ctx.send(embed=embed, file=File('output.png', 'board.png'))
         remove('output.png')
 
-    async def start(self):
-        await self.send_message(init=True)
-        await self.message.add_reaction('✅')
-        await self.message.add_reaction('❌')
-
-        try:
-            react = await self.bot.wait_for('reaction_add', timeout=300,
-                                            check=lambda r, u: (str(r) == '✅' or str(r) == '❌') and u == self.opponent)
-        except:
-            await self.send_message(color=0xe74c3c, text="❌ L'adversaire n'a pas accepté la partie à temps")
-            return False
-
-        if str(react[0]) == '❌':
-            await self.send_message(color=0xe74c3c, text="❌ L'adversaire à refusé la partie")
-            return False
-
-        await self.send_message(color=0xfffff)
-        return True
-
     async def turn(self):
         try:
             move = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == self.cur[0])
@@ -83,6 +64,23 @@ class Chess:
             await self.send_message(move.content, 0xfffff)
         except:
             return await self.ctx.send(f'Temps de réflexion écoulé, {self.cur[1].mention} a gagné')
+
+    async def start(self):
+        await self.send_message(init=True)
+        await self.message.add_reaction('✅')
+        await self.message.add_reaction('❌')
+
+        try:
+            react = await self.bot.wait_for('reaction_add', timeout=300,
+                                            check=lambda r, u: (str(r) == '✅' or str(r) == '❌') and u == self.opponent)
+        except:
+            return await self.send_message(color=0xe74c3c, text="❌ L'adversaire n'a pas accepté la partie à temps")
+
+        if str(react[0]) == '❌':
+            return await self.send_message(color=0xe74c3c, text="❌ L'adversaire à refusé la partie")
+
+        await self.send_message(color=0xfffff)
+        return await self.play()
 
     async def play(self):
         while not self.end:

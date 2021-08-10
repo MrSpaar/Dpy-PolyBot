@@ -9,55 +9,45 @@ class Hangman:
         self.ctx = ctx
         self.message = None
         self.embed = None
-        self.end = False
+
         self.word = choice([ligne.strip() for ligne in open('wordlist.txt')])
-        self.words = [list(self.word), ['-'] * len(self.word)]
+        self.guess = ['-']*len(self.word)
         self.lives, self.errors = 5, []
-
-    async def parse(self, s):
-        if s in ['quit', 'quitter', 'leave', 'stop']:
-            self.end = True
-            return await self.ctx.send(f"Partie terminée. Le mot était `{self.word}`")
-        elif s in self.errors:
-            return await self.ctx.send('Tu as déjà entré cette lettre.', delete_after=3)
-        elif s not in self.word:
-            self.lives -= 1
-            self.errors.append(s)
-            return await self.edit()
-
-        self.words[1] = [s if s == self.words[0][i] else c for i, c in enumerate(self.words[1])]
-
-        if s == self.word or self.words[1] == self.words[0]:
-            await self.ctx.send('Bravo ! Tu as gagné :)')
-            self.words[1] = self.words[0]
-
-        await self.edit()
-
-    async def edit(self):
-        value1 = f"```{''.join(self.words[1])}```"
-        value2 = f"```{', '.join(self.errors)}```" if self.errors else '```\u200b```'
-
-        self.embed.set_field_at(0, name='Mot', value=value1, inline=False)
-        self.embed.set_field_at(1, name='Erreurs', value=value2, inline=False)
-        self.embed.set_footer(text=f'Vies : {self.lives}')
-
-        await self.message.edit(embed=self.embed)
-
-    async def play(self):
-        while not self.end:
-            entry = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author)
-            await self.parse(entry.content)
-            await entry.delete()
-
-            if not self.lives:
-                await self.ctx.send(f'Perdu ! Le mot était `{self.word}`')
-                self.end = True
 
     async def start(self):
         self.embed = (Embed(title='Partie de pendu', color=Color.random())
-                      .add_field(name='Mot', value=f"```{''.join(self.words[1])}```", inline=False)
+                      .add_field(name='Mot', value=f"```{''.join(self.guess)}```", inline=False)
                       .add_field(name='Erreurs', value='```\u200b```', inline=False)
                       .set_footer(text=f'Vies : {self.lives}'))
 
         self.message = await self.ctx.send(embed=self.embed)
         await self.play()
+
+    async def get_letter(self):
+        letter = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author and len(m.content) == 1)
+        await letter.delete()
+        return letter.content.lower()
+
+    async def play(self):
+        letter = await self.get_letter()
+
+        if letter in self.errors or letter in self.guess:
+            await self.ctx.send('Tu as déjà envoyé cette lettre')
+            return await self.play()
+        elif letter not in self.word:
+            self.lives -= 1
+            self.errors.append(letter)
+            self.embed.set_field_at(1, name='Erreurs', value=f"```{', '.join(self.errors)}```", inline=False)
+            self.embed.set_footer(text=f'Vies : {self.lives}')
+        else:
+            self.guess = [letter if letter == char else self.guess[i] for i, char in enumerate(self.word)]
+            self.embed.set_field_at(0, name='Mot', value=f"```{''.join(self.guess)}```", inline=False)
+
+        await self.message.edit(embed=self.embed)
+
+        if self.word == ''.join(self.guess):
+            return await self.ctx.send('Bravo, tu as gagné ! :)')
+        elif not self.lives:
+            return await self.ctx.send(f'Perdu ! Le mot était `{self.word}`')
+        else:
+            await self.play()
