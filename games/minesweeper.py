@@ -25,8 +25,11 @@ class Minesweeper:
             lambda i, m: -1 < i - 11 < 100 and (self.sol[i - 11] == self.mine or m) and i % 10,
         )
 
-        self.sol = sample(self.blank*75 + self.mine*25, 100)
+        self.sol = None
         self._cur = list(self.blank*100)
+
+    def create_grid(self):
+        self.sol = sample(self.blank * 75 + self.mine * 25, 100)
 
         for i, elem in enumerate(self.sol):
             if elem != self.mine:
@@ -68,16 +71,24 @@ class Minesweeper:
                       .set_author(name='Partie de démineur', icon_url=self.ctx.author.avatar_url))
         self.message = await self.ctx.send(embed=self.embed)
 
-        for emoji in [self.flag, '⛏️', '🗑️']:
+        for emoji in [self.flag, '⛏️', '↩️', '🗑️']:
             await self.message.add_reaction(emoji)
 
-        await self.loop()
+        await self.loop(init=True)
 
-    async def loop(self):
+    async def loop(self, init=False):
         while True:
             reaction, member = await self.bot.wait_for('reaction_add', check=lambda r, m: m == self.ctx.author)
             if str(reaction) == '🗑️':
                 return await self.edit_embed(color=0xe74c3c, name='Partie abandonnée')
+            elif str(reaction) == '↩️':
+                await self.message.delete()
+                self.message = await self.ctx.send(embed=self.embed)
+
+                for emoji in [self.flag, '⛏️', '↩️', '🗑️']:
+                    await self.message.add_reaction(emoji)
+
+                continue
 
             pos = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author)
             await pos.delete()
@@ -91,6 +102,11 @@ class Minesweeper:
                     break
             except:
                 pass
+
+        if init:
+            self.create_grid()
+            while self.sol[pos] != self.emotes[0]:
+                self.create_grid()
 
         if reaction == self.flag:
             self._cur[pos] = self.flag

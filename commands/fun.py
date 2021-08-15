@@ -56,6 +56,7 @@ class Fun(commands.Cog, description='commands'):
                      .add_field(inline=False, name='Les réactions',
                                 value='🚩 Mettre un drapeau pour marquer une mine\n' +
                                       '⛏️ Révéler une case\n' +
+                                      '↩️ Renvoyer un message avec la grille'
                                       '🗑️ Abandonner la partie'))
         else:
             embed = (Embed(color=0x3498db)
