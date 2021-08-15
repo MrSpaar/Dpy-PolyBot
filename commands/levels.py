@@ -45,8 +45,8 @@ class Niveaux(commands.Cog, description='commands'):
     )
     async def rank(self, ctx, member: Member = None):
         member = member or ctx.author
-        xp = await self.bot.db_users.find({'guild_id': ctx.guild.id, 'id': member.id})
-        rank = (await self.bot.db_users.sort({'guild_id': ctx.guild.id}, 'xp', DESCENDING)).index(xp) + 1
+        xp = await self.bot.db.users.find({'guild_id': ctx.guild.id, 'id': member.id})
+        rank = (await self.bot.db.users.sort({'guild_id': ctx.guild.id}, 'xp', DESCENDING)).index(xp) + 1
 
         embed = (Embed(color=0x3498db)
                  .set_author(name=f'Progression de {member.display_name}',
@@ -64,7 +64,7 @@ class Niveaux(commands.Cog, description='commands'):
         description='Afficher le classement du serveur'
     )
     async def levels(self, ctx):
-        data = await self.bot.db_users.sort({'guild_id': ctx.guild.id}, 'xp', DESCENDING)
+        data = await self.bot.db.users.sort({'guild_id': ctx.guild.id}, 'xp', DESCENDING)
 
         self.data = data
         embed = (Embed(color=0x3498db)

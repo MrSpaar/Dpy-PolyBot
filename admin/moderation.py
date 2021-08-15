@@ -10,13 +10,13 @@ class Moderation(commands.Cog, description='admin'):
         self.bot = bot
 
     async def fetch_settings(self, guild):
-        settings = await self.bot.db_settings.find({'guild_id': guild.id})
+        settings = await self.bot.db.settings.find({'guild_id': guild.id})
         role = get(guild.roles, id=settings['mute'])
         logs = get(guild.text_channels, id=settings['logs'])
 
         if not role:
             role = await guild.create_role(name='Muted', color=0xa6aaab, permissions=Permissions.none())
-            await self.bot.db_settings.update({'guild_id': guild.id}, {'$set': {'mute': role.id}})
+            await self.bot.db.settings.update({'guild_id': guild.id}, {'$set': {'mute': role.id}})
 
             for channel in guild.text_channels:
                 overwrite = channel.overwrites | {role:  PermissionOverwrite(add_reactions=False, send_messages=False)}
@@ -61,7 +61,7 @@ class Moderation(commands.Cog, description='admin'):
         except:
             pass
 
-        await self.bot.db_pending.insert({'type': 'mute', 'guild_id': ctx.guild.id, 'id': member.id, 'end': date})
+        await self.bot.db.pending.insert({'type': 'mute', 'guild_id': ctx.guild.id, 'id': member.id, 'end': date})
 
     @commands.command(
         brief='',
@@ -69,7 +69,7 @@ class Moderation(commands.Cog, description='admin'):
         description="Se unmute une fois qu'un mute est terminé"
     )
     async def cancel(self, ctx):
-        entries = await self.bot.db_pending.find({'type': 'mute', 'id': ctx.author.id})
+        entries = await self.bot.db.pending.find({'type': 'mute', 'id': ctx.author.id})
         if not entries:
             return await ctx.send("❌ Tu n'es mute sur aucun de mes serveurs")
 
@@ -86,7 +86,7 @@ class Moderation(commands.Cog, description='admin'):
 
             await member.remove_roles(role)
             await ctx.send(f'✅ Tu as été unmute de **{guild.name}**')
-            await self.bot.db_pending.delete(entry)
+            await self.bot.db.pending.delete(entry)
 
     @commands.command(
         brief='@Antoine Grégoire',
@@ -102,7 +102,7 @@ class Moderation(commands.Cog, description='admin'):
 
         await member.remove_roles(role)
         await ctx.send(f'✅ {member.mention} a été unmute')
-        await self.bot.db_pending.delete({'guild_id': ctx.guild.id, 'id': member.id})
+        await self.bot.db.pending.delete({'guild_id': ctx.guild.id, 'id': member.id})
 
     @commands.command(
         aliases=['prout'],

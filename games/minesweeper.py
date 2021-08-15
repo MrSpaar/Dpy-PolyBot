@@ -11,8 +11,15 @@ class Minesweeper:
         self.embed = None
         self.end = False
 
-        self.emotes = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟']
-        self.mine, self.flag, self.blank = '🇲', '🚩', '🟦'
+        self.emotes = [
+            '<:0_:876396436630159401>', '<:1_:876385590055149629>', '<:2_:876385590038376448>',
+            '<:3_:876385589832863764>', '<:4_:876385588872359936>', '<:5_:876385588700405761>',
+            '<:6_:876385587479863346>'
+        ]
+
+        self.mine, self.flag, self.blank = [
+            '<:mi:876385344491229224>', '<:fl:876385343178412102>', '<:bl:876384334133751839>'
+        ]
 
         self.checks = (
             lambda i, m: -1 < i - 10 < 100 and (self.sol[i - 10] == self.mine or m),
@@ -26,10 +33,10 @@ class Minesweeper:
         )
 
         self.sol = None
-        self._cur = list(self.blank*100)
+        self.cur = [self.blank]*100
 
     def create_grid(self):
-        self.sol = sample(self.blank * 75 + self.mine * 25, 100)
+        self.sol = sample([self.blank]*75 + [self.mine]*25, 100)
 
         for i, elem in enumerate(self.sol):
             if elem != self.mine:
@@ -37,9 +44,18 @@ class Minesweeper:
 
     @property
     def grid(self):
-        temp = f"⬛⬛{''.join(self.emotes[1:])}\n{'⬛'*12}\n"
+        emojis = [
+            '<:1_:876453166424686602>', '<:2_:876453170677706772>', '<:3_:876453173131378708>',
+            '<:4_:876453175140433930>', '<:5_:876453177707335710>', '<:6_:876453181620641862>',
+            '<:7_:876453183470329907>', '<:8_:876453186205007893>', '<:9_:876453188927099010>',
+            '<:10:876453193863815219>'
+        ]
+
+        temp = f"{self.blank}{''.join(emojis)}\n"
+
         for i in range(0, 100, 10):
-            temp += f"{self.emotes[1:][i//10]}⬛{'​'.join(self._cur[i:i+10])}\n"
+            temp += f"{emojis[i//10]}{''.join(self.cur[i:i + 10])}\n"
+
         return temp
 
     @grid.setter
@@ -47,14 +63,14 @@ class Minesweeper:
         if self.sol[i] == self.mine:
             self.end = True
 
-        self._cur[i], temp = self.sol[i], []
-        if self._cur[i] == self.emotes[0]:
+        self.cur[i], temp = self.sol[i], []
+        if self.cur[i] == self.emotes[0]:
             self.reveal_near(i)
 
     def reveal_near(self, i, lastest=[]):
         for x, c in zip((-10, 10, 1, -9, 11, -1, 9, -11), self.checks):
             if c(i, True):
-                self._cur[i+x] = self.sol[i+x]
+                self.cur[i + x] = self.sol[i + x]
                 if self.sol[i+x] == self.emotes[0] and i+x not in lastest:
                     lastest.append(i + x)
                     self.reveal_near(i+x, lastest)
@@ -71,7 +87,7 @@ class Minesweeper:
                       .set_author(name='Partie de démineur', icon_url=self.ctx.author.avatar_url))
         self.message = await self.ctx.send(embed=self.embed)
 
-        for emoji in [self.flag, '⛏️', '↩️', '🗑️']:
+        for emoji in ['🚩', '⛏️', '↩️', '🗑️']:
             await self.message.add_reaction(emoji)
 
         await self.loop(init=True)
@@ -85,7 +101,7 @@ class Minesweeper:
                 await self.message.delete()
                 self.message = await self.ctx.send(embed=self.embed)
 
-                for emoji in [self.flag, '⛏️', '↩️', '🗑️']:
+                for emoji in ['🚩', '⛏️', '↩️', '🗑️']:
                     await self.message.add_reaction(emoji)
 
                 continue
@@ -108,8 +124,8 @@ class Minesweeper:
             while self.sol[pos] != self.emotes[0]:
                 self.create_grid()
 
-        if reaction == self.flag:
-            self._cur[pos] = self.flag
+        if reaction == '🚩':
+            self.cur[pos] = self.flag
         elif reaction == '⛏️':
             self.grid = pos
 
@@ -119,5 +135,5 @@ class Minesweeper:
             await self.edit_embed(description=self.grid)
             await self.loop()
         else:
-            desc = '\n'.join(['​'.join(self.sol[i:i+10]) for i in range(0, 100, 10)])
+            desc = '\n'.join([''.join(self.sol[i:i+10]) for i in range(0, 100, 10)])
             await self.edit_embed(color=0xe74c3c, name='Partie perdue !', description=desc)

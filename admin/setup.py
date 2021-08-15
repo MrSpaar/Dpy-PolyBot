@@ -26,7 +26,7 @@ class Setup(commands.Cog, description='admin'):
         if key not in settings:
             return await ctx.send(f"❌ Catégorie invalide : {', '.join(settings.keys())}")
 
-        await self.bot.db_settings.update({'guild_id': ctx.guild.id}, {'$set': {key: value.id}})
+        await self.bot.db.settings.update({'guild_id': ctx.guild.id}, {'$set': {key: value.id}})
         await ctx.send(f"{settings[key]} modifié ({value.mention})")
 
     @commands.command(
@@ -36,7 +36,7 @@ class Setup(commands.Cog, description='admin'):
     )
     @commands.has_permissions(administrator=True)
     async def settings(self, ctx):
-        settings = await self.bot.db_settings.find({'guild_id': ctx.guild.id})
+        settings = await self.bot.db.settings.find({'guild_id': ctx.guild.id})
         mute = get(ctx.guild.roles, id=settings['mute'])
         channel = get(ctx.guild.text_channels, id=settings['channel'])
         logs = get(ctx.guild.text_channels, id=settings['logs'])
@@ -50,8 +50,8 @@ class Setup(commands.Cog, description='admin'):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await self.bot.db_settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channel': None})
-        await self.bot.db_users.collection.insert_many([{'guild_id': guild.id, 'id': member.id, 'level': 0, 'xp': 0} for member in guild.members if not member.bot])
+        await self.bot.db.settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channel': None})
+        await self.bot.db.users.collection.insert_many([{'guild_id': guild.id, 'id': member.id, 'level': 0, 'xp': 0} for member in guild.members if not member.bot])
 
         await guild.owner.send("Merci beaucoup de m'avoir ajouté 👍" +
                                "\n\nPour certaines de mes commandes, quelques réglages sont nécessaires :" +
@@ -66,8 +66,8 @@ class Setup(commands.Cog, description='admin'):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        await self.bot.db_settings.delete({'guild_id': guild.id})
-        await self.bot.db_users.delete({'guild_id': guild.id})
+        await self.bot.db.settings.delete({'guild_id': guild.id})
+        await self.bot.db.users.delete({'guild_id': guild.id})
 
         owner = self.bot.get_user(self.bot.owner_id)
         embed = (Embed(description=f"Owner : {guild.owner.mention}\nNom : {guild.name}\nID : `{guild.id}`", color=0xe74c3c)

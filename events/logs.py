@@ -11,7 +11,7 @@ class Logs(commands.Cog):
         self.bot = bot
 
     async def send_log(self, guild, embed):
-        settings = await self.bot.db_settings.find({'guild_id': guild.id})
+        settings = await self.bot.db.settings.find({'guild_id': guild.id})
         logs = get(guild.text_channels, id=settings['logs'])
 
         if logs:
@@ -19,8 +19,8 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if not await self.bot.db_users.find({'guild_id': member.guild.id, 'id': member.id}) and not member.bot:
-            await self.bot.db_users.insert({'guild_id': member.guild.id, 'id': member.id, 'xp': 0, 'level': 0})
+        if not await self.bot.db.users.find({'guild_id': member.guild.id, 'id': member.id}) and not member.bot:
+            await self.bot.db.users.insert({'guild_id': member.guild.id, 'id': member.id, 'xp': 0, 'level': 0})
 
         embed = Embed(color=0x2ecc71, description=f'**:inbox_tray: {member.mention} a rejoint le serveur !**')
         await self.send_log(member.guild, embed)
@@ -28,7 +28,7 @@ class Logs(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
         entry = await member.guild.audit_logs(limit=1).flatten()
-        await self.bot.db_users.delete({'guild_id': member.guild.id, 'id': member.id})
+        await self.bot.db.users.delete({'guild_id': member.guild.id, 'id': member.id})
 
         if entry[0].action == AuditLogAction.ban:
             embed = (Embed(title=':man_judge: Membre ban', color=0xe74c3c)

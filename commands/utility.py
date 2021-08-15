@@ -95,7 +95,10 @@ class Utilitaire(commands.Cog, description='commands'):
         description="Afficher l'image d'un emoji"
     )
     async def emoji(self, ctx, emoji: PartialEmoji):
-        await ctx.send(embed=(Embed(color=ctx.author.color)).set_image(url=emoji.url))
+        embed = (Embed(color=ctx.author.color)
+                 .set_image(url=emoji.url)
+                 .set_footer(text=f'<:{emoji.name}:{emoji.id}>'))
+        await ctx.send(embed=embed)
 
     @commands.command(
         aliases=['trad', 'translate'],
