@@ -9,7 +9,6 @@ class Minesweeper:
         self.ctx = ctx
         self.message = None
         self.embed = None
-        self.end = False
 
         self.emotes = [
             '<:0_:876396436630159401>', '<:1_:876385590055149629>', '<:2_:876385590038376448>',
@@ -35,6 +34,14 @@ class Minesweeper:
         self.sol = None
         self.cur = [self.blank]*100
 
+    async def start(self):
+        self.embed = (Embed(color=Color.random())
+                      .set_author(name='Partie de démineur', icon_url=self.ctx.author.avatar_url))
+
+        self.message = await self.ctx.send(embed=self.embed)
+        await self.show(self.cur)
+        await self.loop(init=True)
+
     def create_grid(self):
         self.sol = sample([self.blank]*75 + [self.mine]*25, 100)
 
@@ -42,8 +49,7 @@ class Minesweeper:
             if elem != self.mine:
                 self.sol[i] = self.emotes[len([1 for c in self.checks if c(i, False)])]
 
-    @property
-    def grid(self):
+    async def show(self, grid):
         emojis = [
             '<:1_:876453166424686602>', '<:2_:876453170677706772>', '<:3_:876453173131378708>',
             '<:4_:876453175140433930>', '<:5_:876453177707335710>', '<:6_:876453181620641862>',
@@ -54,18 +60,10 @@ class Minesweeper:
         temp = f"{self.blank}{''.join(emojis)}\n"
 
         for i in range(0, 100, 10):
-            temp += f"{emojis[i//10]}{''.join(self.cur[i:i + 10])}\n"
+            temp += f"{emojis[i // 10]}{''.join(grid[i:i + 10])}\n"
 
-        return temp
-
-    @grid.setter
-    def grid(self, i):
-        if self.sol[i] == self.mine:
-            self.end = True
-
-        self.cur[i], temp = self.sol[i], []
-        if self.cur[i] == self.emotes[0]:
-            self.reveal_near(i)
+        self.embed.description = temp
+        await self.message.edit(embed=self.embed)
 
     def reveal_near(self, i, lastest=[]):
         for x, c in zip((-10, 10, 1, -9, 11, -1, 9, -11), self.checks):
@@ -75,65 +73,50 @@ class Minesweeper:
                     lastest.append(i + x)
                     self.reveal_near(i+x, lastest)
 
-    async def edit_embed(self, description=None, color=None, name=None):
-        self.embed.color = color or self.embed.color
-        self.embed.description = description or self.embed.description
-        self.embed.set_author(name=name or 'Partie de démineur', icon_url=self.ctx.author.avatar_url)
-
-        await self.message.edit(embed=self.embed)
-
-    async def start(self):
-        self.embed = (Embed(color=Color.random(), description=self.grid)
-                      .set_author(name='Partie de démineur', icon_url=self.ctx.author.avatar_url))
-        self.message = await self.ctx.send(embed=self.embed)
-
-        for emoji in ['🚩', '⛏️', '↩️', '🗑️']:
-            await self.message.add_reaction(emoji)
-
-        await self.loop(init=True)
-
     async def loop(self, init=False):
-        while True:
-            reaction, member = await self.bot.wait_for('reaction_add', check=lambda r, m: m == self.ctx.author)
-            if str(reaction) == '🗑️':
-                return await self.edit_embed(color=0xe74c3c, name='Partie abandonnée')
-            elif str(reaction) == '↩️':
-                await self.message.delete()
-                self.message = await self.ctx.send(embed=self.embed)
+        message = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author)
 
-                for emoji in ['🚩', '⛏️', '↩️', '🗑️']:
-                    await self.message.add_reaction(emoji)
+        if message.content == 'quit':
+            self.embed.set_author(name='Partie abandonnée', icon_url=self.ctx.author.avatar_url)
+            self.embed.color = 0xe74c3c
 
-                continue
+            return await self.message.edit(embed=self.embed)
+        elif message.content == 'repost':
+            await self.message.delete()
+            self.message = await self.ctx.send(embed=self.embed)
 
-            pos = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author)
-            await pos.delete()
-            await reaction.remove(member)
+            return await self.loop()
+        elif ',' not in message.content:
+            return await self.loop()
 
-            try:
-                a, b = [int(x.strip()) for x in pos.content.split('/')]
-                if -1 < a < 11 and -1 < b < 11:
-                    pos = (a - 1) * 10 + b - 1
-                    reaction = str(reaction.emoji)
-                    break
-            except:
-                pass
+        try:
+            action, x, y = message.content.split(',')
+            pos = (int(x) - 1)*10 + int(y) - 1
+            await message.delete()
+        except:
+            return await self.loop()
 
         if init:
             self.create_grid()
             while self.sol[pos] != self.emotes[0]:
                 self.create_grid()
+        elif self.sol[pos] == self.mine and action == 'm':
+            self.embed.set_author(name='Partie perdue !')
+            self.embed.color = 0xe74c3c
 
-        if reaction == '🚩':
+            return await self.show(self.sol)
+        if self.blank not in self.cur and self.cur.count(self.flag) == 25:
+            self.embed.set_author(name='Partie gagnée !')
+            self.embed.color = 0xf1c40f
+
+            return await self.show(self.sol)
+
+        if action == 'f':
             self.cur[pos] = self.flag
-        elif reaction == '⛏️':
-            self.grid = pos
+        elif action == 'm':
+            self.cur[pos] = self.sol[pos]
+            if self.cur[pos] == self.emotes[0]:
+                self.reveal_near(pos)
 
-        if self.blank not in self.grid and self.grid.count(self.flag) == 25:
-            await self.edit_embed(color=0xf1c40f, name='Partie gagnée !', description=self.grid)
-        elif not self.end:
-            await self.edit_embed(description=self.grid)
-            await self.loop()
-        else:
-            desc = '\n'.join([''.join(self.sol[i:i+10]) for i in range(0, 100, 10)])
-            await self.edit_embed(color=0xe74c3c, name='Partie perdue !', description=desc)
+        await self.show(self.cur)
+        await self.loop()

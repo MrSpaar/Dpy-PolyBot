@@ -51,13 +51,10 @@ class Fun(commands.Cog, description='commands'):
     async def rules(self, ctx, game):
         if game.lower() in ['démineur', 'demineur']:
             embed = (Embed(color=0x3498db)
-                     .add_field(name='Pour jouer', value='Appuis sur une réaction \n' +
-                                                         'Envois un message sous la forme `ligne/colonne`')
-                     .add_field(inline=False, name='Les réactions',
-                                value='🚩 Mettre un drapeau pour marquer une mine\n' +
-                                      '⛏️ Révéler une case\n' +
-                                      '↩️ Renvoyer un message avec la grille'
-                                      '🗑️ Abandonner la partie'))
+                     .add_field(name='Pour jouer', value='Envois un message sous la forme `action,ligne,colonne` :\n' +
+                                                         '    • `f` pour mettre une mine\n' +
+                                                         '    •  `m` pour révéler une case\n\n' +
+                                                         'Par exemple : `m,2,1` pour révéler la case à la deuxième ligne, première colonne.'))
         else:
             embed = (Embed(color=0x3498db)
                      .add_field(name='Règles', value="Les règles classiques des échecs s'appliquent.\n" +
