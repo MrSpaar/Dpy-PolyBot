@@ -52,7 +52,7 @@ class Fun(commands.Cog, description='commands'):
         if game.lower() in ['démineur', 'demineur']:
             embed = (Embed(color=0x3498db)
                      .add_field(name='Pour jouer', value='Envois un message sous la forme `action,ligne,colonne` :\n' +
-                                                         '    • `f` pour mettre une mine\n' +
+                                                         '    • `f` pour mettre un drapeau\n' +
                                                          '    •  `m` pour révéler une case\n\n' +
                                                          'Par exemple : `m,2,1` pour révéler la case à la deuxième ligne, première colonne.'))
         else:
