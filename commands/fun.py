@@ -54,7 +54,9 @@ class Fun(commands.Cog, description='commands'):
                      .add_field(name='Pour jouer', value='Envois un message sous la forme `action,ligne,colonne` :\n' +
                                                          '    • `f` pour mettre un drapeau\n' +
                                                          '    •  `m` pour révéler une case\n\n' +
-                                                         'Par exemple : `m,2,1` pour révéler la case à la deuxième ligne, première colonne.'))
+                                                         'Par exemple : `m,2,1` pour révéler la case à la deuxième ligne, première colonne.')
+                     .add_field(inline=False, name='Autres fonctionnalités', value='Envoie `quit` pour abandonner la partie.\n' +
+                                                                                   'Envoie `repost` pour renvoyer une grille (garde la progression)'))
         else:
             embed = (Embed(color=0x3498db)
                      .add_field(name='Règles', value="Les règles classiques des échecs s'appliquent.\n" +
