@@ -29,6 +29,7 @@ class Fun(commands.Cog, description='commands'):
         usage='',
         description='Jouer au pendu'
     )
+    @commands.max_concurrency(1, commands.BucketType.user)
     async def pendu(self, ctx):
         await Hangman(self.bot, ctx).start()
 
@@ -43,12 +44,11 @@ class Fun(commands.Cog, description='commands'):
         await Minesweeper(self.bot, ctx).start()
 
     @commands.command(
-        aliases=['règles', 'regle', 'règle', 'regles'],
         brief='echecs',
         usage='<echecs ou demineur>',
         description='Afficher une aide pour jouer aux échecs ou au démineur'
     )
-    async def rules(self, ctx, game):
+    async def regles(self, ctx, game):
         if game.lower() in ['démineur', 'demineur']:
             embed = (Embed(color=0x3498db)
                      .add_field(name='Pour jouer', value='Envois un message sous la forme `action,ligne,colonne` :\n' +

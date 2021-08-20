@@ -1,7 +1,7 @@
 from discord import Embed, Color
 
 from random import choice
-
+from components.tools import normalize_string
 
 class Hangman:
     def __init__(self, bot, ctx):
@@ -24,9 +24,9 @@ class Hangman:
         await self.play()
 
     async def get_letter(self):
-        letter = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author and len(m.content) == 1)
-        await letter.delete()
-        return letter.content.lower()
+        message = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author and len(m.content) == 1)
+        await message.delete()
+        return normalize_string(message.content)
 
     async def play(self):
         letter = await self.get_letter()
@@ -34,13 +34,13 @@ class Hangman:
         if letter in self.errors or letter in self.guess:
             await self.ctx.send('Tu as déjà envoyé cette lettre')
             return await self.play()
-        elif letter not in self.word:
+        elif letter not in normalize_string(self.word):
             self.lives -= 1
             self.errors.append(letter)
             self.embed.set_field_at(1, name='Erreurs', value=f"```{', '.join(self.errors)}```", inline=False)
             self.embed.set_footer(text=f'Vies : {self.lives}')
         else:
-            self.guess = [letter if letter == char else self.guess[i] for i, char in enumerate(self.word)]
+            self.guess = [self.word[i] if letter == normalize_string(char) else self.guess[i] for i, char in enumerate(self.word)]
             self.embed.set_field_at(0, name='Mot', value=f"```{''.join(self.guess)}```", inline=False)
 
         await self.message.edit(embed=self.embed)

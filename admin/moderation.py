@@ -2,7 +2,7 @@ from discord import Member, Embed, Permissions, PermissionOverwrite, CategoryCha
 from discord.ext import commands
 from discord.utils import get
 
-from utils.tools import has_higher_perms, parse_time, now
+from components.tools import has_higher_perms, parse_time, now
 from datetime import timedelta
 
 class Moderation(commands.Cog, description='admin'):
@@ -164,6 +164,7 @@ class Moderation(commands.Cog, description='admin'):
             await ctx.send("❌ L'utilisateur n'est pas banni de ce serveur")
 
     @commands.command()
+    @commands.has_permissions(manage_channels=True)
     async def clone(self, ctx, cat: CategoryChannel):
         clone = await cat.clone()
         for channel in cat.channels:
@@ -172,6 +173,20 @@ class Moderation(commands.Cog, description='admin'):
             else:
                 await clone.create_text_channel(name=channel.name, overwrites=channel.overwrites)
 
+    @commands.command()
+    @commands.has_permissions(manage_permissions=True)
+    async def rules(self, ctx):
+        embed = (Embed(color=0x3498db)
+                 .add_field(name='🗑️ Spam', value="Le spam ou l'abus de commandes est strictement interdit", inline=False)
+                 .add_field(name='🧑🏻 Respect', value="Respectez les autres et vous-même, ne faites pas autres ce que vous n'aimeriez pas qu'on vous fasse", inline=False)
+                 .add_field(name='🔞 Contenu interdit', value='Le contenu NSFW, politique ou à charge est interdit', inline=False)
+                 .add_field(name='👌 Ambiance', value="C'est un serveur chill, évitez les prises de tête ou  les disputes", inline=False)
+                 .add_field(name='🔔 Notifications', value='Ping un grand nombre de personnes inutilement ou spam ping est interdit', inline=False)
+                 .add_field(name='🧠 Bon sens', value="Utilisez votre bon sens avant d'envoyer un message, mentionnez un modérateur en cas de doute", inline=False)
+                 .add_field(name='💬 Discution', value='Essayez au plus possible de vous tenir au thème du salon')
+                 .set_author(name='Règles du serveur', icon_url=ctx.guild.icon_url))
+
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

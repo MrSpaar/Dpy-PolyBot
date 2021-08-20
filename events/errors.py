@@ -43,6 +43,9 @@ class Erreurs(commands.Cog):
                 if key in str(error):
                     error_entry = value
 
+        if isinstance(error_entry, dict):
+            raise error
+
         if ctx.command and ctx.command.brief:
             error_entry += f"\n❔ Exemple d'utilisation : `{self.bot.command_prefix}{ctx.command.name} {ctx.command.brief}`"
 

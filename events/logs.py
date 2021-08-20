@@ -2,7 +2,7 @@ from discord import Embed, Member, AuditLogAction
 from discord.ext import commands
 from discord.utils import get
 
-from utils.tools import now
+from components.tools import now
 from datetime import timedelta
 
 

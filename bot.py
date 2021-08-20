@@ -2,14 +2,14 @@ from discord import Game, Intents
 from discord.ext import commands
 
 from os import listdir
-from utils.cls import Bot
+from components.cls import Bot
 
 bot = Bot(intents=Intents.all(), case_insensitive=True,
           help_command=None, activity=Game(name=f'!help'), debug=True)
 
 for directory in ['admin', 'events', 'commands']:
     for file in listdir(directory):
-        if file == '__pycache__':
+        if file == '__pycache__' or (file in ['errors.py', 'logs.py' and bot.debug]):
             continue
 
         bot.load_extension(f'{directory}.{file[:-3]}')
@@ -19,7 +19,7 @@ for directory in ['admin', 'events', 'commands']:
 async def reload(ctx):
     for directory in ['admin', 'events', 'commands']:
         for file in listdir(directory):
-            if file == '__pycache__':
+            if file == '__pycache__' or (file in ['errors.py', 'logs.py' and bot.debug]):
                 continue
 
             bot.reload_extension(f'{directory}.{file[:-3]}')

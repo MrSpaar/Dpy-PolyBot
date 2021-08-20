@@ -1,6 +1,7 @@
 from discord.ext import commands
 
 from datetime import datetime, timedelta
+from unicodedata import normalize
 from inspect import Parameter
 from aiohttp import ClientSession
 
@@ -8,6 +9,9 @@ async def get_json(link, headers=None, json=True):
     async with ClientSession() as s:
         async with s.get(link, headers=headers) as resp:
             return await resp.json() if json else await resp.text()
+
+def normalize_string(s):
+    return normalize(u'NFKD', s).encode('ascii', 'ignore').decode('utf8')
 
 def parse_time(time):
     units = {"s": [1, 'secondes'], "m": [60, 'minutes'], "h": [3600, 'heures']}

@@ -1,7 +1,7 @@
 from discord import Embed, File
 from discord.ext import commands
 
-from utils.tools import get_json
+from components.tools import get_json
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 from youtube_dl import YoutubeDL
