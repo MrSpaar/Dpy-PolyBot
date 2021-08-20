@@ -75,22 +75,23 @@ class Minesweeper:
 
     async def loop(self, init=False):
         message = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author)
+        content = message.content.lower()
 
-        if message.content == 'quit':
+        if content == 'quit':
             self.embed.set_author(name='Partie abandonnée', icon_url=self.ctx.author.avatar_url)
             self.embed.color = 0xe74c3c
 
             return await self.message.edit(embed=self.embed)
-        elif message.content == 'repost':
+        elif content == 'repost':
             await self.message.delete()
             self.message = await self.ctx.send(embed=self.embed)
 
             return await self.loop()
-        elif ',' not in message.content:
+        elif ',' not in content:
             return await self.loop()
 
         try:
-            action, x, y = message.content.split(',')
+            action, x, y = content.split(',')
             pos = (int(x) - 1)*10 + int(y) - 1
             await message.delete()
         except:
