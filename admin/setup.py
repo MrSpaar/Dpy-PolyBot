@@ -74,6 +74,13 @@ class Setup(commands.Cog, description='admin'):
                  .set_author(name="J'ai quitté un serveur", icon_url=guild.icon_url))
         await owner.send(embed=embed)
 
+    @commands.command()
+    @commands.is_owner()
+    async def give_roles(self, ctx):
+        roles = [get(ctx.guild.roles, id=role_id) for role_id in [878280619363282996, 878277244873768970]]
+        for member in ctx.guild.members:
+            await member.add_roles(*roles)
+
 
 def setup(bot):
     bot.add_cog(Setup(bot))
