@@ -50,7 +50,7 @@ class Setup(commands.Cog, description='admin'):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await self.bot.db.settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channel': None})
+        await self.bot.db.settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channel': None, 'new': []})
         await self.bot.db.users.collection.insert_many([{'guild_id': guild.id, 'id': member.id, 'level': 0, 'xp': 0} for member in guild.members if not member.bot])
 
         await guild.owner.send("Merci beaucoup de m'avoir ajouté 👍" +
