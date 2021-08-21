@@ -36,7 +36,8 @@ class Minesweeper:
 
     async def start(self):
         self.embed = (Embed(color=Color.random())
-                      .set_author(name='Partie de démineur', icon_url=self.ctx.author.avatar_url))
+                      .set_author(name='Partie de démineur', icon_url=self.ctx.author.avatar_url)
+                      .set_footer(text='Pour voir comment jouer → !regles demineur'))
 
         self.message = await self.ctx.send(embed=self.embed)
         await self.show(self.cur)
