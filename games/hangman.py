@@ -26,7 +26,7 @@ class Hangman:
     async def get_letter(self):
         message = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author and len(m.content) == 1)
         await message.delete()
-        return normalize_string(message.content)
+        return normalize_string(message.content.lower())
 
     async def play(self):
         letter = await self.get_letter()

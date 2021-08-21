@@ -14,7 +14,7 @@ class Fun(commands.Cog, description='commands'):
     @commands.command(
         aliases=['chess'],
         brief='@Noah Conrard', usage='<membre>',
-        description="Jouer aux échecs contre quelqu'un"
+        description="Jouer aux échecs contre quelqu'un (!regles echecs)"
     )
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def echecs(self, ctx, opponent: Member):
@@ -37,7 +37,7 @@ class Fun(commands.Cog, description='commands'):
         aliases=['minesweeper'],
         brief='',
         usage='',
-        description='Jouer au démineur'
+        description='Jouer au démineur (!regles demineur)'
     )
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def demineur(self, ctx):

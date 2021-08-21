@@ -12,7 +12,7 @@ class XP(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not message.guild or message.channel.id in [840555556707237928, 853630887794311178] or message.author.bot:
+        if not message.guild or message.channel.id in [840555556707237928, 853630887794311178] or message.author.bot or message.author.id == 689154823941390507:
             return
 
         bucket = self.cd.get_bucket(message)
