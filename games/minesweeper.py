@@ -92,12 +92,15 @@ class Minesweeper:
 
         try:
             action, x, y = content.split(',')
-            pos = (int(x) - 1)*10 + int(y) - 1
-            await message.delete()
+            if 11 > int(x) > 0 and 11 > int(y) > 0:
+                pos = (int(x) - 1)*10 + int(y) - 1
+                await message.delete()
+            else:
+                return await self.loop(init)
         except:
             return await self.loop(init)
 
-        if init:
+        if init or self.sol is None:
             self.create_grid()
             while self.sol[pos] != self.emotes[0]:
                 self.create_grid()
