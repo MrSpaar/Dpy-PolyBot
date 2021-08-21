@@ -110,11 +110,6 @@ class Minesweeper:
             self.embed.color = 0xe74c3c
 
             return await self.show(self.sol)
-        if self.blank not in self.cur and self.cur.count(self.flag) == 25:
-            self.embed.set_author(name='Partie gagnée !')
-            self.embed.color = 0xf1c40f
-
-            return await self.show(self.sol)
 
         if action == 'f':
             self.cur[pos] = self.flag
@@ -122,6 +117,12 @@ class Minesweeper:
             self.cur[pos] = self.sol[pos]
             if self.cur[pos] == self.emotes[0]:
                 self.reveal_near(pos)
+
+        if self.blank not in self.cur and self.cur.count(self.flag) == 25:
+            self.embed.set_author(name='Partie gagnée !')
+            self.embed.color = 0xf1c40f
+
+            return await self.show(self.sol)
 
         await self.show(self.cur)
         await self.loop()
