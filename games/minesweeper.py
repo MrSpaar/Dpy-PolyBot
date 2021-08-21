@@ -13,7 +13,7 @@ class Minesweeper:
         self.emotes = [
             '<:0_:876396436630159401>', '<:1_:876385590055149629>', '<:2_:876385590038376448>',
             '<:3_:876385589832863764>', '<:4_:876385588872359936>', '<:5_:876385588700405761>',
-            '<:6_:876385587479863346>'
+            '<:6_:878585152031305798>', '<:7_:878585151838359603>', '<:8_:878582284012376075>'
         ]
 
         self.mine, self.flag, self.blank = [
@@ -95,7 +95,7 @@ class Minesweeper:
             pos = (int(x) - 1)*10 + int(y) - 1
             await message.delete()
         except:
-            return await self.loop()
+            return await self.loop(init)
 
         if init:
             self.create_grid()
