@@ -1,4 +1,4 @@
-from discord import Embed, Member, AuditLogAction
+from discord import Embed, Member
 from discord.ext import commands
 from discord.utils import get
 
@@ -74,7 +74,8 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        if message.embeds or message.author.bot or message.channel.id == 840555556707237928 or len(message.content) == 1:
+        if message.embeds or message.author.bot or message.channel.id == 840555556707237928 or len(message.content) == 1 or \
+           (len(message.content) in [5, 6, 7] and message.content.count(',') == 2):
             return
 
         flags = [(now(utc=True)-message.created_at).total_seconds() <= 20 and message.mentions and message.content and message.attachments,
