@@ -10,7 +10,7 @@ class Hangman:
         self.message = None
         self.embed = None
 
-        self.word = choice([ligne.strip() for ligne in open('wordlist.txt')])
+        self.word = choice([ligne.strip() for ligne in open('wordlist.txt', encoding='latin-1')])
         self.normalized = normalize_string(self.word)
         self.guess = ['-']*len(self.word)
         self.lives, self.errors = 5, []
