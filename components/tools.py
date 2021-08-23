@@ -1,4 +1,5 @@
 from discord.ext import commands
+from discord.utils import get
 
 from datetime import datetime, timedelta
 from unicodedata import normalize
@@ -27,11 +28,26 @@ def now(utc=False):
 
 def has_higher_perms():
     async def extended_check(ctx):
-        if not ctx.message.mentions:
+        args = ctx.message.content.split()
+        member = get(ctx.guild.members, id=int(args[1].strip('<@!>')))
+
+        if not member:
             raise commands.MissingRequiredArgument(Parameter('member', Parameter.POSITIONAL_ONLY))
 
-        if ctx.author.top_role > ctx.message.mentions[0].top_role:
-            return True
+        author_perms = ctx.author.guild_permissions
+        member_perms = member.guild_permissions
 
-        raise commands.MissingPermissions('')
+        if author_perms.administrator and not member_perms.administrator:
+            return True
+        elif author_perms.manage_guild and not member_perms.manage_guild:
+            return True
+        elif author_perms.ban_members and not member_perms.ban_members:
+            return True
+        elif author_perms.kick_members and not member_perms.kick_members:
+            return True
+        elif author_perms.manage_messages and not member_perms.manage_messages:
+            return True
+        else:
+            raise commands.MissingPermissions('')
+
     return commands.check(extended_check)

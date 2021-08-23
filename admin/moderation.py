@@ -94,7 +94,7 @@ class Moderation(commands.Cog, description='admin'):
         description='Redonner la parole à un membre'
     )
     @has_higher_perms()
-    @commands.has_permissions(manage_permissions=True)
+    @commands.has_permissions(manage_messages=True)
     async def unmute(self, ctx, member: Member):
         role, _ = await self.fetch_settings(ctx.guild)
         if role not in member.roles:
