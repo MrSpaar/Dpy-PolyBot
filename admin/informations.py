@@ -2,6 +2,7 @@ from discord import Embed, Status, Member, Role, TextChannel
 from discord.ext import commands
 
 from datetime import datetime
+from time import mktime
 
 
 class Informations(commands.Cog, description='admin'):
@@ -17,14 +18,7 @@ class Informations(commands.Cog, description='admin'):
     async def serverinfo(self, ctx):
         guild = ctx.guild
         channels = f'{len(guild.text_channels)} textuels et {len(guild.voice_channels)} vocaux'
-
-        try:
-            since = str(datetime.now() - guild.created_at).replace('days', 'jours').split(', ')
-            since = f"{since[0]} et {since[1].split(':')[0]} heures"
-        except:
-            since = str(datetime.now() - guild.created_at).split('.')[0]
-
-        creation = guild.created_at.strftime('%d/%m/%Y')
+        creation = int(mktime(guild.created_at.timetuple()))
 
         bots = [member for member in guild.members if member.bot]
         online = len([1 for member in guild.members if member.status != Status.offline])
@@ -32,7 +26,7 @@ class Informations(commands.Cog, description='admin'):
         embed = (Embed(description=guild.description if guild.description else '', color=0x546e7a)
                  .add_field(name='Membres', value=f'```{guild.member_count - len(bots)} ({online} en ligne)```')
                  .add_field(name='Bots', value=f'```{len(bots)}```')
-                 .add_field(name='Création', value=f"```{creation} ({since})```", inline=False)
+                 .add_field(name='Création', value=f"<t:{creation}:D> (<t:{creation}:R>)", inline=False)
                  .add_field(name='Owner', value=f'```{guild.owner.display_name}```')
                  .add_field(name='Région', value=f'```{str(guild.region).title()}```')
                  .add_field(name='ID', value=f'```{guild.id}```', inline=False)
@@ -50,8 +44,10 @@ class Informations(commands.Cog, description='admin'):
     @commands.has_permissions(manage_messages=True)
     async def userinfo(self, ctx, member: Member = None):
         member = member or ctx.author
-        flags = [str(f)[10:].replace('_', ' ').title() for f in member.public_flags.all()]
-        flags = ', '.join(flags) if flags else 'Pas de flags'
+        activity = getattr(member.activity, 'name', 'Rien')
+
+        since = int(mktime(member.joined_at.timetuple()))
+        creation = int(mktime(member.created_at.timetuple()))
 
         status = {
             'online': 'En ligne',
@@ -60,28 +56,20 @@ class Informations(commands.Cog, description='admin'):
             'idle': 'Absent',
             'dnd': 'Ne pas déranger'
         }
-        activity = member.activity.name if member.activity and member.activity.name else "Rien"
-
-        since = member.joined_at.strftime('%d/%m/%Y')
-        creation = member.created_at.strftime("%d/%m/%Y")
-
-        try:
-            joined = str(datetime.now() - member.joined_at).replace('days', 'jours').split(', ')
-            joined = f"{joined[0]} et {joined[1].split(':')[0]} heures"
-        except:
-            joined = str(datetime.now() - member.joined_at).split('.')[0]
 
         embed = (Embed(color=0x1abc9c)
                  .add_field(name='Pseudo', value=f'```{member}```')
                  .add_field(name='Surnom', value=f'```{member.display_name}```')
-                 .add_field(name='Membre depuis', value=f"```{since} ({joined})```", inline=False)
-                 .add_field(name='Création du compte', value=f'```{creation}```')
-                 .add_field(name='Status', value=f'```{status[str(member.status)]}```')
-                 .add_field(name='Activité en cours', value=f"""```{activity}```""")
-                 .add_field(name='ID', value=f'```{member.id}```', inline=False)
-                 .add_field(name='Role principal', value=f'```{member.top_role}```')
-                 .add_field(name='Flags', value=f"```{flags}```")
-                 .set_author(name=f"Informations de membre", icon_url=member.avatar_url))
+                 .add_field(name='Activité en cours', value=f'```{status[str(member.status)]} - {activity}```', inline=False)
+                 .add_field(name='Membre depuis', value=f'<t:{since}:R>')
+                 .add_field(name='Création du compte', value=f'<t:{creation}:R>')
+                 .add_field(name='Role principal', value=f'```{member.top_role}```', inline=False)
+                 .set_author(name="Informations de membre", icon_url=member.avatar_url))
+
+        flags = [str(f)[10:].replace('_', ' ').title() for f in member.public_flags.all()]
+        if flags:
+            flags = ', '.join(flags) if flags else 'Pas de flags'
+            embed.add_field(name='Flags', value=f"```{flags}```")
 
         if member.premium_since:
             since = member.premium_since.strftime("%d/%m/%Y")

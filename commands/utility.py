@@ -121,6 +121,13 @@ class Utilitaire(commands.Cog, description='commands'):
     async def repo(self, ctx):
         await ctx.send('https://github.com/MrSpaar/PolyBot')
 
+    @commands.command(
+        brief='',
+        usage='',
+        description='Afficher le format pour envoyer du code',
+    )
+    async def code(self, ctx):
+        await ctx.send('\`\`\`py\nTon code\n\`\`\`')
 
 def setup(bot):
     bot.add_cog(Utilitaire(bot))

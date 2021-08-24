@@ -7,6 +7,17 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(
+        aliases=['compute'],
+        brief='3*log(50)',
+        usage='<expression>',
+        description='Faire des calculs'
+    )
+    async def calcul(self, ctx, *, expr):
+        query = expr.replace('+', '%2B').replace('x', '*')
+        result = await get_json(f"https://api.mathjs.org/v4/?expr={query}", json=False)
+        await ctx.send(f':pager: `{expr}` = `{result}`')
+
     @staticmethod
     def base_conv(k, b, n):
         def to_base(num, b, numerals='0123456789abcdefghijklmnopqrstuvwxyxABCDEFGHIJKLMNOPQRSTUVWXYZ'):
@@ -48,17 +59,6 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
     )
     async def hexadecimal(self, ctx, *, arg):
         await ctx.send(f'**⚙️ Conversion hexadécimale :** `{arg.encode().hex()}`')
-
-    @commands.command(
-        aliases=['compute'],
-        brief='3*log(50)',
-        usage='<expression>',
-        description='Faire des calculs'
-    )
-    async def calcul(self, ctx, *, expr):
-        query = expr.replace('+', '%2B').replace('x', '*')
-        result = await get_json(f"https://api.mathjs.org/v4/?expr={query}", json=False)
-        await ctx.send(f':pager: `{expr}` = `{result}`')
 
 
 def setup(bot):

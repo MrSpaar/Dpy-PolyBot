@@ -9,20 +9,16 @@ bot = Bot(intents=Intents.all(), case_insensitive=True,
 
 for directory in ['admin', 'events', 'commands']:
     for file in listdir(directory):
-        if file == '__pycache__' or (file in ['errors.py', 'logs.py' and bot.debug]):
-            continue
-
-        bot.load_extension(f'{directory}.{file[:-3]}')
+        if file not in ['__pycache__', 'logs.py', 'errors.py']:
+            bot.load_extension(f'{directory}.{file[:-3]}')
 
 @bot.command()
 @commands.is_owner()
 async def reload(ctx):
     for directory in ['admin', 'events', 'commands']:
         for file in listdir(directory):
-            if file == '__pycache__' or (file in ['errors.py', 'logs.py' and bot.debug]):
-                continue
-
-            bot.reload_extension(f'{directory}.{file[:-3]}')
+            if file not in ['__pycache__', 'logs.py', 'errors.py']:
+                bot.reload_extension(f'{directory}.{file[:-3]}')
     await ctx.send('Tous les modules ont été relancé')
 
 bot.run(bot.token, bot=True, reconnect=True)
