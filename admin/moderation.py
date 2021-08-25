@@ -50,10 +50,10 @@ class Moderation(commands.Cog, description='admin'):
                  .add_field(name='Raison', value=f"```{reason or 'Pas de raison'}```", inline=False)
                  .set_author(name=f'{member} a été mute', icon_url=member.avatar_url))
 
-        await member.add_roles(role)
-        await ctx.send(embed=embed)
         if logs:
             await logs.send(embed=embed)
+        await member.add_roles(role)
+        await ctx.send(embed=embed)
 
         try:
             await member.send(f"🔇 Tu es mute jusqu'au {date.strftime('%d/%m/%Y à %H:%M:%S')} sur **{ctx.guild.name}**" +

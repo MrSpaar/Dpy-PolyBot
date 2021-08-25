@@ -1,7 +1,6 @@
 from discord import Embed, Status, Member, Role, TextChannel
 from discord.ext import commands
 
-from datetime import datetime
 from time import mktime
 
 
