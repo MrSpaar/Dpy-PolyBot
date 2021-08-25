@@ -45,7 +45,7 @@ Ecrivez `!set channel <#channel>` pour définir le salon où le bot fait ses ann
 Ce module est en cours d'affinage mais vous permet de "parler" avec PolyBot :
 ![Example](https://i.imgur.com/V1Eikkc.png)
 Pour obtenir une clé API, vous devrez rejoindre la [liste d'attente OpenAI](https://share.hsforms.com/1Lfc7WtPLRk2ppXhPjcYY-A4sk30). <br>
-⚠️ Les réponses peuvent être répétitives ou imprécises.
+⚠️ Les réponses peuvent être répétitives ou imprécises. Je ne suis en aucun cas responsable des réponses données par le bot.
 
 ### • ⏲️ [Channels temporaires](https://github.com/MrSpaar/PolyBot/blob/master/events/channels.py)
 
