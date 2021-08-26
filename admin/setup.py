@@ -4,7 +4,6 @@ from discord.utils import get
 
 from typing import Union
 
-
 class Setup(commands.Cog, description='admin'):
     def __init__(self, bot):
         self.bot = bot
@@ -24,10 +23,13 @@ class Setup(commands.Cog, description='admin'):
         }
 
         if key not in settings:
-            return await ctx.send(f"❌ Catégorie invalide : {', '.join(settings.keys())}")
+            embed = Embed(color=0xe74c3c, description=f"❌ Catégorie invalide : {', '.join(settings.keys())}")
+            return await ctx.send(embed=embed)
 
         await self.bot.db.settings.update({'guild_id': ctx.guild.id}, {'$set': {key: value.id}})
-        await ctx.send(f"{settings[key]} modifié ({value.mention})")
+
+        embed = Embed(color=0x2ecc71, description=f"{settings[key]} modifié ({value.mention})")
+        await ctx.send(embed=embed)
 
     @commands.command(
         brief='',
@@ -37,15 +39,12 @@ class Setup(commands.Cog, description='admin'):
     @commands.has_permissions(administrator=True)
     async def settings(self, ctx):
         settings = await self.bot.db.settings.find({'guild_id': ctx.guild.id})
-        mute = get(ctx.guild.roles, id=settings['mute'])
-        channel = get(ctx.guild.text_channels, id=settings['channel'])
-        logs = get(ctx.guild.text_channels, id=settings['logs'])
 
-        embed = (Embed(color=0x3498db)
-                 .add_field(name='Channel des logs', value=f'```#{logs}```')
-                 .add_field(name='Channel du bot', value=f'```#{channel}```')
-                 .add_field(name='Rôle des mutés', value=f'```@{mute}```'))
+        channel = getattr(get(ctx.guild.text_channels, id=settings['channel']), 'mention', 'pas défini')
+        logs = getattr(get(ctx.guild.text_channels, id=settings['logs']), 'mention', 'pas défini')
+        mute = getattr(get(ctx.guild.roles, id=settings['mute']), 'mention', 'pas défini')
 
+        embed = Embed(color=0x3498db, description=f"💬 Bot : {channel}\n📟 Logs : {logs}\n🔇 Mute : {mute}")
         await ctx.send(embed=embed)
 
     @commands.Cog.listener()
@@ -73,13 +72,6 @@ class Setup(commands.Cog, description='admin'):
         embed = (Embed(description=f"Owner : {guild.owner.mention}\nNom : {guild.name}\nID : `{guild.id}`", color=0xe74c3c)
                  .set_author(name="J'ai quitté un serveur", icon_url=guild.icon_url))
         await owner.send(embed=embed)
-
-    @commands.command()
-    @commands.is_owner()
-    async def give_roles(self, ctx):
-        roles = [get(ctx.guild.roles, id=role_id) for role_id in [878280619363282996, 878277244873768970]]
-        for member in ctx.guild.members:
-            await member.add_roles(*roles)
 
 
 def setup(bot):

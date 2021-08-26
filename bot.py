@@ -5,11 +5,11 @@ from os import listdir
 from components.cls import Bot
 
 bot = Bot(intents=Intents.all(), case_insensitive=True,
-          help_command=None, activity=Game(name=f'!help'), debug=True)
+          help_command=None, activity=Game(name=f'!help'), debug=False)
 
 for directory in ['admin', 'events', 'commands']:
     for file in listdir(directory):
-        if file not in ['__pycache__', 'logs.py', 'errors.py']:
+        if file != '__pycache__' and not (file in ['errors.py', 'logs.py'] and bot.debug):
             bot.load_extension(f'{directory}.{file[:-3]}')
 
 @bot.command()
@@ -17,7 +17,7 @@ for directory in ['admin', 'events', 'commands']:
 async def reload(ctx):
     for directory in ['admin', 'events', 'commands']:
         for file in listdir(directory):
-            if file not in ['__pycache__', 'logs.py', 'errors.py']:
+            if file != '__pycache__' and not (file in ['errors.py', 'logs.py'] and bot.debug):
                 bot.reload_extension(f'{directory}.{file[:-3]}')
     await ctx.send('Tous les modules ont été relancé')
 

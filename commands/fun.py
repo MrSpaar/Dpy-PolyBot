@@ -77,13 +77,17 @@ class Fun(commands.Cog, description='commands'):
         result = choice(['Pile', 'Face'])
 
         if arg.title() not in ['Pile', 'Face']:
-            desc = '❌ Tu dois entrer "pile" ou "face"!'
+            color = 0xe74c3c
+            desc = '❌ Tu dois entrer `pile` ou `face` !'
         elif arg.title() in result:
+            color = 0xf1c40f
             desc = f'🪙 {result} ! Tu as gagné.'
         else:
+            color = 0xe74c3c
             desc = f'🪙 {result} ! Tu as perdu.'
 
-        await ctx.send(desc)
+        embed = Embed(color=color, description=desc)
+        await ctx.send(embed=embed)
 
     @commands.command(
         brief='2d6+5d20+20',
@@ -101,7 +105,9 @@ class Fun(commands.Cog, description='commands'):
             rolls += [randint(1, int(faces)) for _ in range(int(n))]
 
         rolls_str = ' + '.join([str(n) for n in rolls])
-        await ctx.send(f"**🎲 Résultat du lancé :** {rolls_str} = **{sum(rolls)}**")
+
+        embed = Embed(color=0xf1c40f, description=f"**🎲 Résultat du lancé :** {rolls_str} = **{sum(rolls)}**")
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

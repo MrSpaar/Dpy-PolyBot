@@ -14,13 +14,6 @@ async def get_json(link, headers=None, json=True):
 def normalize_string(s):
     return normalize(u'NFKD', s).encode('ascii', 'ignore').decode('utf8')
 
-def parse_time(time):
-    units = {"s": [1, 'secondes'], "m": [60, 'minutes'], "h": [3600, 'heures']}
-    duration = int(time[:-1]) * units[time[-1]][0]
-    time = f"{time[:-1]} {units[time[-1]][1]}"
-
-    return duration, time
-
 def now(utc=False):
     if utc:
         return datetime.utcnow()

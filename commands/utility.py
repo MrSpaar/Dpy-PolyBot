@@ -14,29 +14,28 @@ class Utilitaire(commands.Cog, description='commands'):
     @commands.command(
         aliases=['ahelp'],
         brief='utilitaire',
-        usage='<catégorie ou commande (optionnel)>',
+        usage='<argument>',
         description='Faire apparaître ce menu'
     )
-    async def help(self, ctx, command=''):
-        if command := get(self.bot.commands, name=command):
-            embed = (Embed(color=0x3498db)
-                     .add_field(name='Description', value=f'```{command.description}```')
-                     .add_field(name='Utilisation',
-                                value=f'```{self.bot.command_prefix}{command.name} {command.usage}```', inline=False)
-                     .add_field(name='Exemple', value=f'```{self.bot.command_prefix}{command.name} {command.brief}```')
-                     .set_author(name=f"Menu d'aide • {self.bot.command_prefix}{command}"))
+    async def help(self, ctx, arg=''):
+        embed = Embed(color=0x3498db, title='Aide - ')
+        perm = 'admin' if ctx.invoked_with == 'ahelp' else 'commands'
 
-            if command.aliases:
-                embed.add_field(name='Alias', value=f'```{", ".join(command.aliases)}```')
+        if command := get(self.bot.commands, name=arg):
+            embed.title += command.name
+            embed.description = f'{command.description}\n\n' + \
+                                f'🙋 Utilisation : `{self.bot.command_prefix}{command.name} {command.usage}`\n' + \
+                                f'👉 Exemple : `{self.bot.command_prefix}{command.name} {command.brief}`'
+        elif cog := [cog for cog in self.bot.cogs.values() if cog.description == perm and arg == cog.qualified_name.lower()]:
+            cog, = cog
+            embed.title += cog.qualified_name
+            embed.description = '\n'.join([f'`{self.bot.command_prefix}{command.name}` : {command.description}' for command in cog.get_commands()])
+            embed.description += f'\n\nDétail : `{self.bot.command_prefix}help commande`'
         else:
-            embed = (Embed(color=0x3498db)
-                     .set_author(name="Menu d'aide", icon_url=ctx.guild.icon_url)
-                     .set_footer(text=f"{self.bot.command_prefix}help <commande> pour plus d'informations"))
+            cogs = [cog.qualified_name for cog in self.bot.cogs.values() if cog.description == perm]
 
-            cat = 'admin' if ctx.invoked_with == 'ahelp' else 'commands'
-            for cog in [cog for cog in self.bot.cogs.values() if cog.description == cat]:
-                cmds = [command.name for command in cog.get_commands()]
-                embed.add_field(name=cog.qualified_name, value=f"```{', '.join(cmds)}```", inline=False)
+            embed.title += 'Modules'
+            embed.description = f'Les modules disponibles :\nㅤ• ' + '\n\ㅤ• '.join(cogs) + '\n\nDétail : `!help catégorie`'
 
         await ctx.send(embed=embed)
 
@@ -109,9 +108,11 @@ class Utilitaire(commands.Cog, description='commands'):
     async def traduire(self, ctx, lang, *, text):
         try:
             text = TextBlob(text).translate(to=lang)
-            await ctx.send(f'📚 **Traduction :**\n```{text}```')
+            embed = Embed(color=0x3498db, description=f'📚 {text}')
         except:
-            await ctx.send('❌ Texte traduit identique au texte initial, langue probablement invalide')
+            embed = Embed(color=0xe74c3c, description='❌ Traduction identique au texte initial, langue probablement invalide')
+
+        await ctx.send(embed=embed)
 
     @commands.command(
         brief='',

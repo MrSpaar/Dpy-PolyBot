@@ -1,3 +1,4 @@
+from discord import Embed
 from discord.ext import commands
 
 from components.tools import get_json
@@ -16,7 +17,9 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
     async def calcul(self, ctx, *, expr):
         query = expr.replace('+', '%2B').replace('x', '*')
         result = await get_json(f"https://api.mathjs.org/v4/?expr={query}", json=False)
-        await ctx.send(f':pager: `{expr}` = `{result}`')
+
+        embed = Embed(color=0x3498db, description=f':pager: `{expr}` = `{result}`')
+        await ctx.send(embed=embed)
 
     @staticmethod
     def base_conv(k, b, n):
@@ -28,14 +31,15 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
     @commands.command(
         brief='16 f',
         usage='<base> <nombre>',
-        description="Convertir en base n depuis n'importe quelle base (uniquement des nombres, base 52 maximum)"
+        description="Convertir un nombre d'une base à une autre base (base 62 maximum)"
     )
     async def base(self, ctx, from_base: int, to_base: int, num: str):
-        if from_base > 62 or to_base > 52:
+        if from_base > 62 or to_base > 62:
             return await ctx.send('❌ Base trop grande (base 52 maximum)')
 
         conv = self.base_conv(num, from_base, to_base)
-        await ctx.send(f'**⚙️ Convertion base {from_base} en base {to_base} :** `{conv}`')
+        embed = Embed(color=0x3498db, description=f'⚙️ `{num}` en base {to_base} : `{conv}`')
+        await ctx.send(embed=embed)
 
     @commands.command(
         aliases=['bin', 'binary'],
@@ -49,7 +53,8 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         except:
             conv = [bin(s)[2:] for s in bytearray(arg, 'utf-8')]
 
-        await ctx.send(f'**⚙️ Conversion binaire :** `{"".join(conv)}`')
+        embed = Embed(color=0x3498db, description=f'⚙️ Binaire : `{"".join(conv)}`')
+        await ctx.send(embed=embed)
 
     @commands.command(
         aliases=['hex', 'hexa'],
@@ -58,7 +63,8 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         description='Convertir du texte en hexadécimal'
     )
     async def hexadecimal(self, ctx, *, arg):
-        await ctx.send(f'**⚙️ Conversion hexadécimale :** `{arg.encode().hex()}`')
+        embed = Embed(color=0x3498db, description=f'⚙️ Hexadécimal : `{arg.encode().hex()}`')
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

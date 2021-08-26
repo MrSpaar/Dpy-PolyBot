@@ -16,10 +16,7 @@ class Pin(commands.Cog):
 
         if str(payload.emoji) == '📌':
             channel = self.bot.get_channel(755477957849382962)
-            embed = (Embed(color=0xf1c40f)
-                     .add_field(name='ID', value=f'```{message.id}```')
-                     .add_field(name='Channel ID', value=f'```{message.channel.id}```')
-                     .add_field(inline=False, name='Message', value=f'[```{message.clean_content}```]({message.to_reference().jump_url})')
+            embed = (Embed(color=0xf1c40f, description=f'💬 [{message.clean_content}]({message.to_reference().jump_url})')
                      .set_author(name=f'{payload.member.display_name} veut épingler un message', icon_url=payload.member.avatar_url))
 
             message = await channel.send(embed=embed)

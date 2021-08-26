@@ -84,6 +84,10 @@ class Musique(commands.Cog, description='commands'):
             self.song_queue.append(song)
             await self.edit_message()
 
+    async def different_channel(self, ctx):
+        embed = Embed(color=0xe74c3c, description="❌ Tu n'es pas dans le même channel que moi")
+        await ctx.send(embed=embed)
+
     @commands.command(
         brief='',
         usage='',
@@ -93,14 +97,12 @@ class Musique(commands.Cog, description='commands'):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if ctx.author not in voice.channel.members:
-            return await ctx.send("❌ Tu n'es pas dans le même channel que moi")
+            return await self.different_channel(ctx)
         if voice.is_connected():
             await ctx.message.delete()
             if voice.is_playing():
-                await ctx.send('⏸️ Vidéo en pause', delete_after=5.0)
                 voice.pause()
             else:
-                await ctx.send('⏯️ Vidéo reprise', delete_after=5.0)
                 voice.resume()
 
     @commands.command(
@@ -112,10 +114,9 @@ class Musique(commands.Cog, description='commands'):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if ctx.author not in voice.channel.members:
-            return await ctx.send("❌ Tu n'es pas dans le même channel que moi")
+            return await self.different_channel(ctx)
         if voice.is_playing():
             await ctx.message.delete()
-            await ctx.send('⏭️ Musique skippée', delete_after=5.0)
             voice.stop()
 
     @commands.command(
@@ -127,7 +128,7 @@ class Musique(commands.Cog, description='commands'):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if ctx.author not in voice.channel.members:
-            return await ctx.send("❌ Tu n'es pas dans le même channel que moi")
+            return await self.different_channel(ctx)
         if voice.is_playing():
             del self.song_queue[num]
             await ctx.message.delete()
@@ -142,7 +143,7 @@ class Musique(commands.Cog, description='commands'):
     async def leave(self, ctx):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if ctx.author not in voice.channel.members:
-            return await ctx.send("❌ Tu n'es pas dans le même channel que moi")
+            return await self.different_channel(ctx)
 
         self.song_queue = []
         voice.stop()

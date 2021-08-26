@@ -27,8 +27,8 @@ class Recherche(commands.Cog, description='commands'):
         }
 
         resp = (await get_json(query, headers))['streams']
-        embed = (Embed(title=resp[0]['game'], color=0x3498db)
-                 .set_author(name='Twitch', icon_url='https://i.imgur.com/gArdgyC.png'))
+        embed = (Embed(color=0x3498db)
+                 .set_author(name=f"Twitch - {resp[0]['game']}", icon_url='https://i.imgur.com/gArdgyC.png'))
 
         func = lambda s: any(key in s['channel']['status'].lower() for key in keys)
         streams = resp[:10] if not keys else filter(func, resp[:100])
@@ -68,10 +68,10 @@ class Recherche(commands.Cog, description='commands'):
         query = f'https://fr.wikipedia.org/w/api.php?format=json&action=query&prop=extracts|pageimages&exintro&explaintext&redirects=1&titles={title}'
         resp = dict(await get_json(query))['query']['pages']
         data = next(iter(resp.values()))
-        desc = data['extract'] if len(data['extract']) < 2045 else f"{data['extract'][:2045]}..."
+        desc = f"{data['extract']} [Lire l'article]({url})"
 
-        embed = (Embed(title=f'{title} - Wikipedia', description=desc, url=url, color=0x546e7a)
-                 .set_author(name='Wikipedia', icon_url='https://i.imgur.com/nDTQgbf.png')
+        embed = (Embed(color=0x546e7a, description=desc)
+                 .set_author(name=f'Wikipedia - {title}', icon_url='https://i.imgur.com/nDTQgbf.png')
                  .set_thumbnail(url=data['thumbnail']['source'] if 'thumbnail' in data.keys() else ''))
 
         await ctx.send(embed=embed)
@@ -92,12 +92,11 @@ class Recherche(commands.Cog, description='commands'):
         diff = f"{datetime.strptime(anime['startDate'], '%Y-%m-%d').strftime('%d/%m/%Y')} → {end}"
         synopsis = TextBlob(anime['synopsis']).translate(to='fr')
 
-        embed = (Embed(title=anime['titles']['en_jp'], description=synopsis, url=url, color=0x546e7a)
+        embed = (Embed(color=0x546e7a, description=f'{synopsis}')
                  .add_field(name='🥇 Score', value=f"{anime['averageRating']}/100")
                  .add_field(name='🖥️ Épisodes', value=f"{ep} ({h:d}h{m:02d}min)")
                  .add_field(name='📅 Diffusion', value=diff)
-                 .set_author(name='Anime', icon_url='https://avatars.githubusercontent.com/u/7648832?s=280&v=4')
-                 .set_thumbnail(url=anime['posterImage']['tiny']))
+                 .set_author(name=f"Anime - {anime['titles']['en_jp']}", icon_url=anime['posterImage']['tiny']))
 
         await ctx.send(embed=embed)
 

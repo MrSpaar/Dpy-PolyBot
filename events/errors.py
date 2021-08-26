@@ -1,4 +1,5 @@
 from discord import HTTPException
+from discord.embeds import Embed
 from discord.ext import commands
 
 
@@ -25,7 +26,7 @@ class Erreurs(commands.Cog):
                 'string index': '❌ Erreur dans la conversion',
                 'list index': "❌ Recherche invalide, aucun résultat trouvé",
                 'UnknownObjectException': "❌ Recherche invalide, aucun résultat trouvé",
-                'not enough values to unpack': "❌ Lancer invalide, exemples de lancers valides : `d6` `2d6` `2d6+3d9` `d6+20`",
+                'not enough values to unpack': "❌ Lancer invalide",
                 "KeyError: 'list'": "❌ Ville introuvable ou inexistante",
                 'This video may be': "❌ Restriction d'âge, impossible de jouer la vidéo",
                 'No video formats found': "❌ Aucun format vidéo trouvé, impossible de jouer la vidéo",
@@ -46,10 +47,11 @@ class Erreurs(commands.Cog):
         if isinstance(error_entry, dict):
             raise error
 
-        if ctx.command and ctx.command.brief:
-            error_entry += f"\n❔ Exemple d'utilisation : `{self.bot.command_prefix}{ctx.command.name} {ctx.command.brief}`"
+        if ctx.command and ctx.command.brief and not isinstance(error, commands.MissingPermissions):
+            error_entry += f"\nExemple d'utilisation : `{self.bot.command_prefix}{ctx.command.name} {ctx.command.brief}`"
 
-        await ctx.send(error_entry)
+        embed = Embed(color=0xe74c3c, description=error_entry)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

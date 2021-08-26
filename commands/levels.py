@@ -20,7 +20,7 @@ class Niveaux(commands.Cog, description='commands'):
             progress = f'{round(progress/1000, 1)}k' if int(progress/1000) else progress
             needed = f'{round(needed/1000, 1)}k' if int(needed/1000) else needed
 
-        return f"{'🟩'*p}{'⬛' * (n-p)} {progress} / {needed} xp"
+        return f"{'🟩'*p}{'⬛' * (n-p)} {progress} / {needed}"
 
     @staticmethod
     def get_page(members, entries, start=1):
@@ -33,7 +33,7 @@ class Niveaux(commands.Cog, description='commands'):
             xp = f'{round(xp / 1000, 1)}k' if int(xp / 1000) else xp
 
             field1 += f'**{i}.** {member.display_name}\n'
-            field2 += f'{level} ({xp} xp)\n'
+            field2 += f'{level} ({xp})\n'
             field3 += f'{bar}\n'
 
         return ('Noms', field1), ('Niveau', field2), ('Progrès', field3)
