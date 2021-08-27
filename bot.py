@@ -1,5 +1,4 @@
 from discord import Game, Intents
-from discord.ext import commands
 
 from os import listdir
 from components.cls import Bot

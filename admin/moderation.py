@@ -1,15 +1,15 @@
-from discord import Member, Embed, Permissions, PermissionOverwrite, Color
-from discord.ext import commands
+from discord import Member, Embed, Permissions, PermissionOverwrite
+from discord.ext import commands, tasks
 from discord.utils import get
-from textblob import blob
 
 from components.tools import has_higher_perms, now
-from datetime import timedelta
+from datetime import datetime, timedelta
 from time import mktime
 
 class Moderation(commands.Cog, description='admin'):
     def __init__(self, bot):
         self.bot = bot
+        self.unmute_loop.start()
 
     async def fetch_settings(self, guild):
         settings = await self.bot.db.settings.find({'guild_id': guild.id})
@@ -31,7 +31,7 @@ class Moderation(commands.Cog, description='admin'):
         usage='<membre> <durée> <raison (optionnel)>',
         description='Rendre un membre muet'
     )
-    #@has_higher_perms()
+    @has_higher_perms()
     @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx, member: Member, time=None):
         role, _ = await self.fetch_settings(ctx.guild)
@@ -55,41 +55,23 @@ class Moderation(commands.Cog, description='admin'):
         except:
             embed = Embed(color=0xe74c3c, description='❌ La cible a plus de permissions que moi')
 
-        try:
-            date = now() + timedelta(days=1000)
-            unix = int(mktime(date.timetuple()))
-            embed = Embed(color=0x3498db, description=f'🔇 Tu as été mute sur **{ctx.guild.name}**.\nTu pourras écrire `!cancel` <t:{unix}:R> pour te unmute.')
-
-            await member.send(embed=embed)
-        except:
-            pass
-
-    @commands.command(
-        brief='',
-        usage='',
-        description="Se unmute une fois qu'un mute est terminé"
-    )
-    async def cancel(self, ctx):
-        entries = await self.bot.db.pending.find({'type': 'mute', 'id': ctx.author.id})
+    @tasks.loop(minutes=1)
+    async def unmute_loop(self):
+        await self.bot.wait_until_ready()
+        entries = await self.bot.db.pending.find({'end': {'$lt': now()}})
         if not entries:
-            embed = Embed(color=0xe74c3c, description="❌ Tu n'es mute sur aucun de mes serveurs")
-            return await ctx.send(embed=embed)
+            return
 
-        entries = [entries] if not isinstance(entries, list) else entries
+        entries = entries if isinstance(entries, list) else [entries]
         for entry in entries:
             guild = self.bot.get_guild(entry['guild_id'])
-
-            if now() <= entry['end']:
-                continue
+            settings = await self.bot.db.settings.find({'guild_id': entry['guild_id']})
 
             member = guild.get_member(entry['id'])
-            role, _ = await self.fetch_settings(guild)
+            role = get(guild.roles, id=settings['mute'])
 
             await member.remove_roles(role)
             await self.bot.db.pending.delete(entry)
-
-            embed = Embed(color=0x2ecc71, description=f'✅ Tu as été unmute de **{guild.name}**')
-            await ctx.send(embed=embed)
 
     @commands.command(
         brief='@Antoine Grégoire',
