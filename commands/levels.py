@@ -26,6 +26,7 @@ class Niveaux(commands.Cog, description='commands'):
     def get_page(members, entries, start=1):
         field1, field2, field3 = '', '', ''
         for i, entry in enumerate(entries, start=start):
+            print(entry['id'])
             member = get(members, id=entry['id'])
             level, xp = entry['level'], entry['xp']
 
@@ -88,7 +89,7 @@ class Niveaux(commands.Cog, description='commands'):
             return
 
         embed, total = message.embeds[0], len(self.data)//10 + (len(self.data) % 10 > 0)
-        page = (int(embed.footer.text[-1]) + (-1 if emoji == '◀️' else 1)) % total or total
+        page = (int(embed.footer.text.split()[-1]) + (-1 if emoji == '◀️' else 1)) % total or total
 
         a, b = (1, 10) if page == 1 else (page*10 - 9, page*10)
         data, a = self.data[a-1:b], a or 1
