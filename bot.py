@@ -12,13 +12,4 @@ for directory in ['admin', 'events', 'commands']:
         if file != '__pycache__' and not (file in ['errors.py', 'logs.py'] and bot.debug):
             bot.load_extension(f'{directory}.{file[:-3]}')
 
-@bot.command()
-@commands.is_owner()
-async def reload(ctx):
-    for directory in ['admin', 'events', 'commands']:
-        for file in listdir(directory):
-            if file != '__pycache__' and not (file in ['errors.py', 'logs.py'] and bot.debug):
-                bot.reload_extension(f'{directory}.{file[:-3]}')
-    await ctx.send('Tous les modules ont été relancé')
-
 bot.run(bot.token, bot=True, reconnect=True)

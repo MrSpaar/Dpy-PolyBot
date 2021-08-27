@@ -3,6 +3,8 @@ from discord.ext import commands
 from discord.utils import get
 
 from typing import Union
+from os import listdir
+
 
 class Setup(commands.Cog, description='admin'):
     def __init__(self, bot):
@@ -45,6 +47,17 @@ class Setup(commands.Cog, description='admin'):
         mute = getattr(get(ctx.guild.roles, id=settings['mute']), 'mention', 'pas défini')
 
         embed = Embed(color=0x3498db, description=f"💬 Bot : {channel}\n📟 Logs : {logs}\n🔇 Mute : {mute}")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.is_owner()
+    async def reload(self, ctx):
+        for directory in ['admin', 'events', 'commands']:
+            for file in listdir(directory):
+                if file != '__pycache__' and not (file in ['errors.py', 'logs.py'] and self.bot.debug):
+                    self.bot.reload_extension(f'{directory}.{file[:-3]}')
+
+        embed = Embed(color=0x2ecc71, description='✅ Tous les modules ont été relancé')
         await ctx.send(embed=embed)
 
     @commands.Cog.listener()
