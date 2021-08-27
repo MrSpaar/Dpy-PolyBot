@@ -8,7 +8,7 @@ class Channels(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        entry = await self.bot.db.pending.find({'guild_id': member.guild.id, 'id': member.id})
+        entry = await self.bot.db.pending.find({'guild_id': member.guild.id, 'owner': member.id})
 
         if after.channel and 'Créer' in after.channel.name and not member.bot and not entry:
             if cat := after.channel.category:
@@ -17,7 +17,7 @@ class Channels(commands.Cog):
 
                 try:
                     await member.move_to(channel)
-                    await self.bot.db.pending.insert({'guild_id': member.guild.id, 'id': member.id, 'voc_id': channel.id, 'txt_id': text.id})
+                    await self.bot.db.pending.insert({'guild_id': member.guild.id, 'owner': member.id, 'voc_id': channel.id, 'txt_id': text.id})
                 except:
                     await channel.delete()
                     await text.delete()

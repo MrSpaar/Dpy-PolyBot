@@ -51,7 +51,7 @@ class Moderation(commands.Cog, description='admin'):
             await member.add_roles(role)
             embed = Embed(color=0x2ecc71, description=f'✅ {member.mention} a été mute {time}')
             await ctx.send(embed=embed)
-            await self.bot.db.pending.insert({'type': 'mute', 'guild_id': ctx.guild.id, 'id': member.id, 'end': date})
+            await self.bot.db.pending.insert({'guild_id': ctx.guild.id, 'id': member.id, 'end': date})
         except:
             embed = Embed(color=0xe74c3c, description='❌ La cible a plus de permissions que moi')
 
