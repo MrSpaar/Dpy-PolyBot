@@ -84,7 +84,7 @@ class Logs(commands.Cog):
 
         entry = [infos[i] for i, flag in enumerate(flags) if flag][0]
 
-        embed = Embed(color=entry['color'], description=f'{entry["emoji"]} {message.author.mention} a supprimé un message dans {message.channel.mention}:')
+        embed = Embed(color=entry['color'], description=f'{entry["emoji"]} Message de {message.author.mention} supprimé dans {message.channel.mention}:')
 
         if message.content:
             embed.description += f'\n\n> {message.content}'
