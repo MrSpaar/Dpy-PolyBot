@@ -8,14 +8,15 @@ PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-pri
 
 ### • 🧍 [Commandes utilisateur](https://github.com/MrSpaar/PolyBot/tree/master/commands)
 
-|                                       Category                                 |                      Commands                   |
-|--------------------------------------------------------------------------------|-------------------------------------------------|
-|[Fun](https://github.com/MrSpaar/PolyBot/blob/master/commands/fun.py)           | `chess` `hangman` `minesweeper` `toss` `roll`   |
-|[Musique](https://github.com/MrSpaar/PolyBot/blob/master/commands/music.py)     | `play` `pause` `skip` `remove` `leave`          |
-|[Recherche](https://github.com/MrSpaar/PolyBot/blob/master/commands/search.py)  | `twitch` `youtube` `wikipedia` `anime` `weather`|
-|[Utilitaire](https://github.com/MrSpaar/PolyBot/blob/master/commands/utility.py)| `help` `poll` `source` `pfp` `emoji` `translate`|
-|[Maths](https://github.com/MrSpaar/PolyBot/blob/master/commands/maths.py)       | `base` `binary` `hexadecimal` `compute`         |
-|[Niveaux](https://github.com/MrSpaar/PolyBot/blob/master/commands/levels.py)    | `rank` `levels`                                 |
+|                                          Category                                         |                      Commands                   |
+|-------------------------------------------------------------------------------------------|-------------------------------------------------|
+|[Fun](https://github.com/MrSpaar/PolyBot/blob/master/commands/fun.py)                      | `chess` `hangman` `minesweeper` `toss` `roll`   |
+|[Musique](https://github.com/MrSpaar/PolyBot/blob/master/commands/music.py)                | `play` `pause` `skip` `remove` `leave`          |
+|[Recherche](https://github.com/MrSpaar/PolyBot/blob/master/commands/search.py)             | `twitch` `youtube` `wikipedia` `anime` `weather`|
+|[Utilitaire](https://github.com/MrSpaar/PolyBot/blob/master/commands/utility.py)           | `help` `poll` `source` `pfp` `emoji` `translate`|
+|[Maths](https://github.com/MrSpaar/PolyBot/blob/master/commands/maths.py)                  | `base` `binary` `hexadecimal` `compute`         |
+|[Niveaux](https://github.com/MrSpaar/PolyBot/blob/master/commands/levels.py)               | `rank` `levels`                                 |
+|[Channels Temporaires](https://github.com/MrSpaar/PolyBot/blob/master/commands/channels.py)| `voc rename` `voc private` `voc owner           |`
 
 ### • 🔒 [Commandes admin](https://github.com/MrSpaar/PolyBot/tree/master/admin)
 

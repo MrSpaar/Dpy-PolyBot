@@ -9,7 +9,8 @@ from time import mktime
 class Moderation(commands.Cog, description='admin'):
     def __init__(self, bot):
         self.bot = bot
-        self.unmute_loop.start()
+        if not self.bot.debug:
+            self.unmute_loop.start()
 
     async def fetch_settings(self, guild):
         settings = await self.bot.db.settings.find({'guild_id': guild.id})

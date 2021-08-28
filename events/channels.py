@@ -2,7 +2,7 @@ from discord.ext import commands
 from discord.utils import get
 
 
-class Channels(commands.Cog):
+class TempChannelsEnvent(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -33,4 +33,4 @@ class Channels(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Channels(bot))
+    bot.add_cog(TempChannelsEnvent(bot))

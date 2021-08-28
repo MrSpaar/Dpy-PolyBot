@@ -16,7 +16,7 @@ class Erreurs(commands.Cog):
             commands.MemberNotFound: '❌ Membre inexistant',
             commands.PartialEmojiConversionFailure: "❌ Cette commande ne marche qu'avec les emojis custom",
             commands.CommandNotFound: '❌ Commande inexistante',
-            commands.CheckFailure: '❌ Les commandes ne sont pas activées ici',
+            commands.CheckFailure: "❌ Tu n'es pas le créateur de ce channel ou tu n'es pas connecté à un channel",
             commands.ChannelNotFound: '❌ Channel introuvable',
             commands.BadArgument: '❌ Les arguments doivent être des nombres entiers',
             commands.CommandOnCooldown: "❌ Commande en cooldown",
