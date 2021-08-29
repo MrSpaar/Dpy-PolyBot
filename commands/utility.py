@@ -17,19 +17,30 @@ class Utilitaire(commands.Cog, description='commands'):
         usage='<argument>',
         description='Faire apparaître ce menu'
     )
-    async def help(self, ctx, arg=''):
+    async def help(self, ctx, arg='', sub=None):
         embed = Embed(color=0x3498db, title='Aide - ')
         perm = 'admin' if ctx.invoked_with == 'ahelp' else 'commands'
 
         if command := get(self.bot.commands, name=arg):
+            if isinstance(command, commands.Group) and sub:
+                sub = command.get_command(sub)
+
             embed.title += command.name
-            embed.description = f'{command.description}\n\n' + \
-                                f'🙋 Utilisation : `{self.bot.command_prefix}{command.name} {command.usage}`\n' + \
-                                f'👉 Exemple : `{self.bot.command_prefix}{command.name} {command.brief}`'
+            embed.description = f'{command.description}.' if not sub else sub.description
+
+            if isinstance(command, commands.Group) and not sub:
+                embed.description += f'\nLes sous-commandes disponibles :\nㅤ• ' + \
+                                      '\nㅤ• '.join([cmd.name for cmd in command.walk_commands()]) + \
+                                     f'\n\n Détail : `{self.bot.command_prefix}help {command.name} sous-commande`'
+            elif sub:
+                embed.description += f'\n\n🙋 Utilisation : `{self.bot.command_prefix}{command.name} {sub.name} {sub.usage}`\n' + \
+                                     f'👉 Exemple : `{self.bot.command_prefix}{command.name} {sub.name} {sub.brief}`'
+            else:
+                embed.description += f'\n\n🙋 Utilisation : `{self.bot.command_prefix}{command.name} {command.usage}`\n' + \
+                                     f'👉 Exemple : `{self.bot.command_prefix}{command.name} {command.brief}`'
         elif cog := [cog for cog in self.bot.cogs.values() if cog.description == perm and arg == cog.qualified_name.lower()]:
-            cog, = cog
-            embed.title += cog.qualified_name
-            embed.description = '\n'.join([f'`{self.bot.command_prefix}{command.name}` : {command.description}' for command in cog.get_commands()])
+            embed.title += cog[0].qualified_name
+            embed.description = '\n'.join([f'`{self.bot.command_prefix}{command.name}` : {command.description}' for command in cog[0].get_commands()])
             embed.description += f'\n\nDétail : `{self.bot.command_prefix}help commande`'
         else:
             cogs = [cog.qualified_name for cog in self.bot.cogs.values() if cog.description == perm]

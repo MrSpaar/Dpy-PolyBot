@@ -30,7 +30,11 @@ class TempChannelCommands(commands.Cog):
         await ctx.send(embed=embed)
         return False
 
-    @commands.group()
+    @commands.group(
+        brief='owner',
+        usage='<sous commande>',
+        description='Commandes liées aux channels temporaires'
+    )
     async def voc(self, ctx):
         if ctx.invoked_subcommand is None:
             embed = Embed(color=0xe74c3c, description='❌ Sous commande inconnue : `rename` `owner`')
