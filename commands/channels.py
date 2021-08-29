@@ -82,12 +82,10 @@ class TempChannelCommands(commands.Cog):
 
         channel = get(ctx.guild.voice_channels, id=entry['voc_id'])
         text = get(ctx.guild.text_channels, id=entry['txt_id'])
-        base = [ctx.author]
+        base = channel.members if ctx.author in channel.members else [ctx.author] + channel.members
 
         if entries:
             entries = base+entries if isinstance(entries, list) else list(entries)+base
-        else:
-            entries = channel.members+base
 
         overwrites = {entry: PermissionOverwrite(view_channel=True, read_messages=True, connect=True,
                                                  send_messages=True, speak=True, embed_links=True,
