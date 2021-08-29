@@ -59,10 +59,12 @@ class Fun(commands.Cog, description='commands'):
                                                                                    'Envoie `repost` pour renvoyer une grille (garde la progression)'))
         else:
             embed = (Embed(color=0x3498db)
-                     .add_field(name='Règles', value="Les règles classiques des échecs s'appliquent.\n" +
-                                                     "Pour faire une promotion, ajoutez un `q` à la fin de votre move.")
-                     .add_field(inline=False, name='Mouvements',
-                                value='Le seul format pour un mouvement est `départarrivée` (`a2a4` par exemple)'))
+                     .add_field(inline=False, name='Pour jouer',
+                                value='Envoie un message sous une des deux formes supportées :\n' +
+                                      '    • SAN : représentation usuelle (`a4`, `Nf5`, ...)\n' +
+                                      '    • UCI : représentation universelle `départarrivée` (`a2a4`, `b1c3`, ...)\n' +
+                                      '\n Les promotions sous le format UCI se font en ajoutant un `q` à la fin (`a2a1q` par exemple)')
+                     .add_field(inline=False, name='Autres fonctionnalités', value='Envoie `quit` pour abandonner la partie.\n'))
 
         embed.set_footer(text='⚠️ Ne pas mettre ! dans vos messages')
         await ctx.send(embed=embed)
