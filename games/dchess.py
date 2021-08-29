@@ -1,5 +1,6 @@
 from discord import File, Embed
 
+from asyncio import TimeoutError
 from chess import Board, Move
 from chess.svg import board
 from cairosvg import svg2png
@@ -44,24 +45,22 @@ class Chess:
         try:
             move = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == self.cur[0])
 
-            if move.content in ['ff', 'resign', 'abandon', 'abandonner']:
+            if move.content in ['ff', 'resign', 'abandon', 'abandonner', 'quit']:
                 await self.ctx.send(f'{self.cur[0].mention} a abandonné la partie')
 
-            valid = move.content in [str(move) for move in self.board.legal_moves]
-            is_move = 4 <= len(move.content) <= 5 and sum(c.isdigit() for c in move.content) == 2
+            legal_uci = [str(move) for move in self.board.legal_moves]
+            legal_san = [self.board.san(move) for move in self.board.legal_moves]
 
-            if not valid and is_move:
-                await move.delete(delay=3)
-                await self.ctx.send('❌ Mouvement invalide', delete_after=3)
-                return await self.turn()
-
-            if not valid and not is_move:
-                return await self.turn()
-
-            self.board.push_san(move.content)
-            await move.delete()
-            await self.send_message(move.content, 0xfffff)
-        except:
+            valid = move.content in legal_san+legal_uci
+            try:
+                m = self.board.parse_san(move.content)
+                self.board.push(m)
+            except:
+                await self.turn()
+            else:
+                await move.delete()
+                await self.send_message(m, 0xfffff)
+        except TimeoutError:
             return await self.ctx.send(f'Temps de réflexion écoulé, {self.cur[1].mention} a gagné')
 
     async def check_board(self):
@@ -76,7 +75,7 @@ class Chess:
         if self.message:
             await self.message.delete()
 
-        b = board(self.board, lastmove=Move.from_uci(move)) if move else board(self.board)
+        b = board(self.board, lastmove=move) if move else board(self.board)
         svg2png(bytestring=b, write_to='output.png')
         footer = '2 minutes par coups' + f' • Tour de {self.cur[1].display_name}' if not init else ''
 
