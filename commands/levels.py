@@ -46,6 +46,8 @@ class Niveaux(commands.Cog, description='commands'):
     )
     async def rank(self, ctx, member: Member = None):
         member = member or ctx.author
+        # FIXME Request guild entries and sort with sorted
+        # BUG Error when gaining xp while invoking command
         xp = await self.bot.db.users.find({'guild_id': ctx.guild.id, 'id': member.id})
         rank = (await self.bot.db.users.sort({'guild_id': ctx.guild.id}, 'xp', DESCENDING)).index(xp) + 1
 
