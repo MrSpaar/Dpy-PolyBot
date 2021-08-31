@@ -2,13 +2,10 @@ from discord import Member, Embed
 from discord.ext import commands
 from discord.utils import get
 
-from pymongo import DESCENDING
-
 
 class Niveaux(commands.Cog, description='commands'):
     def __init__(self, bot):
         self.bot = bot
-        self.data = None
 
     @staticmethod
     def get_progress_bar(level, xp, n, short=False):
@@ -23,17 +20,17 @@ class Niveaux(commands.Cog, description='commands'):
         return f"{'🟩'*p}{'⬛' * (n-p)} {progress} / {needed}"
 
     @staticmethod
-    def get_page(members, entries, start=1):
+    def get_page(members, entries):
         field1, field2, field3 = '', '', ''
-        for i, entry in enumerate(entries, start=start):
-            print(entry['id'])
-            member = get(members, id=entry['id'])
+
+        for id, entry in entries.items():
+            member = get(members, id=id)
             level, xp = entry['level'], entry['xp']
 
             bar = Niveaux.get_progress_bar(level + 1, xp, 5, True)
             xp = f'{round(xp / 1000, 1)}k' if int(xp / 1000) else xp
 
-            field1 += f'**{i}.** {member.display_name}\n'
+            field1 += f"**{entry['pos']}.** {member.display_name}\n"
             field2 += f'{level} ({xp})\n'
             field3 += f'{bar}\n'
 
@@ -46,19 +43,17 @@ class Niveaux(commands.Cog, description='commands'):
     )
     async def rank(self, ctx, member: Member = None):
         member = member or ctx.author
-        # FIXME Request guild entries and sort with sorted
-        # BUG Error when gaining xp while invoking command
-        xp = await self.bot.db.users.find({'guild_id': ctx.guild.id, 'id': member.id})
-        rank = (await self.bot.db.users.sort({'guild_id': ctx.guild.id}, 'xp', DESCENDING)).index(xp) + 1
+        data = await self.bot.db.members.sort({'guilds.id':ctx.guild.id}, {'guilds.$': 1}, 'guilds.xp', -1)
+        data = {entry['_id']: entry['guilds'][0] | {'pos': i+1} for i, entry in enumerate(data)}
 
         embed = (Embed(color=0x3498db)
                  .set_author(name=f'Progression de {member.display_name}',
                              icon_url=member.avatar_url))
 
-        xp, lvl = (xp['xp'], xp['level'] + 1) if xp else (0, 0)
+        xp, lvl = data[member.id]['xp'], data[member.id]['level'] + 1
         bar = self.get_progress_bar(lvl, xp, 13)
 
-        embed.add_field(name=f'Niveau {lvl-1} • Rang {rank}', value=bar)
+        embed.add_field(name=f"Niveau {lvl-1} • Rang {data[member.id]['pos']}", value=bar)
         await ctx.send(embed=embed)
 
     @commands.command(
@@ -67,14 +62,13 @@ class Niveaux(commands.Cog, description='commands'):
         description='Afficher le classement du serveur'
     )
     async def levels(self, ctx):
-        data = await self.bot.db.users.sort({'guild_id': ctx.guild.id}, 'xp', DESCENDING)
-
-        self.data = data
         embed = (Embed(color=0x3498db)
                  .set_author(name='Classement du serveur', icon_url=ctx.guild.icon_url)
                  .set_footer(text='Page 1'))
 
-        for field in self.get_page(ctx.guild.members, data[:10]):
+        data = await self.bot.db.members.sort({'guilds.id':752921557214429316}, {'guilds.$': 1}, 'guilds.xp', -1)
+        data = {entry['_id']: entry['guilds'][0] | {'pos': i+1} for i, entry in enumerate(data[:10])}
+        for field in self.get_page(ctx.guild.members, data):
             embed.add_field(name=field[0], value=field[1])
 
         message = await ctx.send(embed=embed)
@@ -90,13 +84,15 @@ class Niveaux(commands.Cog, description='commands'):
         if not message.embeds or message.embeds[0].author.name != 'Classement du serveur':
             return
 
-        embed, total = message.embeds[0], len(self.data)//10 + (len(self.data) % 10 > 0)
+        data = await self.bot.db.members.sort({'guilds.id':752921557214429316}, {'guilds.$': 1}, 'guilds.xp', -1)
+
+        embed, total = message.embeds[0], len(data)//10 + (len(data) % 10 > 0)
         page = (int(embed.footer.text.split()[-1]) + (-1 if emoji == '◀️' else 1)) % total or total
 
         a, b = (1, 10) if page == 1 else (page*10 - 9, page*10)
-        data, a = self.data[a-1:b], a or 1
+        data = {entry['_id']: entry['guilds'][0] | {'pos': i+a} for i, entry in enumerate(data[a:b])}
 
-        for i, field in enumerate(self.get_page(member.guild.members, data, start=a)):
+        for i, field in enumerate(self.get_page(member.guild.members, data)):
             embed.set_field_at(i, name=field[0], value=field[1])
 
         embed.set_footer(text=f'Page {page}')

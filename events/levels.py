@@ -20,15 +20,15 @@ class XP(commands.Cog):
         if bucket.update_rate_limit():
             return
 
-        member = await self.bot.db.users.find({'guild_id': message.guild.id, 'id': message.author.id})
+        member = await self.bot.db.members.find({'guilds.id': message.guild.id, '_id': message.author.id}, {'guilds.$': 1})
         if not member:
             return
 
-        xp, lvl = member['xp'] + (randint(15, 25)), member['level'] + 1
+        xp, lvl = member['guilds'][0]['xp'], member['guilds'][0]['level'] + 1
         next_lvl = 5 / 6 * lvl * (2 * lvl ** 2 + 27 * lvl + 91)
 
-        await self.bot.db.users.update({'guild_id': message.guild.id, 'id': message.author.id},
-                                       {'$set': {'xp': int(xp), 'level': lvl if xp >= next_lvl else lvl - 1}})
+        await self.bot.db.members.update({'guilds.id': message.guild.id, '_id': message.author.id},
+                                         {'$inc': {'guilds.$.xp': randint(15, 25), 'guilds.$.level': 1 if xp >= next_lvl else 0}})
 
         if xp >= next_lvl:
             settings = await self.bot.db.settings.find({'guild_id': message.guild.id})

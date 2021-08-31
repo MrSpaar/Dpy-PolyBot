@@ -27,6 +27,7 @@ class Database:
         self.settings = Collection(self.client['data']['settings'])
         self.users = Collection(self.client['data']['users'])
         self.pending = Collection(self.client['data']['pending'])
+        self.members = Collection(self.client['data']['members'])
 
         print('[INFO] Connecté à la base de données')
 
@@ -34,16 +35,15 @@ class Collection:
     def __init__(self, collection):
         self.collection = collection
 
-    async def find(self, query=None):
-        query = query or {}
-        data = await self.collection.find(query).to_list(length=None)
+    async def find(self, query={}, sub={}):
+        data = await self.collection.find(query, sub).to_list(length=None)
+        print(f'[REQ] Find : {query}')
 
         if len(data) > 1:
             return data
         elif data:
             return data[0]
 
-        print(f'[REQ] Find : {query}')
         return
 
     async def update(self, query, data, upsert=False):
@@ -58,7 +58,7 @@ class Collection:
         await self.collection.delete_one(query)
         print(f'[REQ] Delete : {query}')
 
-    async def sort(self, query, field, order):
-        data = self.collection.find(query).sort(field, order)
+    async def sort(self, query, sub, field, order):
+        data = self.collection.find(query, sub).sort(field, order)
         print(f'[REQ] Sort : {field}')
         return await data.to_list(length=None)

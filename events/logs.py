@@ -21,9 +21,6 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if not await self.bot.db.users.find({'guild_id': member.guild.id, 'id': member.id}) and not member.bot:
-            await self.bot.db.users.insert({'guild_id': member.guild.id, 'id': member.id, 'xp': 0, 'level': 0})
-
         embed = Embed(color=0x2ecc71, description=f':inbox_tray: {member.mention} a rejoint le serveur !')
         settings = await self.send_log(member.guild, embed)
 
@@ -33,8 +30,6 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
-        await self.bot.db.users.delete({'guild_id': member.guild.id, 'id': member.id})
-
         embed = Embed(color=0xe74c3c, description=f':outbox_tray: {member.display_name} ({member}) a quitté le serveur')
         await self.send_log(member.guild, embed)
 
@@ -111,6 +106,20 @@ class Logs(commands.Cog):
             return
 
         await self.send_log(guild, embed)
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        owner = self.bot.get_user(self.bot.owner_id)
+        embed = (Embed(description=f"Owner : {guild.owner.mention}\nNom : {guild.name}\nID : `{guild.id}`", color=0x2ecc71)
+                 .set_author(name="J'ai rejoint un serveur", icon_url=guild.icon_url))
+        await owner.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        owner = self.bot.get_user(self.bot.owner_id)
+        embed = (Embed(description=f"Owner : {guild.owner.mention}\nNom : {guild.name}\nID : `{guild.id}`", color=0xe74c3c)
+                 .set_author(name="J'ai quitté un serveur", icon_url=guild.icon_url))
+        await owner.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_invite_create(self, invite):
