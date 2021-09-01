@@ -8,7 +8,7 @@ class SetupEvents(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await self.bot.db.settings.insert({'guild_id': guild.id, 'mute': None, 'logs': None, 'channel': None, 'new': []})
+        await self.bot.db.setup.insert({'_id': guild.id, 'mute': None, 'logs': None, 'channel': None, 'new': []})
         for member in filter(lambda m: not m.bot, guild.members):
             await self.bot.db.members.update({'_id': member.id}, {'$addToSet': {'guilds': {'id': guild.id, 'level': 0, 'xp':0}}}, True)
 
@@ -20,7 +20,7 @@ class SetupEvents(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        await self.bot.db.settings.delete({'guild_id': guild.id})
+        await self.bot.db.setup.delete({'_id': guild.id})
         await self.bot.db.members.collection.update_many({'_id': {'$in': [member.id for member in guild.members]}}, {'$pull': {'guilds': {'id': guild.id}}})
 
     @commands.Cog.listener()

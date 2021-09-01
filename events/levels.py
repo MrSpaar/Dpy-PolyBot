@@ -31,7 +31,7 @@ class XP(commands.Cog):
                                          {'$inc': {'guilds.$.xp': randint(15, 25), 'guilds.$.level': 1 if xp >= next_lvl else 0}})
 
         if xp >= next_lvl:
-            settings = await self.bot.db.settings.find({'guild_id': message.guild.id})
+            settings = await self.bot.db.setup.find({'_id': message.guild.id})
             channel = get(message.guild.text_channels, id=settings['channel']) or message.channel
             embed = Embed(description=f'🆙 {message.author.mention} vient de monter niveau **{lvl}**.', color=0xf1c40f)
             await channel.send(embed=embed)

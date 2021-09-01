@@ -4,7 +4,7 @@ from os import listdir
 from components.cls import Bot
 
 bot = Bot(intents=Intents.all(), case_insensitive=True,
-          help_command=None, activity=Game(name=f'!help'), debug=False)
+          help_command=None, activity=Game(name=f'!help'), debug=True)
 
 for directory in ['admin', 'events', 'commands']:
     for file in listdir(directory):

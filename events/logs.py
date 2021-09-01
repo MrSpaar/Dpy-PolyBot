@@ -12,7 +12,7 @@ class Logs(commands.Cog):
         self.bot = bot
 
     async def send_log(self, guild, embed):
-        settings = await self.bot.db.settings.find({'guild_id': guild.id})
+        settings = await self.bot.db.setup.find({'_id': guild.id})
         logs = get(guild.text_channels, id=settings['logs'])
 
         if logs:

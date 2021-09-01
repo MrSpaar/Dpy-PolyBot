@@ -28,7 +28,7 @@ class SetupCommands(commands.Cog, description='admin'):
             embed = Embed(color=0xe74c3c, description=f"❌ Catégorie invalide : {', '.join(settings.keys())}")
             return await ctx.send(embed=embed)
 
-        await self.bot.db.settings.update({'guild_id': ctx.guild.id}, {'$set': {key: value.id}})
+        await self.bot.db.setup.update({'_id': ctx.guild.id}, {'$set': {key: value.id}})
 
         embed = Embed(color=0x2ecc71, description=f"{settings[key]} modifié ({value.mention})")
         await ctx.send(embed=embed)
@@ -40,7 +40,7 @@ class SetupCommands(commands.Cog, description='admin'):
     )
     @commands.has_permissions(administrator=True)
     async def settings(self, ctx):
-        settings = await self.bot.db.settings.find({'guild_id': ctx.guild.id})
+        settings = await self.bot.db.setup.find({'_id': ctx.guild.id})
 
         channel = getattr(get(ctx.guild.text_channels, id=settings['channel']), 'mention', 'pas défini')
         logs = getattr(get(ctx.guild.text_channels, id=settings['logs']), 'mention', 'pas défini')

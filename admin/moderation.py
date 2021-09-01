@@ -13,13 +13,13 @@ class Moderation(commands.Cog, description='admin'):
             self.unmute_loop.start()
 
     async def fetch_settings(self, guild):
-        settings = await self.bot.db.settings.find({'guild_id': guild.id})
+        settings = await self.bot.db.setup.find({'_id': guild.id})
         role = get(guild.roles, id=settings['mute'])
         logs = get(guild.text_channels, id=settings['logs'])
 
         if not role:
             role = await guild.create_role(name='Muted', color=0xa6aaab, permissions=Permissions.none())
-            await self.bot.db.settings.update({'guild_id': guild.id}, {'$set': {'mute': role.id}})
+            await self.bot.db.setup.update({'_id': guild.id}, {'$set': {'mute': role.id}})
 
             for channel in guild.text_channels:
                 overwrite = channel.overwrites | {role:  PermissionOverwrite(add_reactions=False, send_messages=False)}
@@ -66,7 +66,7 @@ class Moderation(commands.Cog, description='admin'):
         entries = entries if isinstance(entries, list) else [entries]
         for entry in entries:
             guild = self.bot.get_guild(entry['guild_id'])
-            settings = await self.bot.db.settings.find({'guild_id': entry['guild_id']})
+            settings = await self.bot.db.setup.find({'guild_id': entry['guild_id']})
 
             member = guild.get_member(entry['id'])
             role = get(guild.roles, id=settings['mute'])

@@ -24,8 +24,7 @@ class Database:
     def __init__(self):
         self.client = AsyncIOMotorClient(environ['DATABASE_URL'])
 
-        self.settings = Collection(self.client['data']['settings'])
-        self.users = Collection(self.client['data']['users'])
+        self.setup = Collection(self.client['data']['setup'])
         self.pending = Collection(self.client['data']['pending'])
         self.members = Collection(self.client['data']['members'])
 
@@ -36,7 +35,11 @@ class Collection:
         self.collection = collection
 
     async def find(self, query={}, sub={}):
-        data = await self.collection.find(query, sub).to_list(length=None)
+        if sub:
+            data = await self.collection.find(query, sub).to_list(length=None)
+        else:
+            data = await self.collection.find(query).to_list(length=None)
+
         print(f'[REQ] Find : {query}')
 
         if len(data) > 1:
