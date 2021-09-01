@@ -6,7 +6,7 @@ from discord.utils import get
 from typing import Union
 
 
-class TempChannelCommands(commands.Cog):
+class TempChannelCommands(commands.Cog, name='Vocaux', description='commands'):
     def __init__(self, bot):
         self.bot = bot
 

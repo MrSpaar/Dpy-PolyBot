@@ -6,7 +6,7 @@ from typing import Union
 from os import listdir
 
 
-class SetupCommands(commands.Cog, description='admin'):
+class SetupCommands(commands.Cog, name='Configuration', description='admin'):
     def __init__(self, bot):
         self.bot = bot
 
