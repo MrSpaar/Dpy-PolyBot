@@ -28,8 +28,6 @@ PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-pri
 
 ⚠️ La création d'un rôle `muted` est automatique mais si vous en voulez un spécifique : `!set mute <@role>`
 
-Ce bot utilise [MongoDB](https://www.mongodb.com/cloud/atlas). Si vous voulez copier coller le code, vous devrez créé une base de donnée s'appelant `data`, qui contient 3 collections: `pending`, `users` et `settings`.
-
 # Modules supplémentaires
 
 ---
