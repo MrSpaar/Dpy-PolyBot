@@ -16,7 +16,7 @@ PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-pri
 |[Utilitaire](https://github.com/MrSpaar/PolyBot/blob/master/commands/utility.py)           | `help` `poll` `source` `pfp` `emoji` `translate`|
 |[Maths](https://github.com/MrSpaar/PolyBot/blob/master/commands/maths.py)                  | `base` `binary` `hexadecimal` `compute`         |
 |[Niveaux](https://github.com/MrSpaar/PolyBot/blob/master/commands/levels.py)               | `rank` `levels`                                 |
-|[Channels Temporaires](https://github.com/MrSpaar/PolyBot/blob/master/commands/channels.py)| `voc rename` `voc private` `voc owner           |`
+|[Channels Temporaires](https://github.com/MrSpaar/PolyBot/blob/master/commands/channels.py)| `voc rename` `voc private` `voc owner`          |
 
 ### • 🔒 [Commandes admin](https://github.com/MrSpaar/PolyBot/tree/master/admin)
 
