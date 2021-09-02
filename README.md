@@ -1,7 +1,5 @@
 # Commandes
 
----
-
 PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-privé mais open-source** !<br>
 ⚠️ Chaque lien mène vers le code source ou le dossier lui correspondant.<br>
 
@@ -30,8 +28,6 @@ PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-pri
 
 # Modules supplémentaires
 
----
-
 ### • 📈 [Système d'expérience](https://github.com/MrSpaar/PolyBot/blob/master/events/levels.py)
 
 Le système a la **même courbe d'xp que [Mee6](https://mee6.xyz/)**. <br>
@@ -42,7 +38,7 @@ Ecrivez `!set channel <#channel>` pour définir le salon où le bot fait ses ann
 ### • 💬 [Chatbot OpenAI](https://github.com/MrSpaar/PolyBot/blob/master/events/openai.py)
 
 Ce module est en cours d'affinage mais vous permet de "parler" avec PolyBot :
-![Example](https://i.imgur.com/wVMC2wJ.png)
+![Example](https://i.imgur.com/wVMC2wJ.png)<br>
 Pour obtenir une clé API, vous devrez rejoindre la [liste d'attente OpenAI](https://share.hsforms.com/1Lfc7WtPLRk2ppXhPjcYY-A4sk30). <br>
 ⚠️ Les réponses peuvent être répétitives ou imprécises. Je ne suis en aucun cas responsable des réponses données par le bot.
 
