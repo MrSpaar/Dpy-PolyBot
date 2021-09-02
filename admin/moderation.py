@@ -3,8 +3,8 @@ from discord.ext import commands, tasks
 from discord.utils import get
 
 from components.tools import has_higher_perms, now
-from datetime import datetime, timedelta
-from time import mktime
+from datetime import timedelta
+
 
 class Moderation(commands.Cog, description='admin'):
     def __init__(self, bot):

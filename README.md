@@ -42,7 +42,7 @@ Ecrivez `!set channel <#channel>` pour définir le salon où le bot fait ses ann
 ### • 💬 [Chatbot OpenAI](https://github.com/MrSpaar/PolyBot/blob/master/events/openai.py)
 
 Ce module est en cours d'affinage mais vous permet de "parler" avec PolyBot :
-![Example](https://i.imgur.com/V1Eikkc.png)
+![Example](https://i.imgur.com/wVMC2wJ.png)
 Pour obtenir une clé API, vous devrez rejoindre la [liste d'attente OpenAI](https://share.hsforms.com/1Lfc7WtPLRk2ppXhPjcYY-A4sk30). <br>
 ⚠️ Les réponses peuvent être répétitives ou imprécises. Je ne suis en aucun cas responsable des réponses données par le bot.
 
@@ -68,6 +68,12 @@ Ecrivez `!set logs <#channel>` pour définir le channel contenant les logs.
 |Ajout/Suppression de rôles| Rôle ajouté ou enlevé, de qui et par qui               |
 |Modification de profile   | Ancien et nouveau pseudo et/ou tag                     |
 |Création d'invitation     | Lien, autheur, date d'expiration, nombre d'utilisations|
+
+### • 📌 [Epingler des messages](https://github.com/MrSpaar/PolyBot/blob/master/events/pin.py)
+
+Ce module permet aux utilisateurs d'épingler des messages sans que l'utilisateur puisse gérer les messages.<br>
+Il suffit de réagir au message avec 📌, un message est alors envoyé dans [ce channel](https://github.com/MrSpaar/PolyBot/blob/master/events/pin.py#L18), où un modérateur peut approuver ou non la demande.<br>
+PolyBot épinglera alors le message si la demande à été validée.
 
 ### • ❌ [Gestion d'erreurs](https://github.com/MrSpaar/PolyBot/blob/master/events/errors.py)
 
