@@ -4,7 +4,7 @@ from discord.ext import commands
 from difflib import get_close_matches as gcm
 
 
-class Erreurs(commands.Cog):
+class ErrorHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -58,4 +58,4 @@ class Erreurs(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Erreurs(bot))
+    bot.add_cog(ErrorHandler(bot))

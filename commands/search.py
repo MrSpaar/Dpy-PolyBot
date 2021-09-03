@@ -9,7 +9,7 @@ from textblob import TextBlob
 from os import environ, remove
 
 
-class Recherche(commands.Cog, description='commands'):
+class Search(commands.Cog, name='Recherche', description='commands'):
     def __init__(self, bot):
         self.bot = bot
 
@@ -159,4 +159,4 @@ class Recherche(commands.Cog, description='commands'):
 
 
 def setup(bot):
-    bot.add_cog(Recherche(bot))
+    bot.add_cog(Search(bot))

@@ -7,7 +7,7 @@ from youtube_dl import YoutubeDL
 from re import findall
 
 
-class Musique(commands.Cog, description='commands'):
+class Music(commands.Cog, name='Musique', description='commands'):
     def __init__(self, bot):
         self.bot = bot
         self.song_queue = []
@@ -151,4 +151,4 @@ class Musique(commands.Cog, description='commands'):
 
 
 def setup(bot):
-    bot.add_cog(Musique(bot))
+    bot.add_cog(Music(bot))

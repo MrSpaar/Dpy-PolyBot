@@ -5,7 +5,7 @@ from discord.utils import get
 from random import randint
 
 
-class XP(commands.Cog):
+class Leveling(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.cd = commands.CooldownMapping.from_cooldown(1, 60, commands.BucketType.user)
@@ -38,4 +38,4 @@ class XP(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(XP(bot))
+    bot.add_cog(Leveling(bot))

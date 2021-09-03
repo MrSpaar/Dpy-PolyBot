@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.utils import get
 
 
-class Niveaux(commands.Cog, description='commands'):
+class Levels(commands.Cog, name='Niveaux', description='commands'):
     def __init__(self, bot):
         self.bot = bot
 
@@ -27,7 +27,7 @@ class Niveaux(commands.Cog, description='commands'):
             member = get(members, id=id)
             level, xp = entry['level'], entry['xp']
 
-            bar = Niveaux.get_progress_bar(level + 1, xp, 5, True)
+            bar = Levels.get_progress_bar(level + 1, xp, 5, True)
             xp = f'{round(xp / 1000, 1)}k' if int(xp / 1000) else xp
 
             field1 += f"**{entry['pos']}.** {member.display_name}\n"
@@ -102,4 +102,4 @@ class Niveaux(commands.Cog, description='commands'):
 
 
 def setup(bot):
-    bot.add_cog(Niveaux(bot))
+    bot.add_cog(Levels(bot))

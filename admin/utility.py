@@ -4,7 +4,7 @@ from discord.ext import commands
 from typing import Union
 
 
-class Management(commands.Cog, name='Gestion', description='admin'):
+class Utility(commands.Cog, name='Utilitaire', description='admin'):
     def __init__(self, bot):
         self.bot = bot
 
@@ -51,4 +51,4 @@ class Management(commands.Cog, name='Gestion', description='admin'):
 
 
 def setup(bot):
-    bot.add_cog(Management(bot))
+    bot.add_cog(Utility(bot))

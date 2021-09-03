@@ -7,7 +7,7 @@ from textblob import TextBlob
 from os import remove
 
 
-class Utilitaire(commands.Cog, description='commands'):
+class Misc(commands.Cog, name='Divers', description='commands'):
     def __init__(self, bot):
         self.bot = bot
 
@@ -142,4 +142,4 @@ class Utilitaire(commands.Cog, description='commands'):
         await ctx.send('\`\`\`py\nTon code\n\`\`\`')
 
 def setup(bot):
-    bot.add_cog(Utilitaire(bot))
+    bot.add_cog(Misc(bot))

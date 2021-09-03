@@ -6,7 +6,7 @@ from components.tools import has_higher_perms, now
 from datetime import timedelta
 
 
-class Moderation(commands.Cog, description='admin'):
+class Moderation(commands.Cog, name='Modération', description='admin'):
     def __init__(self, bot):
         self.bot = bot
         if not self.bot.debug:
