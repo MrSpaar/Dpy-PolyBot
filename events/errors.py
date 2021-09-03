@@ -1,6 +1,7 @@
-from discord import HTTPException
 from discord.embeds import Embed
 from discord.ext import commands
+
+from difflib import get_close_matches as gcm
 
 
 class Erreurs(commands.Cog):
@@ -9,13 +10,15 @@ class Erreurs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        closest = gcm(ctx.message.content.split()[0][1:], [cmd.name for cmd in self.bot.commands])
+
         handled = {
             commands.MissingPermissions: "❌ Tu n'as pas la permission de faire ça",
             commands.BotMissingPermissions: "❌ Je n'ai pas la permission de faire ça",
             commands.MissingRequiredArgument: f"❌ Il manque au moins un argument : `{getattr(getattr(error, 'param', ''), 'name', '')}`",
             commands.MemberNotFound: '❌ Membre inexistant',
             commands.PartialEmojiConversionFailure: "❌ Cette commande ne marche qu'avec les emojis custom",
-            commands.CommandNotFound: '❌ Commande inexistante',
+            commands.CommandNotFound: f"❌ Commande inexistante{'' if not closest else ', peut-être voulais-tu utiliser `' + closest[0] + '` ?'}",
             commands.CheckFailure: "❌ Tu n'es pas le créateur de ce channel ou tu n'es pas connecté à un channel",
             commands.ChannelNotFound: '❌ Channel introuvable',
             commands.BadArgument: '❌ Les arguments doivent être des nombres entiers',
