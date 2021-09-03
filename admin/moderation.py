@@ -66,7 +66,7 @@ class Moderation(commands.Cog, description='admin'):
         entries = entries if isinstance(entries, list) else [entries]
         for entry in entries:
             guild = self.bot.get_guild(entry['guild_id'])
-            settings = await self.bot.db.setup.find({'guild_id': entry['guild_id']})
+            settings = await self.bot.db.setup.find({'_id': entry['guild_id']})
 
             member = guild.get_member(entry['id'])
             role = get(guild.roles, id=settings['mute'])
