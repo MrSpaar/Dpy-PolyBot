@@ -1,4 +1,4 @@
-from discord import __version__
+from discord import Game, Intents, __version__
 from discord.ext import commands
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -7,9 +7,10 @@ from os import environ
 
 
 class Bot(commands.Bot):
-    def __init__(self, debug=False, **kwargs):
-        super().__init__(command_prefix='-' if debug else '!', **kwargs)
+    def __init__(self, debug=False):
         load_dotenv()
+        super().__init__(command_prefix='-' if debug else '!', help_command=None, case_insensitive=True,
+                         activity=Game(name=f'-help') if debug else Game(name=f'!help'), intents=Intents.all())
 
         self.debug = debug
         self.db = Database()
