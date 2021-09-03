@@ -24,10 +24,12 @@ class Pin(commands.Cog):
                 await message.add_reaction(emoji)
             return
 
-        if not message.embeds or 'veut épingler' not in message.embeds[0].author.name:
+        if not message.embeds:
             return
 
         embed = message.embeds[0]
+        if not embed.author or not embed.author.name or 'veut épingler' not in embed.author.name:
+            return
 
         if str(payload.emoji) == '❌':
             embed.color = 0xe74c3c
