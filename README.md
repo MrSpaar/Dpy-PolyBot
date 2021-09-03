@@ -11,7 +11,7 @@ PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-pri
 |[Fun](https://github.com/MrSpaar/PolyBot/blob/master/commands/fun.py)                      | `chess` `hangman` `minesweeper` `toss` `roll`   |
 |[Musique](https://github.com/MrSpaar/PolyBot/blob/master/commands/music.py)                | `play` `pause` `skip` `remove` `leave`          |
 |[Recherche](https://github.com/MrSpaar/PolyBot/blob/master/commands/search.py)             | `twitch` `youtube` `wikipedia` `anime` `weather`|
-|[Utilitaire](https://github.com/MrSpaar/PolyBot/blob/master/commands/utility.py)           | `help` `poll` `source` `pfp` `emoji` `translate`|
+|[Divers](https://github.com/MrSpaar/PolyBot/blob/master/commands/misc.py)                  | `help` `poll` `source` `pfp` `emoji` `translate`|
 |[Maths](https://github.com/MrSpaar/PolyBot/blob/master/commands/maths.py)                  | `base` `binary` `hexadecimal` `compute`         |
 |[Niveaux](https://github.com/MrSpaar/PolyBot/blob/master/commands/levels.py)               | `rank` `levels`                                 |
 |[Channels Temporaires](https://github.com/MrSpaar/PolyBot/blob/master/commands/channels.py)| `voc rename` `voc private` `voc owner`          |
@@ -20,8 +20,9 @@ PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-pri
 
 |                                        Category                                |                                  Commands                               |
 |--------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-|[Modération](https://github.com/MrSpaar/PolyBot/blob/master/admin/moderation.py)| `mute` `automute` `unmute` `clear` `kick` `ban` `unban` `clone` `cancel`|
+|[Modération](https://github.com/MrSpaar/PolyBot/blob/master/admin/moderation.py)| `mute` `automute` `unmute` `clear` `kick` `ban` `unban` `clone`         |
 |[Infos](https://github.com/MrSpaar/PolyBot/blob/master/admin/informations.py)   | `serverinfo` `userinfo` `roleinfo` `channelinfo` `lastjoins`            |
+|[Utilitaire](https://github.com/MrSpaar/PolyBot/blob/master/admin/utility.py)   | `clone` `menu`                                                          |
 |[Setup](https://github.com/MrSpaar/PolyBot/blob/master/admin/setup.py)          | `set` `settings`                                                        |
 
 ⚠️ La création d'un rôle `muted` est automatique mais si vous en voulez un spécifique : `!set mute <@role>`
