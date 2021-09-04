@@ -32,7 +32,11 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
 
                 await ctx.send(f'Rôle `@{obj}` cloné')
 
-    @commands.group()
+    @commands.group(
+        brief='boutons @CM 1 @CM 2 Groupes de CM',
+        usage='<sous commande> <sous arguments>',
+        description='Commandes liées aux menus de rôles'
+    )
     @commands.has_permissions(manage_roles=True)
     async def menu(self, ctx):
         await ctx.message.delete()

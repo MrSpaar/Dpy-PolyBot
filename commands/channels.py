@@ -31,8 +31,8 @@ class TempChannelCommands(commands.Cog, name='Vocaux', description='commands'):
         return False
 
     @commands.group(
-        brief='owner',
-        usage='<sous commande>',
+        brief='owner @Alexandre Humber',
+        usage='<sous commande> <sous arguments>',
         description='Commandes liées aux channels temporaires'
     )
     async def voc(self, ctx):
