@@ -35,6 +35,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     @commands.group()
     @commands.has_permissions(manage_roles=True)
     async def menu(self, ctx):
+        await ctx.message.delete()
         if ctx.invoked_subcommand is None:
             embed = Embed(color=0xe74c3c, description='❌ Sous commande inconnue : `boutons` `liste`')
             await ctx.send(embed=embed)
