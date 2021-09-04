@@ -22,7 +22,7 @@ PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-pri
 |--------------------------------------------------------------------------------|-------------------------------------------------------------------------|
 |[Modération](https://github.com/MrSpaar/PolyBot/blob/master/admin/moderation.py)| `mute` `automute` `unmute` `clear` `kick` `ban` `unban` `clone`         |
 |[Infos](https://github.com/MrSpaar/PolyBot/blob/master/admin/informations.py)   | `serverinfo` `userinfo` `roleinfo` `channelinfo` `lastjoins`            |
-|[Utilitaire](https://github.com/MrSpaar/PolyBot/blob/master/admin/utility.py)   | `clone` `menu`                                                          |
+|[Utilitaire](https://github.com/MrSpaar/PolyBot/blob/master/admin/utility.py)   | `clone` `menu boutons` `menu select`                                    |
 |[Setup](https://github.com/MrSpaar/PolyBot/blob/master/admin/setup.py)          | `set` `settings`                                                        |
 
 ⚠️ La création d'un rôle `muted` est automatique mais si vous en voulez un spécifique : `!set mute <@role>`

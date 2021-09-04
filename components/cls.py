@@ -1,12 +1,12 @@
 from discord import Game, Intents, __version__
-from discord.ext import commands
+from discord_components import ComponentsBot
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from os import environ
 
 
-class Bot(commands.Bot):
+class Bot(ComponentsBot):
     def __init__(self, debug=False):
         load_dotenv()
         super().__init__(command_prefix='-' if debug else '!', help_command=None, case_insensitive=True,

@@ -1,4 +1,5 @@
-from discord import Role, CategoryChannel, VoiceChannel, Embed, Color
+from discord import Role, CategoryChannel, VoiceChannel, Embed
+from discord_components import Button, ButtonStyle, Select, SelectOption
 from discord.ext import commands
 
 from typing import Union
@@ -31,23 +32,37 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
 
                 await ctx.send(f'Rôle `@{obj}` cloné')
 
-    @commands.command(
-        brief='@CM 1 @CM 2',
-        usage='<rôles>',
-        description='Faire un menu de rôles'
+    @commands.group()
+    @commands.has_permissions(manage_roles=True)
+    async def menu(self, ctx):
+        if ctx.invoked_subcommand is None:
+            embed = Embed(color=0xe74c3c, description='❌ Sous commande inconnue : `boutons` `liste`')
+            await ctx.send(embed=embed)
+
+    @menu.command(
+        name='boutons',
+        brief='@CM 1 @CM 2 Groupes de CM',
+        usage='<rôles> <titre>',
+        description='Faire un menu de rôles avec des boutons'
     )
     @commands.has_permissions(manage_roles=True)
-    async def menu(self, ctx, roles: commands.Greedy[Role], *, title):
-        emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '🇦', '🇧']
-        embed = (Embed(color=0x3498db, description='')
-                 .set_author(name=f'Menu - {title}', icon_url=ctx.guild.icon_url))
+    async def buttons(self, ctx, roles: commands.Greedy[Role], *, title):
+        buttons = [[Button(label=role.name, style=ButtonStyle.green, custom_id=role.id) for role in roles]]
+        await ctx.send(f'Menu de rôles - {title}', components=buttons)
 
-        for emoji, role in  zip(emojis, roles):
-            embed.description += f'{emoji} {role.mention}\n'
-
-        message = await ctx.send(embed=embed)
-        for i in range(len(roles)):
-            await message.add_reaction(emojis[i])
+    @menu.command(
+        name='liste',
+        brief='@CM 1 @CM 2 Choisis ton CM',
+        usage='<rôles> <titre>',
+        description='Faire un menu de rôles avec une liste déroulante'
+    )
+    @commands.has_permissions(manage_roles=True)
+    async def dropdown(ctx, roles: commands.Greedy[Role], *, title):
+        select = [Select(placeholder=title, 
+                        options=[
+                            SelectOption(label=role.name, value=role.id) for role in roles
+                        ])]
+        await ctx.send('Menu de rôles', components=select)
 
 
 def setup(bot):
