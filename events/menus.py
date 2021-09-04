@@ -22,7 +22,7 @@ class RoleMenus(commands.Cog):
         await interaction.respond(content=f'✅ Rôle {role.mention} ajouté')
 
     @commands.Cog.listener()
-    async def on_select_option(interaction):
+    async def on_select_option(self, interaction):
         if 'Menu de rôles' not in interaction.message.content:
             return
 
