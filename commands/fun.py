@@ -1,3 +1,4 @@
+from discord_components import Button, ButtonStyle
 from discord import Member, Embed
 from discord.ext import commands
 
@@ -5,11 +6,14 @@ from games.minesweeper import Minesweeper
 from games.hangman import Hangman
 from games.dchess import Chess
 from random import randint, choice
+from datetime import datetime
+from asyncio import sleep
 
 
 class Fun(commands.Cog, description='commands'):
     def __init__(self, bot):
         self.bot = bot
+        self.last = {}
 
     @commands.command(
         aliases=['chess'],
@@ -102,14 +106,49 @@ class Fun(commands.Cog, description='commands'):
                  for i in range(len(content)) if content[i].isdigit()]
 
         for elem in content:
-            n, faces = elem.split('d') if elem.split('d')[
-                0] != '' else (1, elem[1:])
+            n, faces = elem.split('d') if elem.split('d')[0] != '' else (1, elem[1:])
             rolls += [randint(1, int(faces)) for _ in range(int(n))]
 
         rolls_str = ' + '.join([str(n) for n in rolls])
 
         embed = Embed(color=0xf1c40f, description=f"**🎲 Résultat du lancé :** {rolls_str} = **{sum(rolls)}**")
         await ctx.send(embed=embed)
+
+    @commands.command(
+        brief='',
+        usage='',
+        description='Tester son temps de réaction'
+    )
+    @commands.max_concurrency(1, commands.BucketType.user)
+    async def reaction(self, ctx):
+        await ctx.send('\u200b', components=[Button(label='Prêt ?', custom_id=ctx.author.id)])
+
+        interaction = await self.bot.wait_for('button_click', check=lambda i: i.user==ctx.author)
+        await interaction.edit_origin(components=[Button(label='Appuie dès que je change de couleur', style=ButtonStyle.red, custom_id=interaction.user.id)])
+        await sleep(randint(2,10))
+
+        message = await ctx.channel.fetch_message(interaction.message.id)
+        if not message.components:
+            return
+
+        await interaction.message.edit(components=[Button(label='Maintenant !', style=ButtonStyle.green, custom_id=ctx.author.id)])
+        self.last[interaction.user.id] = datetime.now()
+
+        interaction = await self.bot.wait_for('button_click', check=lambda i: i.user==ctx.author)
+        td = datetime.now() - self.last[interaction.user.id]
+        del self.last[interaction.user.id]
+
+        embed = Embed(color=0x3498db, description=f'⏱️ Ton temps de réaction : `{round(td.seconds+td.microseconds/1000000, 3)}` secondes')
+        await interaction.edit_origin(content=None, embed=embed, components=[])
+
+    @commands.Cog.listener()
+    async def on_button_click(self, interaction):
+        if interaction.user.id != int(interaction.component.custom_id):
+            return await interaction.respond(type=6)
+
+        if interaction.component.label == 'Appuie dès que je change de couleur' and interaction.component.style == ButtonStyle.red:
+            embed = Embed(color=0xe74c3c, description='❌ Tu as appuyé trop tôt')
+            return await interaction.edit_origin(content=None, embed=embed, components=[])
 
 
 def setup(bot):
