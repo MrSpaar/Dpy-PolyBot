@@ -57,7 +57,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
         description='Faire un menu de rôles avec une liste déroulante'
     )
     @commands.has_permissions(manage_roles=True)
-    async def dropdown(ctx, roles: commands.Greedy[Role], *, title):
+    async def dropdown(self, ctx, roles: commands.Greedy[Role], *, title):
         select = [Select(placeholder=title, 
                         options=[
                             SelectOption(label=role.name, value=role.id) for role in roles
