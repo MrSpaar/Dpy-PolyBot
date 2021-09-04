@@ -90,7 +90,7 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
         page = (int(embed.footer.text.split()[-1]) + (-1 if emoji == '◀️' else 1)) % total or total
 
         a, b = (1, 10) if page == 1 else (page*10 - 9, page*10)
-        data = {entry['_id']: entry['guilds'][0] | {'pos': i+a} for i, entry in enumerate(data[a:b])}
+        data = {entry['_id']: entry['guilds'][0] | {'pos': i+a} for i, entry in enumerate(data[a-1:b])}
 
         for i, field in enumerate(self.get_page(member.guild.members, data)):
             embed.set_field_at(i, name=field[0], value=field[1])
