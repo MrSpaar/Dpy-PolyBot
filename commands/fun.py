@@ -136,9 +136,10 @@ class Fun(commands.Cog, description='commands'):
 
         interaction = await self.bot.wait_for('button_click', check=lambda i: i.user==ctx.author)
         td = datetime.now() - self.last[interaction.user.id]
+        td = round(td.seconds+td.microseconds/1000000-self.bot.latency, 3)
         del self.last[interaction.user.id]
 
-        embed = Embed(color=0x3498db, description=f'⏱️ Ton temps de réaction : `{round(td.seconds+td.microseconds/1000000, 3)}` secondes')
+        embed = Embed(color=0x3498db, description=f'⏱️ Ton temps de réaction : `{td}` secondes')
         await interaction.edit_origin(content=None, embed=embed, components=[])
 
     @commands.Cog.listener()
