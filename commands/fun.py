@@ -121,7 +121,7 @@ class Fun(commands.Cog, description='commands'):
     )
     @commands.max_concurrency(1, commands.BucketType.user)
     async def reaction(self, ctx):
-        await ctx.send('\u200b', components=[Button(label='Prêt ?', custom_id=ctx.author.id)])
+        await ctx.send('\u200b', components=[Button(label='Appuie quand tu es prêt', custom_id=ctx.author.id)])
 
         interaction = await self.bot.wait_for('button_click', check=lambda i: i.user==ctx.author)
         await interaction.edit_origin(components=[Button(label='Appuie dès que je change de couleur', style=ButtonStyle.red, custom_id=interaction.user.id)])

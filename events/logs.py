@@ -47,7 +47,7 @@ class Logs(commands.Cog):
         embed = Embed(color=0x3498db)
 
         if before.display_name != after.display_name:
-            embed.description = f"📝 {member.mention} a changé de surnom de {before.mention} (`{before.display_name}`)"
+            embed.description = f"📝 {member.mention} a changé de surnom de {before.mention} (`{before.display_name}` → `{after.display_name}`)"
         elif before.roles != after.roles:
             new = list(filter(lambda r: r not in before.roles, after.roles))
             removed = list(filter(lambda r: r not in after.roles, before.roles))
@@ -97,11 +97,11 @@ class Logs(commands.Cog):
         embed = Embed(color=0x3498db)
 
         if before.name != after.name and before.discriminator != after.discriminator:
-            embed.description = f'📝 {before.mention} a changé de Gamer Tag (`{before}`)'
+            embed.description = f'📝 {before.mention} a changé de Gamer Tag (`{before}` → `{after}`)'
         if before.name != after.name and before.discriminator == after.discriminator:
-            embed.description = f'📝 {before.mention} a changé de pseudo (`{before.name}`)'
+            embed.description = f'📝 {before.mention} a changé de pseudo (`{before.name}` → `{after.name}`)'
         elif before.discriminator != after.discriminator and before.name == after.name:
-            embed.description = f'📝 {before.mention} a changé de discriminant (`{before.discriminator}`)'
+            embed.description = f'📝 {before.mention} a changé de discriminant (`{before.discriminator}` → `{after.discriminator}`)'
         else:
             return
 
