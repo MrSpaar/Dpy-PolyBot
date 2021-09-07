@@ -1,6 +1,7 @@
 from discord import Role, CategoryChannel, VoiceChannel, Embed
 from discord_components import Button, ButtonStyle, Select, SelectOption
 from discord.ext import commands
+from discord.utils import get
 
 from typing import Union
 
@@ -68,6 +69,34 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
                             SelectOption(label=role.name, value=role.id) for role in roles
                         ])]
         await ctx.send('Menu de rôles', components=select)
+
+    @commands.Cog.listener()
+    async def on_button_click(self, interaction):
+        if 'Menu de rôles' not in interaction.message.content:
+            return
+
+        buttons = interaction.message.components[0].components
+        roles = [get(interaction.guild.roles, id=int(button.custom_id)) for button in buttons]
+
+        if common := [role for role in roles if role in interaction.user.roles]:
+            return await interaction.respond(content=f'❌ Tu as déjà un des rôles ({common[0].mention})')
+
+        role = get(interaction.guild.roles, id=int(interaction.component.custom_id))
+        await interaction.user.add_roles(role)
+        await interaction.respond(content=f'✅ Rôle {role.mention} ajouté')
+
+    @commands.Cog.listener()
+    async def on_select_option(self, interaction):
+        if 'Menu de rôles' not in interaction.message.content:
+            return
+
+        roles = [get(interaction.guild.roles, id=int(option.value)) for option in interaction.component.options]
+        if common := [role for role in roles if role in interaction.user.roles]:
+            return await interaction.respond(content=f'❌ Tu as déjà un des rôles ({common[0].mention})')
+
+        role = get(interaction.guild.roles, id=int(interaction.values[0]))
+        await interaction.user.add_roles(role)
+        await interaction.respond(content=f'✅ Rôle {role.mention} ajouté')
 
 
 def setup(bot):

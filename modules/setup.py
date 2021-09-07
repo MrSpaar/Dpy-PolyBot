@@ -52,13 +52,37 @@ class SetupCommands(commands.Cog, name='Configuration', description='admin'):
     @commands.command()
     @commands.is_owner()
     async def reload(self, ctx):
-        for directory in ['admin', 'events', 'commands']:
-            for file in listdir(directory):
-                if file != '__pycache__' and not (file in ['errors.py', 'logs.py'] and self.bot.debug):
-                    self.bot.reload_extension(f'{directory}.{file[:-3]}')
+        for file in listdir('modules'):
+            if file != '__pycache__' and not (file in ['errors.py', 'logs.py'] and self.bot.debug):
+                self.bot.reload_extension(f'modules.{file[:-3]}')
 
         embed = Embed(color=0x2ecc71, description='✅ Tous les modules ont été relancé')
         await ctx.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        await self.bot.db.setup.insert({'_id': guild.id, 'mute': None, 'logs': None, 'channel': None, 'new': []})
+        for member in filter(lambda m: not m.bot, guild.members):
+            await self.bot.db.members.update({'_id': member.id}, {'$addToSet': {'guilds': {'id': guild.id, 'level': 0, 'xp':0}}}, True)
+
+        await guild.owner.send("Merci beaucoup de m'avoir ajouté 👍" +
+                               "\n\nPour certaines de mes commandes, quelques réglages sont nécessaires :" +
+                               "\n    • `!set channel <#channel>` pour indiquer au bot ou faire les annonces de level up" +
+                               "\n    • `!set logs <#channel>` pour indiquer au bot où envoyer les messages de logs" +
+                               "\n\nCes **commandes sont à faire sur ton serveur**, pas ici, en privé ⚠️")
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        await self.bot.db.setup.delete({'_id': guild.id})
+        await self.bot.db.members.collection.update_many({'_id': {'$in': [member.id for member in guild.members]}}, {'$pull': {'guilds': {'id': guild.id}}})
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        await self.bot.db.members.update({'_id': member.id}, {'$addToSet': {'guilds': {'id': member.guild.id, 'level': 0, 'xp': 0}}}, True)
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        await self.bot.db.members.update({'_id': member.id}, {'$pull': {'guilds': {'id': member.guild.id}}})
 
 
 def setup(bot):
