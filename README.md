@@ -4,7 +4,7 @@ PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-pri
 ⚠️ Chaque lien mène vers le code source ou le dossier lui correspondant.<br>
 
 
-### • 🧍 [Commandes utilisateur](https://github.com/MrSpaar/PolyBot/tree/master/commands)
+### • 🧍 Commandes utilisateur
 
 |                                          Category                                         |                         Commands                       |
 |-------------------------------------------------------------------------------------------|--------------------------------------------------------|
@@ -16,7 +16,7 @@ PolyBot est **un bot discord multi-fonction**. Pour l'instant, il est **semi-pri
 |[Niveaux](https://github.com/MrSpaar/PolyBot/blob/master/modules/levels.py)               | `rank` `levels`                                         |
 |[Channels Temporaires](https://github.com/MrSpaar/PolyBot/blob/master/modules/channels.py)| `voc rename` `voc private` `voc owner`                  |
 
-### • 🔒 [Commandes admin](https://github.com/MrSpaar/PolyBot/tree/master/admin)
+### • 🔒 Commandes admin
 
 |                                        Category                                |                                   Commands                                |
 |--------------------------------------------------------------------------------|---------------------------------------------------------------------------|
@@ -74,6 +74,5 @@ PolyBot épinglera alors le message si la demande à été validée.
 
 ### • ❌ [Gestion d'erreurs](https://github.com/MrSpaar/PolyBot/blob/master/modules/errors.py)
 
-Ce module permet d'afficher des messages d'erreurs.<br>
-A chaque erreur, un message suivi d'un exemple est envoyé.<br>
+Ce module permet d'afficher des messages d'erreurs. A chaque erreur, un message suivi d'un exemple est envoyé.<br>
 S'il s'agit d'une commande inconnue, la commande la plus proche apparait également dans le message d'erreur.
