@@ -1,7 +1,8 @@
 from discord import Embed, Color
 
 from random import choice
-from components.tools import normalize_string
+from core.tools import normalize_string
+
 
 class Hangman:
     def __init__(self, bot, ctx):

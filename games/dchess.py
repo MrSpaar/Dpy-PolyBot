@@ -1,7 +1,7 @@
 from discord import File, Embed
 
 from asyncio import TimeoutError
-from chess import Board, Move
+from chess import Board
 from chess.svg import board
 from cairosvg import svg2png
 from os import remove

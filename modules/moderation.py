@@ -2,7 +2,7 @@ from discord import Member, Embed, Permissions, PermissionOverwrite
 from discord.ext import commands, tasks
 from discord.utils import get
 
-from components.tools import has_higher_perms, now
+from core.tools import has_higher_perms, now
 from datetime import timedelta
 
 

@@ -1,7 +1,7 @@
 from discord import Embed
 from discord.ext import commands
 
-from components.tools import get_json
+from core.tools import get_json
 
 
 class Maths(commands.Cog, name='Mathématiques', description='commands'):

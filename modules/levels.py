@@ -8,6 +8,7 @@ from random import randint
 class Levels(commands.Cog, name='Niveaux', description='commands'):
     def __init__(self, bot):
         self.bot = bot
+        self.cd = commands.CooldownMapping.from_cooldown(1, 60, commands.BucketType.user)
 
     @staticmethod
     def get_progress_bar(level, xp, n, short=False):

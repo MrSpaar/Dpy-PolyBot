@@ -1,5 +1,5 @@
 from os import listdir
-from components.cls import Bot
+from core.cls import Bot
 
 bot = Bot(debug=False)
 

@@ -2,7 +2,7 @@ from discord import Embed, Member, member
 from discord.ext import commands
 from discord.utils import get
 
-from components.tools import now
+from core.tools import now
 from datetime import timedelta
 from time import mktime
 
