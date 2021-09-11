@@ -3,6 +3,8 @@ from discord.ext import commands
 
 from difflib import get_close_matches as gcm
 
+from discord.ext.commands.errors import CheckFailure, NoPrivateMessage
+
 
 class ErrorHandler(commands.Cog):
     def __init__(self, bot):
@@ -24,6 +26,8 @@ class ErrorHandler(commands.Cog):
             commands.BadArgument: '❌ Les arguments doivent être des nombres entiers',
             commands.CommandOnCooldown: "❌ Commande en cooldown",
             commands.MaxConcurrencyReached: "❌ Il y a une limite d'une partie en même temps",
+            commands.CheckFailure: "❌ Tu ne peux pas utiliser cette commande sur ce serveur",
+            commands.NoPrivateMessage: "❌ Cette commande n'est utilisable que sur un serveur",
             commands.CommandInvokeError: {
                 'channel': "❌ Tu n'es connecté à aucun channel",
                 'string index': '❌ Erreur dans la conversion',
