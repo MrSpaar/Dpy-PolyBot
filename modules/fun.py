@@ -144,9 +144,6 @@ class Fun(commands.Cog, description='commands'):
 
     @commands.Cog.listener()
     async def on_button_click(self, interaction):
-        if interaction.user.id != int(interaction.component.custom_id):
-            return await interaction.respond(type=6)
-
         if interaction.component.label == 'Appuie dès que je change de couleur' and interaction.component.style == ButtonStyle.red:
             embed = Embed(color=0xe74c3c, description='❌ Tu as appuyé trop tôt')
             return await interaction.edit_origin(content=None, embed=embed, components=[])

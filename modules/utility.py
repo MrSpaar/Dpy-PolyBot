@@ -57,6 +57,15 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
         await ctx.send(f'Menu de rôles - {title}', components=buttons)
 
     @menu.command(
+        brief='🥫 @Kouizinier 🎮 @Soirées jeux',
+        usage='<emojis et rôles> <titre>',
+        description='Faire un menu de rôles avec des boutons incluant des emojis'
+    )
+    async def emoji(self, ctx, entries: commands.Greedy[Union[Role, str]]):
+        buttons = [[Button(label=role.name, style=ButtonStyle.green, custom_id=role.id, emoji=emoji) for emoji, role in zip(entries[::2], entries[1::2])]]
+        await ctx.send(f'Menu de rôles', components=buttons)
+
+    @menu.command(
         name='liste',
         brief='@CM 1 @CM 2 Choisis ton CM',
         usage='<rôles> <titre>',
@@ -74,12 +83,6 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     async def on_button_click(self, interaction):
         if 'Menu de rôles' not in interaction.message.content:
             return
-
-        buttons = interaction.message.components[0].components
-        roles = [get(interaction.guild.roles, id=int(button.custom_id)) for button in buttons]
-
-        if common := [role for role in roles if role in interaction.user.roles]:
-            return await interaction.respond(content=f'❌ Tu as déjà un des rôles ({common[0].mention})')
 
         role = get(interaction.guild.roles, id=int(interaction.component.custom_id))
         await interaction.user.add_roles(role)
