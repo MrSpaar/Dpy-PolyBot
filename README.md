@@ -66,12 +66,6 @@ Ecrivez `!set logs <#channel>` pour définir le channel contenant les logs.
 |Modification de profile   | Ancien et nouveau pseudo et/ou tag                     |
 |Création d'invitation     | Lien, autheur, date d'expiration, nombre d'utilisations|
 
-### • 📌 [Epingler des messages](https://github.com/MrSpaar/PolyBot/blob/master/modules/pin.py)
-
-Ce module permet aux utilisateurs d'épingler des messages sans que l'utilisateur puisse gérer les messages.<br>
-Il suffit de réagir au message avec 📌, un message est alors envoyé dans [ce channel](https://github.com/MrSpaar/PolyBot/blob/master/events/pin.py#L18), où un modérateur peut approuver ou non la demande.<br>
-PolyBot épinglera alors le message si la demande à été validée.
-
 ### • ❌ [Gestion d'erreurs](https://github.com/MrSpaar/PolyBot/blob/master/modules/errors.py)
 
 Ce module permet d'afficher des messages d'erreurs. A chaque erreur, un message suivi d'un exemple est envoyé.<br>
