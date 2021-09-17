@@ -14,7 +14,6 @@ from core.cls import Bot
 class Fun(commands.Cog, description='commands'):
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.last = {}
 
     @commands.command(
         aliases=['chess'],
@@ -134,12 +133,11 @@ class Fun(commands.Cog, description='commands'):
             return
 
         await interaction.message.edit(components=[Button(label='Maintenant !', style=ButtonStyle.green, custom_id=ctx.author.id)])
-        self.last[interaction.user.id] = datetime.now()
+        start = datetime.now()
 
         interaction = await self.bot.wait_for('button_click', check=lambda i: i.user==ctx.author)
-        td = datetime.now() - self.last[interaction.user.id]
+        td = datetime.now() - start
         td = round(td.seconds+td.microseconds/1000000-self.bot.latency, 3)
-        del self.last[interaction.user.id]
 
         embed = Embed(color=0x3498db, description=f'⏱️ Ton temps de réaction : `{td}` secondes')
         await interaction.edit_origin(content=None, embed=embed, components=[])
