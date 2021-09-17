@@ -4,11 +4,12 @@ from discord.utils import get
 
 from asyncio import run_coroutine_threadsafe
 from youtube_dl import YoutubeDL
+from core.cls import Bot
 from re import findall
 
 
 class Music(commands.Cog, name='Musique', description='commands'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         self.song_queue = []
         self.message = None
@@ -43,6 +44,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         usage='<recherche ou lien>',
         description='Jouer une vidéo dans un channel vocal'
     )
+    @commands.guild_only()
     @commands.cooldown(1, 5, commands.BucketType.channel)
     async def play(self, ctx, *, query: str):
         channel = ctx.author.voice.channel
@@ -93,6 +95,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         usage='',
         description='Mettre la vidéo en cours de lecture en pause'
     )
+    @commands.guild_only()
     async def pause(self, ctx):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
@@ -110,6 +113,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         usage='',
         description='Passer la vidéo en cours de lecture'
     )
+    @commands.guild_only()
     async def skip(self, ctx):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
@@ -124,6 +128,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         usage='<position dans la file>', 
         description='Enlever une vidéo de la file'
     )
+    @commands.guild_only()
     async def remove(self, ctx, num: int):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
@@ -140,6 +145,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         usage='',
         description='Arrêter le bot de jouer des vidéos'
     )
+    @commands.guild_only()
     async def leave(self, ctx):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if ctx.author not in voice.channel.members:

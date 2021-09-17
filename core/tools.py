@@ -5,22 +5,23 @@ from datetime import datetime, timedelta
 from unicodedata import normalize
 from inspect import Parameter
 from aiohttp import ClientSession
+from typing import Union
 
-async def get_json(link, headers=None, json=True):
+async def get_json(link: str, headers: dict = None, json: bool = True) -> Union[dict, str]:
     async with ClientSession() as s:
         async with s.get(link, headers=headers) as resp:
             return await resp.json() if json else await resp.text()
 
-def normalize_string(s):
+def normalize_string(s: str) -> str:
     return normalize(u'NFKD', s).encode('ascii', 'ignore').decode('utf8')
 
-def now(utc=False):
+def now(utc: bool = False) -> datetime:
     if utc:
         return datetime.utcnow()
     return datetime.utcnow() + timedelta(hours=2)
 
-def has_higher_perms():
-    async def extended_check(ctx):
+def has_higher_perms() -> None:
+    async def extended_check(ctx: commands.Context) -> bool:
         args = ctx.message.content.split()
         member = get(ctx.guild.members, id=int(args[1].strip('<@!>')))
 

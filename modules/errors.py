@@ -1,13 +1,12 @@
 from discord.embeds import Embed
 from discord.ext import commands
 
+from core.cls import Bot
 from difflib import get_close_matches as gcm
-
-from discord.ext.commands.errors import CheckFailure, NoPrivateMessage
 
 
 class ErrorHandler(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.Cog.listener()

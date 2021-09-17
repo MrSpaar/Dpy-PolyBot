@@ -1,14 +1,16 @@
-from discord import Embed, Color
+from discord import Embed, Color, Message
+from discord.ext.commands import Context
 
+from core.cls import Bot
 from random import sample
 
 
 class Minesweeper:
     def __init__(self, bot, ctx):
-        self.bot = bot
-        self.ctx = ctx
-        self.message = None
-        self.embed = None
+        self.bot: Bot = bot
+        self.ctx: Context = ctx
+        self.message: Message = None
+        self.embed: Embed = None
 
         self.emotes = [
             '<:0_:876396436630159401>', '<:1_:876385590055149629>', '<:2_:876385590038376448>',

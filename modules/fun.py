@@ -8,10 +8,11 @@ from games.dchess import Chess
 from random import randint, choice
 from datetime import datetime
 from asyncio import sleep
+from core.cls import Bot
 
 
 class Fun(commands.Cog, description='commands'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         self.last = {}
 
@@ -20,6 +21,7 @@ class Fun(commands.Cog, description='commands'):
         brief='@Noah Conrard', usage='<membre>',
         description="Jouer aux échecs contre quelqu'un (!regles echecs)"
     )
+    @commands.guild_only()
     @commands.max_concurrency(1, commands.BucketType.channel)
     async def echecs(self, ctx, opponent: Member):
         if opponent.bot or opponent == ctx.author:

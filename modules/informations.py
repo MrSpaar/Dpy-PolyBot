@@ -1,11 +1,12 @@
 from discord import Embed, Status, Member, Role, TextChannel
 from discord.ext import commands
 
+from core.cls import Bot
 from time import mktime
 
 
 class Informations(commands.Cog, description='admin'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.command(
@@ -13,6 +14,7 @@ class Informations(commands.Cog, description='admin'):
         usage='',
         description='Afficher des informations à propos du serveur'
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def serverinfo(self, ctx):
         guild = ctx.guild
@@ -40,6 +42,7 @@ class Informations(commands.Cog, description='admin'):
         usage='<membre>',
         description="Afficher des informations à propos du serveur d'un membre"
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def userinfo(self, ctx, member: Member = None):
         member = member or ctx.author
@@ -81,6 +84,7 @@ class Informations(commands.Cog, description='admin'):
         usage='<role>',
         description="Afficher des informations à propos du serveur d'un rôle"
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def roleinfo(self, ctx, role: Role):
         since = role.created_at.strftime("%d/%m/%Y")
@@ -131,6 +135,7 @@ class Informations(commands.Cog, description='admin'):
         usage='<channel>',
         description="Afficher des informations à propos d'un channel"
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def channelinfo(self, ctx, channel: TextChannel = None):
         channel = channel or ctx.channel
@@ -155,6 +160,7 @@ class Informations(commands.Cog, description='admin'):
         usage="<nombre d'entrées>",
         description='Afficher les nouveaux membres les plus récents'
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def lastjoins(self, ctx, x: int = 10):
         members = filter(lambda m: not m.bot, sorted(ctx.guild.members, key=lambda m: m.joined_at, reverse=True))

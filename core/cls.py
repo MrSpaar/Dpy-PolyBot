@@ -3,6 +3,7 @@ from discord_components import ComponentsBot
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
+from typing import Union
 from os import environ
 
 
@@ -37,7 +38,7 @@ class Collection:
     def __init__(self, collection):
         self.collection = collection
 
-    async def find(self, query={}, sub={}):
+    async def find(self, query: dict = {}, sub: dict = {}) -> Union[list, dict, None]:
         if sub:
             data = await self.collection.find(query, sub).to_list(length=None)
         else:
@@ -52,19 +53,19 @@ class Collection:
 
         return
 
-    async def update(self, query, data, upsert=False):
+    async def update(self, query: dict, data: dict, upsert: bool = False) -> None:
         await self.collection.update_one(query, data, upsert)
         print(f'[REQ] Update : {query} et {data}')
 
-    async def insert(self, data):
+    async def insert(self, data: dict) -> None:
         await self.collection.insert_one(data)
         print(f'[REQ] Insert : {data}')
 
-    async def delete(self, query):
+    async def delete(self, query: dict) -> None:
         await self.collection.delete_one(query)
         print(f'[REQ] Delete : {query}')
 
-    async def sort(self, query, sub, field, order):
+    async def sort(self, query: dict, sub: dict, field: str, order: int) -> None:
         data = self.collection.find(query, sub).sort(field, order)
         print(f'[REQ] Sort : {field}')
         return await data.to_list(length=None)

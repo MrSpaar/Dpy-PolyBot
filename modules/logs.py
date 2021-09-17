@@ -2,13 +2,14 @@ from discord import Embed, Member, member
 from discord.ext import commands
 from discord.utils import get
 
+from core.cls import Bot
 from core.tools import now
 from datetime import timedelta
 from time import mktime
 
 
 class Logs(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     async def send_log(self, guild, embed):

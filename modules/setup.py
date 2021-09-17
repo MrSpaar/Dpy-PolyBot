@@ -3,11 +3,12 @@ from discord.ext import commands
 from discord.utils import get
 
 from typing import Union
+from core.cls import Bot
 from os import listdir
 
 
 class SetupCommands(commands.Cog, name='Configuration', description='admin'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.command(
@@ -16,6 +17,7 @@ class SetupCommands(commands.Cog, name='Configuration', description='admin'):
         usage='<mute, logs ou channel> <@role ou #channel>',
         description='Modifier les paramètres du bot'
     )
+    @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def _set(self, ctx, key, value: Union[Role, TextChannel]):
         settings = {
@@ -38,6 +40,7 @@ class SetupCommands(commands.Cog, name='Configuration', description='admin'):
         usage='',
         description='Afficher les paramètres du bot'
     )
+    @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def settings(self, ctx):
         settings = await self.bot.db.setup.find({'_id': ctx.guild.id})

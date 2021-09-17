@@ -2,11 +2,12 @@ from discord.ext import commands
 
 from unicodedata import normalize, combining
 from aiohttp import ClientSession
+from core.cls import Bot
 from os import environ
 
 
 class OpenAI(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.Cog.listener()

@@ -4,10 +4,11 @@ from discord.utils import get
 
 from core.tools import has_higher_perms, now
 from datetime import timedelta
+from core.cls import Bot
 
 
 class Moderation(commands.Cog, name='Modération', description='admin'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         if not self.bot.debug:
             self.unmute_loop.start()
@@ -33,6 +34,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
         description='Rendre un membre muet'
     )
     @has_higher_perms()
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx, member: Member, time=None):
         role, _ = await self.fetch_settings(ctx.guild)
@@ -80,6 +82,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
         description='Redonner la parole à un membre'
     )
     @has_higher_perms()
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def unmute(self, ctx, member: Member):
         role, _ = await self.fetch_settings(ctx.guild)
@@ -97,6 +100,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
         brief='20', usage='<nombre de messages>',
         description='Supprimer plusieurs messages en même temps'
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, x: int):
         await ctx.channel.purge(limit=x+1)
@@ -106,6 +110,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
         usage='<membre> <raison (optionnel)>',
         description='Exclure un membre du serveur'
     )
+    @commands.guild_only()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: Member, *, reason='Pas de raison'):
         embed = Embed(color=0x2ecc71, description=f'✅ {member.mention} a été kick')
@@ -118,6 +123,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
         usage='<membre> <raison (optionnel)>',
         description='Bannir un membre du serveur'
     )
+    @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: Member, *, reason='Pas de raison'):
         embed = Embed(color=0x2ecc71, description=f'✅ {member.mention} a été ban')
@@ -130,6 +136,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
         usage='<membre> <raison (optionnel)>',
         description='Révoquer un bannissement'
     )
+    @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, user_id: int, *, reason='Pas de raison'):
         try:

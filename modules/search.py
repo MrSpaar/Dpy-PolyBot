@@ -7,10 +7,11 @@ import matplotlib.pyplot as plt
 from youtube_dl import YoutubeDL
 from textblob import TextBlob
 from os import environ, remove
+from core.cls import Bot
 
 
 class Search(commands.Cog, name='Recherche', description='commands'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.command(

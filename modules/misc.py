@@ -1,14 +1,15 @@
-from discord import Embed, Member, File, PartialEmoji
+from discord import Embed, User, File, PartialEmoji
 from discord.ext import commands
 from discord.utils import get
 
 from inspect import getsource
 from textblob import TextBlob
+from core.cls import Bot
 from os import remove
 
 
 class Misc(commands.Cog, name='Divers', description='commands'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.command(
@@ -95,7 +96,7 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         usage='<mention>',
         description="Afficher l'image de profil d'un membre"
     )
-    async def pdp(self, ctx, member: Member = None):
+    async def pdp(self, ctx, member: User = None):
         member = member or ctx.author
         await ctx.send(embed=(Embed(color=member.color)).set_image(url=member.avatar_url))
 

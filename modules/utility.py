@@ -4,10 +4,11 @@ from discord.ext import commands
 from discord.utils import get
 
 from typing import Union
+from core.cls import Bot
 
 
 class Utility(commands.Cog, name='Utilitaire', description='admin'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.command(
@@ -15,6 +16,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
         usage='<rôles ou id catégories>',
         description='Cloner des rôles ou des catégories'
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True, manage_channels=True)
     async def clone(self, ctx, to_clone: commands.Greedy[Union[Role, CategoryChannel]]):
         for obj in to_clone:
@@ -38,6 +40,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
         usage='<sous commande> <sous arguments>',
         description='Commandes liées aux menus de rôles'
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     async def menu(self, ctx):
         await ctx.message.delete()
@@ -51,6 +54,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
         usage='<rôles> <titre>',
         description='Faire un menu de rôles avec des boutons'
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     async def buttons(self, ctx, roles: commands.Greedy[Role], *, title):
         buttons = [[Button(label=role.name, style=ButtonStyle.green, custom_id=role.id) for role in roles]]
@@ -61,6 +65,8 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
         usage='<emojis et rôles> <titre>',
         description='Faire un menu de rôles avec des boutons incluant des emojis'
     )
+    @commands.guild_only()
+    @commands.has_permissions(manage_roles=True)
     async def emoji(self, ctx, entries: commands.Greedy[Union[Role, str]]):
         buttons = [[Button(label=role.name, style=ButtonStyle.green, custom_id=role.id, emoji=emoji) for emoji, role in zip(entries[::2], entries[1::2])]]
         await ctx.send(f'Menu de rôles', components=buttons)
@@ -71,6 +77,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
         usage='<rôles> <titre>',
         description='Faire un menu de rôles avec une liste déroulante'
     )
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     async def dropdown(self, ctx, roles: commands.Greedy[Role], *, title):
         select = [Select(placeholder=title, 

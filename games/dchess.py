@@ -1,16 +1,18 @@
 from discord import File, Embed
+from discord.ext.commands import Context
 
 from asyncio import TimeoutError
-from chess import Board
+from chess import Board, Move
 from chess.svg import board
 from cairosvg import svg2png
+from core.cls import Bot
 from os import remove
 
 
 class Chess:
     def __init__(self, bot, ctx, opponent):
-        self.bot = bot
-        self.ctx = ctx
+        self.bot: Bot = bot
+        self.ctx: Context = ctx
 
         self.cur = [ctx.author, opponent]
         self.opponent = opponent
@@ -36,22 +38,23 @@ class Chess:
         return await self.play()
 
     async def play(self):
-        while not self.end:
-            await self.turn()
-            await self.check_board()
+        await self.turn()
+
+        if self.board.is_checkmate():
+            return await self.ctx.send(f'{self.cur[0].mention} a gagné la partie !')
+        elif self.board.is_game_over():
+            return await self.ctx.send('Égalité, personne ne gagne')
+        else:
             self.cur[0], self.cur[1] = self.cur[1], self.cur[0]
+            await self.play()
 
     async def turn(self):
         try:
             move = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == self.cur[0])
 
             if move.content in ['ff', 'resign', 'abandon', 'abandonner', 'quit']:
-                await self.ctx.send(f'{self.cur[0].mention} a abandonné la partie')
+                return await self.ctx.send(f'{self.cur[0].mention} a abandonné la partie')
 
-            legal_uci = [str(move) for move in self.board.legal_moves]
-            legal_san = [self.board.san(move) for move in self.board.legal_moves]
-
-            valid = move.content in legal_san+legal_uci
             try:
                 m = self.board.parse_san(move.content)
                 self.board.push(m)
@@ -63,15 +66,7 @@ class Chess:
         except TimeoutError:
             return await self.ctx.send(f'Temps de réflexion écoulé, {self.cur[1].mention} a gagné')
 
-    async def check_board(self):
-        if self.board.is_checkmate():
-            await self.ctx.send(f'{self.cur[0].mention} a gagné la partie !')
-            self.end = True
-        elif self.board.is_game_over():
-            await self.ctx.send('Égalité, personne ne gagne')
-            self.end = True
-
-    async def send_message(self, move=None, color=0x00000, text='', init=False):
+    async def send_message(self, move: Move = None, color=0x00000, text: str = '', init: bool = False) -> None:
         if self.message:
             await self.message.delete()
 

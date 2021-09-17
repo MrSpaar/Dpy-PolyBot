@@ -1,11 +1,12 @@
 from discord import Embed
 from discord.ext import commands
 
+from core.cls import Bot
 from core.tools import get_json
 
 
 class Maths(commands.Cog, name='Mathématiques', description='commands'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.command(

@@ -1,15 +1,17 @@
-from discord import Embed, Color
+from discord import Embed, Color, Message
+from discord.ext.commands import Context
 
+from core.cls import Bot
 from random import choice
 from core.tools import normalize_string
 
 
 class Hangman:
     def __init__(self, bot, ctx):
-        self.bot = bot
-        self.ctx = ctx
-        self.message = None
-        self.embed = None
+        self.bot: Bot = bot
+        self.ctx: Context = ctx
+        self.message: Message = None
+        self.embed: Embed = None
 
         self.word = choice([ligne.strip() for ligne in open('wordlist.txt', encoding='UTF-8')])
         self.normalized = normalize_string(self.word)

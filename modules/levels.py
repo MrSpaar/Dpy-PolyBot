@@ -2,11 +2,12 @@ from discord import Member, Embed
 from discord.ext import commands
 from discord.utils import get
 
+from core.cls import Bot
 from random import randint
 
 
 class Levels(commands.Cog, name='Niveaux', description='commands'):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         self.cd = commands.CooldownMapping.from_cooldown(1, 60, commands.BucketType.user)
 
@@ -44,6 +45,7 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
         usage='<membre (optionnel)>',
         description='Afficher sa progression'
     )
+    @commands.guild_only()
     async def rank(self, ctx, member: Member = None):
         member = member or ctx.author
         data = await self.bot.db.members.sort({'guilds.id':ctx.guild.id}, {'guilds.$': 1}, 'guilds.xp', -1)
@@ -64,6 +66,7 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
         usage='',
         description='Afficher le classement du serveur'
     )
+    @commands.guild_only()
     async def levels(self, ctx):
         embed = (Embed(color=0x3498db)
                  .set_author(name='Classement du serveur', icon_url=ctx.guild.icon_url)
