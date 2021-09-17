@@ -18,7 +18,7 @@ class Hangman:
         self.guess = ['-']*len(self.word)
         self.lives, self.errors = 5, []
 
-    async def start(self):
+    async def start(self) -> None:
         self.embed = (Embed(title='Partie de pendu', color=Color.random())
                       .add_field(name='Mot', value=f"```{''.join(self.guess)}```", inline=False)
                       .add_field(name='Erreurs', value='```\u200b```', inline=False)
@@ -27,12 +27,12 @@ class Hangman:
         self.message = await self.ctx.send(embed=self.embed)
         await self.play()
 
-    async def get_letter(self):
+    async def get_letter(self) -> str:
         message = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author and len(m.content) in [1, len(self.word)])
         await message.delete()
         return normalize_string(message.content.lower())
 
-    async def play(self):
+    async def play(self) -> None:
         letter = await self.get_letter()
 
         if letter in self.errors or letter in self.guess:

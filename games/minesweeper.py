@@ -36,7 +36,7 @@ class Minesweeper:
         self.sol = None
         self.cur = [self.blank]*100
 
-    async def start(self):
+    async def start(self) -> None:
         self.embed = (Embed(color=Color.random())
                       .set_author(name='Partie de démineur', icon_url=self.ctx.author.avatar_url)
                       .set_footer(text='Pour voir comment jouer → !regles demineur'))
@@ -45,14 +45,14 @@ class Minesweeper:
         await self.show(self.cur)
         await self.loop(init=True)
 
-    def create_grid(self):
+    def create_grid(self) -> None:
         self.sol = sample([self.blank]*75 + [self.mine]*25, 100)
 
         for i, elem in enumerate(self.sol):
             if elem != self.mine:
                 self.sol[i] = self.emotes[len([1 for c in self.checks if c(i, False)])]
 
-    async def show(self, grid):
+    async def show(self, grid: list) -> None:
         emojis = [
             '<:1_:876453166424686602>', '<:2_:876453170677706772>', '<:3_:876453173131378708>',
             '<:4_:876453175140433930>', '<:5_:876453177707335710>', '<:6_:876453181620641862>',
@@ -68,7 +68,7 @@ class Minesweeper:
         self.embed.description = temp
         await self.message.edit(embed=self.embed)
 
-    def reveal_near(self, i, lastest=[]):
+    def reveal_near(self, i: int, lastest: list = []) -> None:
         for x, c in zip((-10, 10, 1, -9, 11, -1, 9, -11), self.checks):
             if c(i, True):
                 self.cur[i + x] = self.sol[i + x]
@@ -76,7 +76,7 @@ class Minesweeper:
                     lastest.append(i + x)
                     self.reveal_near(i+x, lastest)
 
-    async def loop(self, init=False):
+    async def loop(self, init: bool = False) -> None:
         message = await self.bot.wait_for('message', check=lambda m: m.author == self.ctx.author)
         content = message.content.lower()
 

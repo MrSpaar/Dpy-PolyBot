@@ -1,4 +1,4 @@
-from discord import File, Embed
+from discord import File, Embed, Message
 from discord.ext.commands import Context
 
 from asyncio import TimeoutError
@@ -13,14 +13,14 @@ class Chess:
     def __init__(self, bot, ctx, opponent):
         self.bot: Bot = bot
         self.ctx: Context = ctx
+        self.message: Message = None
 
-        self.cur = [ctx.author, opponent]
-        self.opponent = opponent
         self.end = False
-        self.message = None
         self.board = Board()
+        self.opponent = opponent
+        self.cur = [ctx.author, opponent]
 
-    async def start(self):
+    async def start(self) -> None:
         await self.send_message(init=True)
         await self.message.add_reaction('✅')
         await self.message.add_reaction('❌')
@@ -37,7 +37,7 @@ class Chess:
         await self.send_message(color=0xfffff)
         return await self.play()
 
-    async def play(self):
+    async def play(self) -> None:
         await self.turn()
 
         if self.board.is_checkmate():
@@ -48,7 +48,7 @@ class Chess:
             self.cur[0], self.cur[1] = self.cur[1], self.cur[0]
             await self.play()
 
-    async def turn(self):
+    async def turn(self) -> None:
         try:
             move = await self.bot.wait_for('message', timeout=120, check=lambda m: m.author == self.cur[0])
 
