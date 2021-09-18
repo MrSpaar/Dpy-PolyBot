@@ -65,7 +65,7 @@ class Collection:
         await self.collection.delete_one(query)
         print(f'[REQ] Delete : {query}')
 
-    async def sort(self, query: dict, sub: dict, field: str, order: int) -> None:
+    async def sort(self, query: dict, sub: dict, field: str, order: int) -> list:
         data = self.collection.find(query, sub).sort(field, order)
         print(f'[REQ] Sort : {field}')
         return await data.to_list(length=None)
