@@ -28,6 +28,8 @@ class ErrorHandler(commands.Cog):
             commands.CheckFailure: "❌ Tu ne peux pas utiliser cette commande sur ce serveur",
             commands.NoPrivateMessage: "❌ Cette commande n'est utilisable que sur un serveur",
             commands.CommandInvokeError: {
+                'Not temp': "❌ Tu n'es pas dans un channel temporaire",
+                'Not owner': "❌ Tu n'es pas le créateur de ce channel",
                 'channel': "❌ Tu n'es connecté à aucun channel",
                 'string index': '❌ Erreur dans la conversion',
                 'list index': "❌ Recherche invalide, aucun résultat trouvé",
@@ -54,7 +56,7 @@ class ErrorHandler(commands.Cog):
             raise error
 
         if ctx.command and ctx.command.brief and not isinstance(error, commands.MissingPermissions):
-            error_entry += f"\nExemple d'utilisation : `{self.bot.command_prefix}{ctx.command.name} {ctx.command.brief}`"
+            error_entry += f"\nExemple d'utilisation : `{self.bot.command_prefix}{ctx.command.full_parent_name+' ' if ctx.command.full_parent_name else ''}{ctx.command.name} {ctx.command.brief}`"
 
         embed = Embed(color=0xe74c3c, description=error_entry)
         await ctx.send(embed=embed)

@@ -47,3 +47,19 @@ def has_higher_perms() -> None:
             raise commands.MissingPermissions('')
 
     return commands.check(extended_check)
+
+def vc_check():
+    async def extended_check(ctx: commands.Context) -> bool:
+        if not ctx.guild or not ctx.author.voice:
+            raise commands.CommandInvokeError('channel')
+
+        entry = await ctx.bot.db.pending.find({'guild_id': ctx.guild.id, 'voc_id': ctx.author.voice.channel.id})
+        if not entry:
+            raise commands.CommandInvokeError('Not temp')
+
+        owner = ctx.guild.get_member(entry['owner'])
+        if ctx.author != owner and not ctx.author.guild_permissions.manage_channels:
+            raise commands.CommandInvokeError('Not owner')
+
+        return True
+    return commands.check(extended_check)

@@ -4,32 +4,13 @@ from discord.ext import commands
 from discord.utils import get
 
 from core.cls import Bot
+from core.tools import vc_check
 from typing import Union
 
 
 class TempChannelCommands(commands.Cog, name='Vocaux', description='commands'):
     def __init__(self, bot: Bot):
         self.bot = bot
-
-    async def vc_check(self, ctx):
-        if not ctx.guild or not ctx.author.voice:
-            embed = Embed(color=0xe74c3c, description="❌ Tu n'es connecté à un aucun channel")
-            await ctx.send(embed=embed)
-            return False
-
-        entry = await ctx.bot.db.pending.find({'guild_id': ctx.guild.id, 'voc_id': ctx.author.voice.channel.id})
-        if not entry:
-            embed = Embed(color=0xe74c3c, description="❌ Tu n'es pas dans un channel temporaire")
-            await ctx.send(embed=embed)
-            return False
-
-        owner = ctx.guild.get_member(entry['owner'])
-        if ctx.author == owner:
-            return entry
-
-        embed = Embed(color=0xe74c3c, description="❌ Tu n'es pas le créateur de ce channel")
-        await ctx.send(embed=embed)
-        return False
 
     @commands.group(
         brief='owner @Alexandre Humber',
@@ -47,11 +28,10 @@ class TempChannelCommands(commands.Cog, name='Vocaux', description='commands'):
         usage='<nouveau nom>',
         description='Modifier le nom de son channel'
     )
+    @vc_check()
     @commands.guild_only()
     async def rename(self, ctx, *, name):
-        entry = await self.vc_check(ctx)
-        if not entry:
-            return
+        entry = await ctx.bot.db.pending.find({'guild_id': ctx.guild.id, 'voc_id': ctx.author.voice.channel.id})
 
         channel = get(ctx.guild.voice_channels, id=entry['voc_id'])
         await channel.edit(name=name)
@@ -64,13 +44,12 @@ class TempChannelCommands(commands.Cog, name='Vocaux', description='commands'):
         usage='<membre>',
         description='Définir le propriétaire du channel'
     )
+    @vc_check()
     @commands.guild_only()
     async def owner(self, ctx, member: Member):
-        entry = await self.vc_check(ctx)
-        if not entry:
-            return
-
+        entry = await ctx.bot.db.pending.find({'guild_id': ctx.guild.id, 'voc_id': ctx.author.voice.channel.id})
         await self.bot.db.pending.update(entry, {'$set': {'owner': member.id}})
+
         embed = Embed(color=0x2ecc71, description='✅ Owner modifié')
         await ctx.send(embed=embed)
 
@@ -79,11 +58,10 @@ class TempChannelCommands(commands.Cog, name='Vocaux', description='commands'):
         usage='<membres et/ou rôles>',
         description='Rendre le channel privé'
     )
+    @vc_check()
     @commands.guild_only()
     async def private(self, ctx, entries: Greedy[Union[Role, Member]] = None):
-        entry = await self.vc_check(ctx)
-        if not entry:
-            return
+        entry = await ctx.bot.db.pending.find({'guild_id': ctx.guild.id, 'voc_id': ctx.author.voice.channel.id})
 
         channel = get(ctx.guild.voice_channels, id=entry['voc_id'])
         text = get(ctx.guild.text_channels, id=entry['txt_id'])
