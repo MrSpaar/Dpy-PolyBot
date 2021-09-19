@@ -70,7 +70,7 @@ class Logs(commands.Cog):
     @commands.Cog.listener()
     async def on_message_delete(self, message: Message):
         if message.embeds or message.author.bot or message.channel.id == 840555556707237928 or len(message.content) == 1 or \
-           (len(message.content) in [5, 6, 7] and message.content.count(',') == 2):
+           (len(message.content) in [5, 6, 7] and message.content.count(',') == 2) or not message.guild:
             return
 
         flags = [
