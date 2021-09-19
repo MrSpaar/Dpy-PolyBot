@@ -45,6 +45,10 @@ class Misc(commands.Cog, name='Divers', description='commands'):
             embed.description += f'\n\nDétail : `{self.bot.command_prefix}help commande`'
         else:
             cogs = [cog.qualified_name for cog in self.bot.cogs.values() if cog.description == perm]
+            if ctx.guild.id != 752921557214429316:
+                cogs.remove('Polytech')
+            if ctx.guild.id != 634339847108165632:
+                cogs.remove('Club')
 
             embed.title += 'Modules'
             embed.description = f'Les modules disponibles :\nㅤ• ' + '\n\ㅤ• '.join(cogs) + '\n\nDétail : `!help catégorie`'
