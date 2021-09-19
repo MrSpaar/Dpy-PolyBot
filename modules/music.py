@@ -1,10 +1,11 @@
-from discord import Embed, FFmpegPCMAudio
+from discord import Embed, FFmpegPCMAudio, VoiceChannel
 from discord.ext.commands import Context
 from discord.ext import commands
 from discord.utils import get
 
 from asyncio import run_coroutine_threadsafe
 from youtube_dl import YoutubeDL
+from typing import Optional
 from core.cls import Bot
 from re import findall
 
@@ -47,8 +48,8 @@ class Music(commands.Cog, name='Musique', description='commands'):
     )
     @commands.guild_only()
     @commands.cooldown(1, 5, commands.BucketType.channel)
-    async def play(self, ctx: Context, *, query: str):
-        channel = ctx.author.voice.channel
+    async def play(self, ctx: Context, channel: Optional[VoiceChannel], *, query: str):
+        channel = channel or ctx.author.voice.channel
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if not voice:
