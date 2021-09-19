@@ -1,4 +1,5 @@
 from discord import Embed, Status, Member, Role, TextChannel
+from discord.ext.commands import Context
 from discord.ext import commands
 
 from core.cls import Bot
@@ -16,7 +17,7 @@ class Informations(commands.Cog, description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def serverinfo(self, ctx):
+    async def serverinfo(self, ctx: Context):
         guild = ctx.guild
         channels = f'{len(guild.text_channels)} textuels et {len(guild.voice_channels)} vocaux'
         creation = int(mktime(guild.created_at.timetuple()))
@@ -44,7 +45,7 @@ class Informations(commands.Cog, description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def userinfo(self, ctx, member: Member = None):
+    async def userinfo(self, ctx: Context, member: Member = None):
         member = member or ctx.author
         activity = getattr(member.activity, 'name', 'Rien')
 
@@ -86,7 +87,7 @@ class Informations(commands.Cog, description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def roleinfo(self, ctx, role: Role):
+    async def roleinfo(self, ctx: Context, role: Role):
         since = role.created_at.strftime("%d/%m/%Y")
         perms = role.permissions
         perms = {
@@ -137,7 +138,7 @@ class Informations(commands.Cog, description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def channelinfo(self, ctx, channel: TextChannel = None):
+    async def channelinfo(self, ctx: Context, channel: TextChannel = None):
         channel = channel or ctx.channel
         category = channel.category if channel.category else "Pas de catégorie"
 
@@ -162,7 +163,7 @@ class Informations(commands.Cog, description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def lastjoins(self, ctx, x: int = 10):
+    async def lastjoins(self, ctx: Context, x: int = 10):
         members = filter(lambda m: not m.bot, sorted(ctx.guild.members, key=lambda m: m.joined_at, reverse=True))
         members = [f'`{member.name}` : {str(member.joined_at)[:10]} ({member.id})'.replace('-', '/') for member in members]
         string = '\n'.join(members[:x])

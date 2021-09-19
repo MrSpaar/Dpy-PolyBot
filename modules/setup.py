@@ -1,4 +1,5 @@
-from discord import Role, TextChannel, Embed
+from discord import Role, TextChannel, Embed, Guild, Member
+from discord.ext.commands import Context
 from discord.ext import commands
 from discord.utils import get
 
@@ -19,7 +20,7 @@ class SetupCommands(commands.Cog, name='Configuration', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def _set(self, ctx, key, value: Union[Role, TextChannel]):
+    async def _set(self, ctx: Context, key: str, value: Union[Role, TextChannel]):
         settings = {
             'mute': 'Rôle des muets',
             'logs': 'Channel de logs',
@@ -42,7 +43,7 @@ class SetupCommands(commands.Cog, name='Configuration', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def settings(self, ctx):
+    async def settings(self, ctx: Context):
         settings = await self.bot.db.setup.find({'_id': ctx.guild.id})
 
         channel = getattr(get(ctx.guild.text_channels, id=settings['channel']), 'mention', 'pas défini')
@@ -54,7 +55,7 @@ class SetupCommands(commands.Cog, name='Configuration', description='admin'):
 
     @commands.command()
     @commands.is_owner()
-    async def reload(self, ctx):
+    async def reload(self, ctx: Context):
         for file in listdir('modules'):
             if file != '__pycache__' and not (file in ['errors.py', 'logs.py'] and self.bot.debug):
                 self.bot.reload_extension(f'modules.{file[:-3]}')
@@ -75,16 +76,16 @@ class SetupCommands(commands.Cog, name='Configuration', description='admin'):
                                "\n\nCes **commandes sont à faire sur ton serveur**, pas ici, en privé ⚠️")
 
     @commands.Cog.listener()
-    async def on_guild_remove(self, guild):
+    async def on_guild_remove(self, guild: Guild):
         await self.bot.db.setup.delete({'_id': guild.id})
         await self.bot.db.members.collection.update_many({'_id': {'$in': [member.id for member in guild.members]}}, {'$pull': {'guilds': {'id': guild.id}}})
 
     @commands.Cog.listener()
-    async def on_member_join(self, member):
+    async def on_member_join(self, member: Member):
         await self.bot.db.members.update({'_id': member.id}, {'$addToSet': {'guilds': {'id': member.guild.id, 'level': 0, 'xp': 0}}}, True)
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member):
+    async def on_member_remove(self, member: Member):
         await self.bot.db.members.update({'_id': member.id}, {'$pull': {'guilds': {'id': member.guild.id}}})
 
 

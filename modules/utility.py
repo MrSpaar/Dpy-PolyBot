@@ -1,5 +1,6 @@
 from discord import Role, CategoryChannel, VoiceChannel, Embed
-from discord_components import Button, ButtonStyle, Select, SelectOption
+from discord_components import Button, ButtonStyle, Select, SelectOption, Interaction
+from discord.ext.commands import Context
 from discord.ext import commands
 from discord.utils import get
 
@@ -18,7 +19,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True, manage_channels=True)
-    async def clone(self, ctx, to_clone: commands.Greedy[Union[Role, CategoryChannel]]):
+    async def clone(self, ctx: Context, to_clone: commands.Greedy[Union[Role, CategoryChannel]]):
         for obj in to_clone:
             if isinstance(obj, CategoryChannel):
                 clone = await obj.clone()
@@ -42,7 +43,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
-    async def menu(self, ctx):
+    async def menu(self, ctx: Context):
         await ctx.message.delete()
         if ctx.invoked_subcommand is None:
             embed = Embed(color=0xe74c3c, description='❌ Sous commande inconnue : `boutons` `liste`')
@@ -56,7 +57,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
-    async def buttons(self, ctx, roles: commands.Greedy[Role], *, title):
+    async def buttons(self, ctx: Context, roles: commands.Greedy[Role], *, title: str):
         buttons = [[Button(label=role.name, style=ButtonStyle.green, custom_id=role.id) for role in roles]]
         await ctx.send(f'Menu de rôles - {title}', components=buttons)
 
@@ -67,7 +68,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
-    async def emoji(self, ctx, entries: commands.Greedy[Union[Role, str]]):
+    async def emoji(self, ctx: Context, entries: commands.Greedy[Union[Role, str]]):
         buttons = [[Button(label=role.name, style=ButtonStyle.green, custom_id=role.id, emoji=emoji) for emoji, role in zip(entries[::2], entries[1::2])]]
         await ctx.send(f'Menu de rôles', components=buttons)
 
@@ -79,7 +80,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
-    async def dropdown(self, ctx, roles: commands.Greedy[Role], *, title):
+    async def dropdown(self, ctx: Context, roles: commands.Greedy[Role], *, title: str):
         select = [Select(placeholder=title, 
                         options=[
                             SelectOption(label=role.name, value=role.id) for role in roles
@@ -87,7 +88,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
         await ctx.send('Menu de rôles', components=select)
 
     @commands.Cog.listener()
-    async def on_button_click(self, interaction):
+    async def on_button_click(self, interaction: Interaction):
         if 'Menu de rôles' not in interaction.message.content:
             return
 
@@ -96,7 +97,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
         await interaction.respond(content=f'✅ Rôle {role.mention} ajouté')
 
     @commands.Cog.listener()
-    async def on_select_option(self, interaction):
+    async def on_select_option(self, interaction: Interaction):
         if 'Menu de rôles' not in interaction.message.content:
             return
 

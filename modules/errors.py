@@ -1,4 +1,5 @@
-from discord.embeds import Embed
+from discord import Embed
+from discord.ext.commands import Context
 from discord.ext import commands
 
 from core.cls import Bot
@@ -10,7 +11,7 @@ class ErrorHandler(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx: Context, error):
         closest = gcm(ctx.message.content.split()[0][1:], [cmd.name for cmd in self.bot.commands])
 
         handled = {

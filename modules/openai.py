@@ -1,7 +1,8 @@
+from discord import Message
 from discord.ext import commands
 
-from unicodedata import normalize, combining
 from aiohttp import ClientSession
+from core.tools import normalize_string
 from core.cls import Bot
 from os import environ
 
@@ -11,12 +12,11 @@ class OpenAI(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: Message):
         if not message.content.startswith(self.bot.mention) and not message.content.startswith(self.bot.user.mention):
             return
 
-        question = message.content.strip(self.bot.mention).strip()
-        question = u"".join([c for c in normalize('NFKD', question) if not combining(c)])
+        question = normalize_string(message.content.strip(self.bot.mention).strip())
         query = f"Ce qui suit est une conversation avec un assistant IA. L'assistant est serviable, creatif, intelligent et tres sympathique.\\n\\n {question}"
         data = '{"prompt": "%s", "max_tokens": 100, "temperature": 0.1}' % query
 

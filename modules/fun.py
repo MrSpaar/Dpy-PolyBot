@@ -1,4 +1,5 @@
-from discord_components import Button, ButtonStyle
+from discord_components import Button, ButtonStyle, Interaction
+from discord.ext.commands import Context
 from discord import Member, Embed
 from discord.ext import commands
 
@@ -22,7 +23,7 @@ class Fun(commands.Cog, description='commands'):
     )
     @commands.guild_only()
     @commands.max_concurrency(1, commands.BucketType.channel)
-    async def echecs(self, ctx, opponent: Member):
+    async def echecs(self, ctx: Context, opponent: Member):
         if opponent.bot or opponent == ctx.author:
             return await ctx.send('Tu ne peux pas jouer contre un bot ou contre toi-même')
         
@@ -35,7 +36,7 @@ class Fun(commands.Cog, description='commands'):
         description='Jouer au pendu'
     )
     @commands.max_concurrency(1, commands.BucketType.user)
-    async def pendu(self, ctx):
+    async def pendu(self, ctx: Context):
         await Hangman(self.bot, ctx).start()
 
     @commands.command(
@@ -45,7 +46,7 @@ class Fun(commands.Cog, description='commands'):
         description='Jouer au démineur (!regles demineur)'
     )
     @commands.max_concurrency(1, commands.BucketType.channel)
-    async def demineur(self, ctx):
+    async def demineur(self, ctx: Context):
         await Minesweeper(self.bot, ctx).start()
 
     @commands.command(
@@ -53,7 +54,7 @@ class Fun(commands.Cog, description='commands'):
         usage='<echecs ou demineur>',
         description='Afficher une aide pour jouer aux échecs ou au démineur'
     )
-    async def regles(self, ctx, game):
+    async def regles(self, ctx: Context, game: str):
         if game.lower() in ['démineur', 'demineur']:
             embed = (Embed(color=0x3498db)
                      .add_field(name='Pour jouer', value='Envois un message sous la forme `action,ligne,colonne` :\n' +
@@ -80,7 +81,7 @@ class Fun(commands.Cog, description='commands'):
         usage='<pile ou face>',
         description='Jouer au pile ou face contre le bot'
     )
-    async def toss(self, ctx, arg):
+    async def toss(self, ctx: Context, arg: str):
         result = choice(['Pile', 'Face'])
 
         if arg.title() not in ['Pile', 'Face']:
@@ -101,7 +102,7 @@ class Fun(commands.Cog, description='commands'):
         usage='<texte>',
         description='Faire une lancer de dés'
     )
-    async def roll(self, ctx, dices):
+    async def roll(self, ctx: Context, dices: str):
         content = dices.split('+')
         rolls = [int(content.pop(i))
                  for i in range(len(content)) if content[i].isdigit()]
@@ -121,7 +122,7 @@ class Fun(commands.Cog, description='commands'):
         description='Tester son temps de réaction'
     )
     @commands.max_concurrency(1, commands.BucketType.user)
-    async def reaction(self, ctx):
+    async def reaction(self, ctx: str):
         await ctx.send('\u200b', components=[Button(label='Appuie quand tu es prêt', custom_id=ctx.author.id)])
 
         interaction = await self.bot.wait_for('button_click', check=lambda i: i.user==ctx.author)
@@ -143,7 +144,7 @@ class Fun(commands.Cog, description='commands'):
         await interaction.edit_origin(content=None, embed=embed, components=[])
 
     @commands.Cog.listener()
-    async def on_button_click(self, interaction):
+    async def on_button_click(self, interaction: Interaction):
         if interaction.component.label == 'Appuie dès que je change de couleur' and interaction.component.style == ButtonStyle.red:
             embed = Embed(color=0xe74c3c, description='❌ Tu as appuyé trop tôt')
             return await interaction.edit_origin(content=None, embed=embed, components=[])

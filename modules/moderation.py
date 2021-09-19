@@ -1,4 +1,5 @@
-from discord import Member, Embed, Permissions, PermissionOverwrite
+from discord import Member, Embed, Permissions, PermissionOverwrite, Guild
+from discord.ext.commands import Context
 from discord.ext import commands, tasks
 from discord.utils import get
 
@@ -13,7 +14,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
         if not self.bot.debug:
             self.unmute_loop.start()
 
-    async def fetch_settings(self, guild):
+    async def fetch_settings(self, guild: Guild):
         settings = await self.bot.db.setup.find({'_id': guild.id})
         role = get(guild.roles, id=settings['mute'])
         logs = get(guild.text_channels, id=settings['logs'])
@@ -36,7 +37,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
     @has_higher_perms()
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def mute(self, ctx, member: Member, time=None):
+    async def mute(self, ctx: Context, member: Member, time: str = None):
         role, _ = await self.fetch_settings(ctx.guild)
         if role in member.roles:
             embed = Embed(color=0xe74c3c, description=f'❌ {member.mention} est déjà mute')
@@ -84,7 +85,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
     @has_higher_perms()
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def unmute(self, ctx, member: Member):
+    async def unmute(self, ctx: Context, member: Member):
         role, _ = await self.fetch_settings(ctx.guild)
         if role not in member.roles:
             return await ctx.send(f"❌ {member.mention} n'est pas mute")
@@ -102,7 +103,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def clear(self, ctx, x: int):
+    async def clear(self, ctx: Context, x: int):
         await ctx.channel.purge(limit=x+1)
 
     @commands.command(
@@ -112,7 +113,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, member: Member, *, reason='Pas de raison'):
+    async def kick(self, ctx: Context, member: Member, *, reason: str = 'Pas de raison'):
         embed = Embed(color=0x2ecc71, description=f'✅ {member.mention} a été kick')
 
         await member.kick(reason=reason)
@@ -125,7 +126,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: Member, *, reason='Pas de raison'):
+    async def ban(self, ctx: Context, member: Member, *, reason='Pas de raison'):
         embed = Embed(color=0x2ecc71, description=f'✅ {member.mention} a été ban')
 
         await member.ban(reason=reason)
@@ -138,7 +139,7 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, user_id: int, *, reason='Pas de raison'):
+    async def unban(self, ctx: Context, user_id: int, *, reason='Pas de raison'):
         try:
             member = self.bot.get_user(user_id)
             await ctx.guild.unban(member, reason=reason)

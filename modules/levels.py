@@ -1,4 +1,5 @@
-from discord import Member, Embed
+from discord import Member, Embed, Reaction, Message
+from discord.ext.commands import Context
 from discord.ext import commands
 from discord.utils import get
 
@@ -12,7 +13,7 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
         self.cd = commands.CooldownMapping.from_cooldown(1, 60, commands.BucketType.user)
 
     @staticmethod
-    def get_progress_bar(level, xp, n, short=False):
+    def get_progress_bar(level: int, xp: int, n: int, short: bool = False):
         needed = 5 * ((level - 1) ** 2) + (50 * (level - 1)) + 100
         progress = needed - int(5/6*level * (2*level**2 + 27*level + 91) - xp) if xp else 0
         p = int((progress/needed)*n) or 1
@@ -24,7 +25,7 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
         return f"{'🟩'*p}{'⬛' * (n-p)} {progress} / {needed}"
 
     @staticmethod
-    def get_page(members, entries):
+    def get_page(members: list[Member], entries: dict):
         field1, field2, field3 = '', '', ''
 
         for id, entry in entries.items():
@@ -46,7 +47,7 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
         description='Afficher sa progression'
     )
     @commands.guild_only()
-    async def rank(self, ctx, member: Member = None):
+    async def rank(self, ctx: Context, member: Member = None):
         member = member or ctx.author
         data = await self.bot.db.members.sort({'guilds.id':ctx.guild.id}, {'guilds.$': 1}, 'guilds.xp', -1)
         data = {entry['_id']: entry['guilds'][0] | {'pos': i+1} for i, entry in enumerate(data)}
@@ -67,7 +68,7 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
         description='Afficher le classement du serveur'
     )
     @commands.guild_only()
-    async def levels(self, ctx):
+    async def levels(self, ctx: Context):
         embed = (Embed(color=0x3498db)
                  .set_author(name='Classement du serveur', icon_url=ctx.guild.icon_url)
                  .set_footer(text='Page 1'))
@@ -82,7 +83,7 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
             await message.add_reaction(emoji)
 
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, member):
+    async def on_reaction_add(self, reaction: Reaction, member: Member):
         if member.bot:
             return
 
@@ -107,7 +108,7 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
         await reaction.remove(member)
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: Message):
         if not message.guild or message.channel.id in [840555556707237928, 853630887794311178] or \
         message.author.bot or message.author.id == 689154823941390507 or message.content.startswith(self.bot.command_prefix):
             return

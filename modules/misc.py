@@ -1,4 +1,5 @@
 from discord import Embed, User, File, PartialEmoji
+from discord.ext.commands import Context, Command
 from discord.ext import commands
 from discord.utils import get
 
@@ -18,7 +19,7 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         usage='<argument>',
         description='Faire apparaître ce menu'
     )
-    async def help(self, ctx, arg='', sub=None):
+    async def help(self, ctx: Context, arg: str = None, sub: str = None):
         embed = Embed(color=0x3498db, title='Aide - ')
         perm = 'admin' if ctx.invoked_with == 'ahelp' else 'commands'
 
@@ -61,7 +62,7 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         usage='<question> | <choix 1> | <choix 2> | ...',
         description='Faire un sondage (9 choix au maximum)'
     )
-    async def sondage(self, ctx, *, args):
+    async def sondage(self, ctx: Context, *, args: str):
         items = [arg.strip() for arg in args.split('|')]
         question = items[0]
         reactions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
@@ -83,7 +84,7 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         usage='<commande>',
         description="Afficher le code source d'une commande"
     )
-    async def source(self, ctx, command):
+    async def source(self, ctx: Context, command: str):
         source = str(getsource(self.bot.get_command(command).callback))
 
         if len(source) > 2000:
@@ -100,7 +101,7 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         usage='<mention>',
         description="Afficher l'image de profil d'un membre"
     )
-    async def pdp(self, ctx, member: User = None):
+    async def pdp(self, ctx: Context, member: User = None):
         member = member or ctx.author
         await ctx.send(embed=(Embed(color=member.color)).set_image(url=member.avatar_url))
 
@@ -109,7 +110,7 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         usage='<emoji custom>',
         description="Afficher l'image d'un emoji"
     )
-    async def emoji(self, ctx, emoji: PartialEmoji):
+    async def emoji(self, ctx: Context, emoji: PartialEmoji):
         embed = (Embed(color=ctx.author.color)
                  .set_image(url=emoji.url)
                  .set_footer(text=f'<:{emoji.name}:{emoji.id}>'))
@@ -121,7 +122,7 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         usage='<langue> <texte à traduire>',
         description='Traduire du texte'
     )
-    async def traduire(self, ctx, lang, *, text):
+    async def traduire(self, ctx: Context, lang: str, *, text: str):
         try:
             text = TextBlob(text).translate(to=lang)
             embed = Embed(color=0x3498db, description=f'📚 {text}')
@@ -135,7 +136,7 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         usage='',
         description='Envoyer le lien vers le code source du bot'
     )
-    async def repo(self, ctx):
+    async def repo(self, ctx: Context):
         await ctx.send('https://github.com/MrSpaar/PolyBot')
 
     @commands.command(
@@ -143,7 +144,7 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         usage='',
         description='Afficher le format pour envoyer du code',
     )
-    async def code(self, ctx):
+    async def code(self, ctx: Context):
         await ctx.send('\`\`\`py\nTon code\n\`\`\`')
 
 def setup(bot):

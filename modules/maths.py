@@ -1,4 +1,5 @@
 from discord import Embed
+from discord.ext.commands import Context
 from discord.ext import commands
 
 from core.cls import Bot
@@ -15,7 +16,7 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         usage='<expression>',
         description='Faire des calculs'
     )
-    async def calcul(self, ctx, *, expr):
+    async def calcul(self, ctx: Context, *, expr: str):
         query = expr.replace('+', '%2B').replace('x', '*')
         result = await get_json(f"https://api.mathjs.org/v4/?expr={query}", json=False)
 
@@ -23,7 +24,7 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         await ctx.send(embed=embed)
 
     @staticmethod
-    def base_conv(k, b, n):
+    def base_conv(k: int, b: int, n: int):
         def to_base(num, b, numerals='0123456789abcdefghijklmnopqrstuvwxyxABCDEFGHIJKLMNOPQRSTUVWXYZ'):
             return ((num == 0) and numerals[0]) or (to_base(num // b, b, numerals).lstrip(numerals[0]) + numerals[num % b])
 
@@ -34,7 +35,7 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         usage='<base> <nombre>',
         description="Convertir un nombre d'une base à une autre base (base 62 maximum)"
     )
-    async def base(self, ctx, from_base: int, to_base: int, num: str):
+    async def base(self, ctx: Context, from_base: int, to_base: int, num: str):
         if from_base > 62 or to_base > 62:
             return await ctx.send('❌ Base trop grande (base 52 maximum)')
 
@@ -48,7 +49,7 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         usage='<texte>',
         description='Convertir du texte en binaire'
     )
-    async def binaire(self, ctx, *, arg):
+    async def binaire(self, ctx: Context, *, arg: str):
         try:
             conv = [bin(int(arg))[2:]]
         except:
@@ -63,7 +64,7 @@ class Maths(commands.Cog, name='Mathématiques', description='commands'):
         usage='<texte>',
         description='Convertir du texte en hexadécimal'
     )
-    async def hexadecimal(self, ctx, *, arg):
+    async def hexadecimal(self, ctx: Context, *, arg: str):
         embed = Embed(color=0x3498db, description=f'⚙️ Hexadécimal : `{arg.encode().hex()}`')
         await ctx.send(embed=embed)
 

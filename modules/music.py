@@ -1,4 +1,5 @@
 from discord import Embed, FFmpegPCMAudio
+from discord.ext.commands import Context
 from discord.ext import commands
 from discord.utils import get
 
@@ -46,7 +47,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
     )
     @commands.guild_only()
     @commands.cooldown(1, 5, commands.BucketType.channel)
-    async def play(self, ctx, *, query: str):
+    async def play(self, ctx: Context, *, query: str):
         channel = ctx.author.voice.channel
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
@@ -96,7 +97,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         description='Mettre la vidéo en cours de lecture en pause'
     )
     @commands.guild_only()
-    async def pause(self, ctx):
+    async def pause(self, ctx: Context):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if ctx.author not in voice.channel.members:
@@ -114,7 +115,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         description='Passer la vidéo en cours de lecture'
     )
     @commands.guild_only()
-    async def skip(self, ctx):
+    async def skip(self, ctx: Context):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if ctx.author not in voice.channel.members:
@@ -129,7 +130,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         description='Enlever une vidéo de la file'
     )
     @commands.guild_only()
-    async def remove(self, ctx, num: int):
+    async def remove(self, ctx: Context, num: int):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
 
         if ctx.author not in voice.channel.members:
@@ -146,7 +147,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         description='Arrêter le bot de jouer des vidéos'
     )
     @commands.guild_only()
-    async def leave(self, ctx):
+    async def leave(self, ctx: Context):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if ctx.author not in voice.channel.members:
             return await self.different_channel(ctx)

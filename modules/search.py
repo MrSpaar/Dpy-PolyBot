@@ -1,4 +1,5 @@
 from discord import Embed, File
+from discord.ext.commands import Context
 from discord.ext import commands
 
 from core.tools import get_json
@@ -19,7 +20,7 @@ class Search(commands.Cog, name='Recherche', description='commands'):
         usage='<catégorie> <mots-clés>',
         description='Rechercher des streams Twitch'
     )
-    async def twitch(self, ctx, game, *keys):
+    async def twitch(self, ctx: Context, game: str, *keys: str):
         query = f"https://api.twitch.tv/kraken/search/streams?query={game}&limit={100 if keys else 10}"
         headers = {
             'Accept': 'application/vnd.twitchtv.v5+json',
@@ -50,7 +51,7 @@ class Search(commands.Cog, name='Recherche', description='commands'):
         usage='<recherche>',
         description='Rechercher des vidéos youtube'
     )
-    async def youtube(self, ctx, *, arg):
+    async def youtube(self, ctx: Context, *, arg: str):
         url = (YoutubeDL({'format': 'bestaudio/best', 'noplaylist': 'True', 'quiet': 'True'})
                .extract_info(f"ytsearch:{arg}", download=False)['entries'][0]['webpage_url'])
         await ctx.send(url)
@@ -61,7 +62,7 @@ class Search(commands.Cog, name='Recherche', description='commands'):
         usage='<recherche>',
         description='Rechercher des articles wikipedia'
     )
-    async def wikipedia(self, ctx, *, arg):
+    async def wikipedia(self, ctx: Context, *, arg: str):
         query = f'https://fr.wikipedia.org/w/api.php?action=opensearch&search={arg}&namespace=0&limit=1'
         resp = list(await get_json(query))
         title, url = resp[1][0], resp[3][0]
@@ -82,7 +83,7 @@ class Search(commands.Cog, name='Recherche', description='commands'):
         usage="<nom de l'anime>",
         description='Rechercher des animes'
     )
-    async def anime(self, ctx, *, name):
+    async def anime(self, ctx: Context, *, name: str):
         resp = (await get_json(f'https://kitsu.io/api/edge/anime?filter[text]={name}'))['data'][0]
         anime, url = resp['attributes'], f"https://kitsu.io/anime/{resp['attributes']['slug']}"
 
@@ -107,7 +108,7 @@ class Search(commands.Cog, name='Recherche', description='commands'):
         usage='<ville>',
         description="Donne la météo d'une ville sur un jour"
     )
-    async def meteo(self, ctx, *, city):
+    async def meteo(self, ctx: Context, *, city: str):
         query = f"https://api.openweathermap.org/data/2.5/forecast?q={city}&units=metric&APPID={environ['WEATHER_TOKEN']}"
         resp = await get_json(query)
         today, now = resp['list'][0], datetime.now()
