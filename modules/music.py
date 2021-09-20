@@ -13,32 +13,32 @@ from re import findall
 class Music(commands.Cog, name='Musique', description='commands'):
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.song_queue = []
-        self.message = None
+        self.song_queue = {}
+        self.message = {}
         self.FFMPEG_OPTIONS = {
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
             'options': '-vn'
         }
 
-    async def edit_message(self):
-        embed = self.song_queue[0]['embed']
-        content = "\n".join([f"({self.song_queue.index(i)}) {i['title']}" for i in self.song_queue[1:]])
+    async def edit_message(self, ctx):
+        embed = self.song_queue[ctx.guild.id][0]['embed']
+        content = "\n".join([f"({self.song_queue[ctx.guild.id].index(i)}) {i['title']}" for i in self.song_queue[ctx.guild.id][1:]])
         embed.set_field_at(index=3, name="File d'attente:", value=content or "Pas de vidéos en attente", inline=False)
-        await self.message.edit(embed=embed)
+        await self.message[ctx.guild.id].edit(embed=embed)
 
-    def play_next(self):
-        voice = get(self.bot.voice_clients, guild=self.message.guild)
+    def play_next(self, ctx):
+        voice = get(self.bot.voice_clients, guild=ctx.guild)
         if voice is None:
-            del self.song_queue
-            run_coroutine_threadsafe(self.message.delete(), self.bot.loop)
-        elif len(self.song_queue) > 1:
-            del self.song_queue[0]
-            run_coroutine_threadsafe(self.edit_message(), self.bot.loop)
-            voice.play(FFmpegPCMAudio(self.song_queue[0]['source'], **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+            del self.song_queue[ctx.guild.id]
+            run_coroutine_threadsafe(self.message[ctx.guild.id].delete(), self.bot.loop)
+        elif len(self.song_queue[ctx.guild.id]) > 1:
+            del self.song_queue[ctx.guild.id][0]
+            run_coroutine_threadsafe(self.edit_message(ctx), self.bot.loop)
+            voice.play(FFmpegPCMAudio(self.song_queue[ctx.guild.id][0]['source'], **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(ctx))
             voice.is_playing()
         else:
             run_coroutine_threadsafe(voice.disconnect(), self.bot.loop)
-            run_coroutine_threadsafe(self.message.delete(), self.bot.loop)
+            run_coroutine_threadsafe(self.message[ctx.guild.id].delete(), self.bot.loop)
 
     @commands.command(
         aliases=['p'],
@@ -80,13 +80,13 @@ class Music(commands.Cog, name='Musique', description='commands'):
 
         await ctx.message.delete()
         if not voice.is_playing():
-            self.song_queue = [song]
-            self.message = await ctx.send(embed=song['embed'])
-            voice.play(FFmpegPCMAudio(song['source'], **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+            self.song_queue[ctx.guild.id] = [song]
+            self.message[ctx.guild.id] = await ctx.send(embed=song['embed'])
+            voice.play(FFmpegPCMAudio(song['source'], **self.FFMPEG_OPTIONS), after=lambda e: self.play_next(ctx))
             voice.is_playing()
         else:
-            self.song_queue.append(song)
-            await self.edit_message()
+            self.song_queue[ctx.guild.id].append(song)
+            await self.edit_message(ctx)
 
     async def different_channel(self, ctx):
         embed = Embed(color=0xe74c3c, description="❌ Tu n'es pas dans le même channel que moi")
