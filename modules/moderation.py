@@ -53,11 +53,14 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
 
         try:
             await member.add_roles(role)
+            await member.edit(mute=True)
+            await self.bot.db.pending.insert({'guild_id': ctx.guild.id, 'id': member.id, 'end': date})
+
             embed = Embed(color=0x2ecc71, description=f'✅ {member.mention} a été mute {time}')
             await ctx.send(embed=embed)
-            await self.bot.db.pending.insert({'guild_id': ctx.guild.id, 'id': member.id, 'end': date})
         except:
             embed = Embed(color=0xe74c3c, description='❌ La cible a plus de permissions que moi')
+            await ctx.send(embed=embed)
 
     @tasks.loop(minutes=1)
     async def unmute_loop(self):
@@ -90,11 +93,16 @@ class Moderation(commands.Cog, name='Modération', description='admin'):
         if role not in member.roles:
             return await ctx.send(f"❌ {member.mention} n'est pas mute")
 
-        await member.remove_roles(role)
-        await self.bot.db.pending.delete({'guild_id': ctx.guild.id, 'id': member.id})
+        try:
+            await member.remove_roles(role)
+            await member.edit(mute=False)
+            await self.bot.db.pending.delete({'guild_id': ctx.guild.id, 'id': member.id})
 
-        embed = Embed(color=0x2ecc71, description=f'✅ {member.mention} a été unmute')
-        await ctx.send(embed=embed)
+            embed = Embed(color=0x2ecc71, description=f'✅ {member.mention} a été unmute')
+            await ctx.send(embed=embed)
+        except:
+            embed = Embed(color=0xe74c3c, description='❌ La cible a plus de permissions que moi')
+            await ctx.send(embed=embed)
 
     @commands.command(
         aliases=['prout'],

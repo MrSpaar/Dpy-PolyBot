@@ -33,8 +33,10 @@ class TempChannelCommands(commands.Cog, name='Vocaux', description='commands'):
     async def rename(self, ctx: Context, *, name: str):
         entry = await ctx.bot.db.pending.find({'guild_id': ctx.guild.id, 'voc_id': ctx.author.voice.channel.id})
 
-        channel = get(ctx.guild.voice_channels, id=entry['voc_id'])
-        await channel.edit(name=name)
+        voc = get(ctx.guild.voice_channels, id=entry['voc_id'])
+        text = get(ctx.guild.text_channels, id=entry['txt_id'])
+        await voc.edit(name=name)
+        await text.edit(name=name)
 
         embed = Embed(color=0x2ecc71, description='✅ Nom modifié')
         await ctx.send(embed=embed)
