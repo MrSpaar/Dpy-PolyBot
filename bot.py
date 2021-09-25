@@ -1,7 +1,7 @@
 from os import listdir
 from core.cls import Bot
 
-bot = Bot(debug=True)
+bot = Bot(debug=False)
 
 for file in listdir('modules'):
     if file != '__pycache__' and not (file in ['errors.py', 'logs.py'] and bot.debug):

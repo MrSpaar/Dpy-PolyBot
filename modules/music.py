@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.utils import get
 
 from asyncio import run_coroutine_threadsafe
-from youtube_dl import YoutubeDL
+from yt_dlp import YoutubeDL
 from typing import Optional
 from core.cls import Bot
 from re import findall
@@ -137,7 +137,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         if ctx.author not in voice.channel.members:
             return await self.different_channel(ctx)
         if voice.is_playing():
-            del self.song_queue[num]
+            del self.song_queue[ctx.guild.id][num]
             await ctx.message.delete()
             await self.edit_message()
 
@@ -153,7 +153,7 @@ class Music(commands.Cog, name='Musique', description='commands'):
         if ctx.author not in voice.channel.members:
             return await self.different_channel(ctx)
 
-        self.song_queue = []
+        self.song_queue[ctx.guild.id] = []
         voice.stop()
         await ctx.message.delete()
 
