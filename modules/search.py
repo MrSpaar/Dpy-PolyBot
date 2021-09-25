@@ -5,8 +5,7 @@ from discord.ext import commands
 from core.tools import get_json
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
-from youtube_dl import YoutubeDL
-from textblob import TextBlob
+from yt_dlp import YoutubeDL
 from os import environ, remove
 from core.cls import Bot
 
@@ -85,16 +84,15 @@ class Search(commands.Cog, name='Recherche', description='commands'):
     )
     async def anime(self, ctx: Context, *, name: str):
         resp = (await get_json(f'https://kitsu.io/api/edge/anime?filter[text]={name}'))['data'][0]
-        anime, url = resp['attributes'], f"https://kitsu.io/anime/{resp['attributes']['slug']}"
+        anime = resp['attributes']
 
         end = datetime.strptime(anime['endDate'], '%Y-%m-%d').strftime('%d/%m/%Y') if anime['endDate'] else 'En cours'
         ep = f"{anime['episodeCount']} épisodes" if anime['episodeCount'] else 'En cours'
         h, m = divmod(int(anime['totalLength']), 60)
 
         diff = f"{datetime.strptime(anime['startDate'], '%Y-%m-%d').strftime('%d/%m/%Y')} → {end}"
-        synopsis = TextBlob(anime['synopsis']).translate(to='fr')
 
-        embed = (Embed(color=0x546e7a, description=f'{synopsis}')
+        embed = (Embed(color=0x546e7a, description=anime['synopsis'])
                  .add_field(name='🥇 Score', value=f"{anime['averageRating']}/100")
                  .add_field(name='🖥️ Épisodes', value=f"{ep} ({h:d}h{m:02d}min)")
                  .add_field(name='📅 Diffusion', value=diff)
