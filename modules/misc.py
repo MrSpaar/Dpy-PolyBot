@@ -4,7 +4,6 @@ from discord.ext import commands
 from discord.utils import get
 
 from inspect import getsource
-from textblob import TextBlob
 from core.cls import Bot
 from os import remove
 
@@ -114,21 +113,6 @@ class Misc(commands.Cog, name='Divers', description='commands'):
         embed = (Embed(color=ctx.author.color)
                  .set_image(url=emoji.url)
                  .set_footer(text=f'<:{emoji.name}:{emoji.id}>'))
-        await ctx.send(embed=embed)
-
-    @commands.command(
-        aliases=['trad', 'translate'],
-        brief='fr Hello World!',
-        usage='<langue> <texte à traduire>',
-        description='Traduire du texte'
-    )
-    async def traduire(self, ctx: Context, lang: str, *, text: str):
-        try:
-            text = TextBlob(text).translate(to=lang)
-            embed = Embed(color=0x3498db, description=f'📚 {text}')
-        except:
-            embed = Embed(color=0xe74c3c, description='❌ Traduction identique au texte initial, langue probablement invalide')
-
         await ctx.send(embed=embed)
 
     @commands.command(
