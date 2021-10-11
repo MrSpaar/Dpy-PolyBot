@@ -20,18 +20,23 @@ class SetupCommands(commands.Cog, name='Configuration', description='admin'):
     )
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def _set(self, ctx: Context, key: str, value: Union[Role, TextChannel]):
+    async def _set(self, ctx: Context, key: str, value: Union[Role, TextChannel], *, message=None):
         settings = {
             'mute': 'Rôle des muets',
             'logs': 'Channel de logs',
-            'channel': 'Channel du bot'
+            'channel': 'Channel du bot',
+            'role': 'Rôle des nouveaux membres',
+            'welcome': 'Message de bienvenu'
         }
 
         if key not in settings:
             embed = Embed(color=0xe74c3c, description=f"❌ Catégorie invalide : {', '.join(settings.keys())}")
             return await ctx.send(embed=embed)
 
-        await self.bot.db.setup.update({'_id': ctx.guild.id}, {'$set': {key: value.id}})
+        if key == 'welcome':
+            await self.bot.db.setup.update({'_id': ctx.guild.id}, {'$set': {key: {'id': value.id, 'txt': message}}})
+        else:
+            await self.bot.db.setup.update({'_id': ctx.guild.id}, {'$set': {key: value.id}})
 
         embed = Embed(color=0x2ecc71, description=f"{settings[key]} modifié ({value.mention})")
         await ctx.send(embed=embed)

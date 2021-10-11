@@ -26,9 +26,13 @@ class Logs(commands.Cog):
         embed = Embed(color=0x2ecc71, description=f':inbox_tray: {member.mention} a rejoint le serveur !')
         settings = await self.send_log(member.guild, embed)
 
-        for role_id in settings['new']:
-            role = get(member.guild.roles, id=role_id)
-            await member.add_roles(role)
+        if settings['welcome']:
+            channel = get(member.guild.text_channels, id=settings['welcome']['id'])
+            await channel.send(settings['welcome']['txt'].replace('mention', member.mention))
+
+        if settings['new']:
+            role = get(member.guild.roles, id=settings['new'])
+            await member.add_roles(role)    
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: Member):
