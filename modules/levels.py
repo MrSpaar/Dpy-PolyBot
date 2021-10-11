@@ -129,7 +129,11 @@ class Levels(commands.Cog, name='Niveaux', description='commands'):
 
         if xp >= next_lvl:
             settings = await self.bot.db.setup.find({'_id': message.guild.id})
-            channel = get(message.guild.text_channels, id=settings['channel']) or message.channel
+            channel = get(message.guild.text_channels, id=settings['channel'])
+
+            if not channel:
+                return
+
             embed = Embed(description=f'🆙 {message.author.mention} vient de monter niveau **{lvl}**.', color=0xf1c40f)
             await channel.send(embed=embed)
 
