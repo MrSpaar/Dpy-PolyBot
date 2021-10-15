@@ -1,6 +1,7 @@
 from discord import Member, Embed, Permissions, PermissionOverwrite, Guild
 from discord.ext.commands import Context
 from discord.ext import commands, tasks
+from discord.ext.commands.core import command
 from discord.utils import get
 
 from core.tools import has_higher_perms, now

@@ -1,4 +1,4 @@
-from discord import Role, CategoryChannel, VoiceChannel, Embed
+from discord import Role, Member, Embed
 from discord_components import Button, ButtonStyle, Select, SelectOption, Interaction
 from discord.ext.commands import Context
 from discord.ext import commands
@@ -12,29 +12,36 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @commands.command(
-        brief='@CM 1 @CM 2',
-        usage='<rôles ou id catégories>',
-        description='Cloner des rôles ou des catégories'
-    )
-    @commands.guild_only()
-    @commands.has_permissions(manage_roles=True, manage_channels=True)
-    async def clone(self, ctx: Context, to_clone: commands.Greedy[Union[Role, CategoryChannel]]):
-        for obj in to_clone:
-            if isinstance(obj, CategoryChannel):
-                clone = await obj.clone()
-                for channel in obj.channels:
-                    if isinstance(channel, VoiceChannel):
-                        await clone.create_voice_channel(name=channel.name, overwrites=channel.overwrites)
-                    else:
-                        await clone.create_text_channel(name=channel.name, overwrites=channel.overwrites)
+    @commands.command(hidden=True)
+    @commands.has_permissions(administrator=True)
+    async def verify(self, ctx: Context, member: Member, *, nick):
+        if ctx.guild.id == 752921557214429316:
+            raise commands.CommandNotFound('Commande inexistante')
 
-                await ctx.send(f'✅ Catégorie `{obj}` clonée')
-            elif isinstance(obj, Role):
-                await ctx.guild.create_role(name=obj.name, color=obj.color, hoist=obj.hoist,
-                                            permissions=obj.permissions, mentionable=obj.mentionable)
+        verif = get(ctx.guild.roles, id=878256370363805707)
+        role = get(ctx.guild.roles, id=877952434952081419)
 
-                await ctx.send(f'Rôle `@{obj}` cloné')
+        await member.edit(nick=nick)
+        await member.remove_roles(verif)
+        await member.add_roles(role)
+
+        channel = get(ctx.guild.text_channels, id=879041859765272706)
+        await channel.send(f'Bienvenue à {member.mention} ! <:pepeOK:819556642487926784>')
+
+    @commands.command(hidden=True)
+    @commands.has_permissions(administrator=True)
+    async def edit(self, ctx: Context, *, content):
+        if not ctx.message.reference:
+            embed = Embed(color=0xe74c3c, description="❌ Tu n'as répondu à aucun message")
+            return await ctx.send(embed=embed)
+
+        message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+
+        if message.author != ctx.me:
+            embed = Embed(color=0xe74c3c, description="❌ Je ne peux pas éditer un message que je n'ai pas écrit")
+            return await ctx.send(embed=embed)
+
+        await message.edit(content=content)
 
     @commands.group(
         brief='boutons @CM 1 @CM 2 Groupes de CM',
@@ -58,7 +65,9 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     async def buttons(self, ctx: Context, roles: commands.Greedy[Role], *, title: str):
-        buttons = [[Button(label=role.name, style=ButtonStyle.green, custom_id=role.id) for role in roles]]
+        groups = [[role for role in roles[i:i+5]] for i in range(0, len(roles), 5)]
+        buttons = [[Button(label=role.name, style=ButtonStyle.green, custom_id=role.id) for role in group] for group in groups]
+
         await ctx.send(f'Menu de rôles - {title}', components=buttons)
 
     @menu.command(
@@ -69,7 +78,9 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     async def emoji(self, ctx: Context, entries: commands.Greedy[Union[Role, str]]):
-        buttons = [[Button(label=role.name, style=ButtonStyle.green, custom_id=role.id, emoji=emoji) for emoji, role in zip(entries[::2], entries[1::2])]]
+        groups = [[(emoji, role) for emoji, role in zip(entries[i:i+10:2], entries[i+1:i+10:2])] for i in range(0, len(entries), 10)]
+        buttons = [[Button(label=entry[1].name, style=ButtonStyle.green, custom_id=entry[1].id, emoji=entry[0]) for entry in group] for group in groups]
+
         await ctx.send(f'Menu de rôles', components=buttons)
 
     @menu.command(
