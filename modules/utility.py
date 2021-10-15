@@ -42,6 +42,7 @@ class Utility(commands.Cog, name='Utilitaire', description='admin'):
             return await ctx.send(embed=embed)
 
         await message.edit(content=content)
+        await ctx.message.delete()
 
     @commands.group(
         brief='boutons @CM 1 @CM 2 Groupes de CM',
